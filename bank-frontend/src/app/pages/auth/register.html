@@ -1,0 +1,57 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>🏦 JavaIsland Bank</h1>
+      <p>Crea il tuo account</p>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    @if (success()) {
+      <div class="alert alert-success">{{ success() }}</div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Nome</label>
+          <input id="firstName" type="text" [(ngModel)]="firstName" name="firstName" placeholder="Mario" />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Cognome</label>
+          <input id="lastName" type="text" [(ngModel)]="lastName" name="lastName" placeholder="Rossi" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="birthDate">Data di nascita</label>
+        <input id="birthDate" type="date" [(ngModel)]="birthDate" name="birthDate" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="mario.rossi@email.com" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="Minimo 6 caratteri" />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Conferma password</label>
+        <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Ripeti la password" />
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        @if (loading()) { Registrazione in corso... } @else { Registrati }
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Hai già un account? <a routerLink="/login">Accedi</a></p>
+    </div>
+  </div>
+</div>

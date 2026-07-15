@@ -1,0 +1,46 @@
+<div class="dashboard">
+  <h1>Pannello Dipendente</h1>
+
+  @if (loading()) {
+    <div class="loading">Caricamento...</div>
+  }
+
+  <div class="stats-grid">
+    <a routerLink="/employee/registrations" class="stat-card clickable">
+      <span class="stat-icon pending-icon">⏳</span>
+      <span class="stat-label">Registrazioni in attesa</span>
+      <span class="stat-value">{{ pendingCount() }}</span>
+    </a>
+    <a routerLink="/employee/accounts" class="stat-card clickable">
+      <span class="stat-icon accounts-icon">🏦</span>
+      <span class="stat-label">Conti totali</span>
+      <span class="stat-value">{{ totalAccounts() }}</span>
+    </a>
+    <div class="stat-card">
+      <span class="stat-icon customers-icon">👥</span>
+      <span class="stat-label">Clienti registrati</span>
+      <span class="stat-value">{{ totalCustomers() }}</span>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Azioni Rapide</h2>
+    <div class="actions-grid">
+      <a routerLink="/employee/registrations" class="action-card">
+        <span class="action-icon">✅</span>
+        <span class="action-label">Valida Registrazioni</span>
+        <span class="action-desc">Approva o rifiuta nuove richieste</span>
+      </a>
+      <a routerLink="/employee/accounts" class="action-card">
+        <span class="action-icon">🏦</span>
+        <span class="action-label">Gestisci Conti</span>
+        <span class="action-desc">Attiva, congela o gestisci limiti</span>
+      </a>
+      <a routerLink="/employee/cards" class="action-card">
+        <span class="action-icon">💳</span>
+        <span class="action-label">Gestisci Carte</span>
+        <span class="action-desc">Visualizza e gestisci le carte</span>
+      </a>
+    </div>
+  </div>
+</div>

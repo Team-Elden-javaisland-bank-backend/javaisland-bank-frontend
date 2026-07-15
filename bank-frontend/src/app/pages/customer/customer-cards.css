@@ -1,0 +1,63 @@
+/* ═══ CUSTOMER CARDS — MOBILE FIRST ═══ */
+.page h1 { margin: 0 0 20px 0; font-size: 22px; color: #1a1a2e; }
+.loading { text-align: center; padding: 40px; color: #666; }
+.empty-state { text-align: center; padding: 48px 20px; background: #fff; border-radius: 12px; color: #666; }
+
+.cards-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+
+.credit-card {
+  border-radius: 16px;
+  padding: 24px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-top { display: flex; justify-content: space-between; align-items: center; }
+.card-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+.card-status { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.cs-ACTIVE { background: rgba(255,255,255,0.2); color: #fff; }
+.cs-INACTIVE { background: rgba(255,200,0,0.3); color: #ffd700; }
+.cs-BLOCKED { background: rgba(255,0,0,0.3); color: #ff6666; }
+
+.card-chip { width: 36px; height: 26px; background: linear-gradient(135deg, #ffd700, #b8860b); border-radius: 5px; margin: 12px 0; }
+
+.card-number {
+  font-family: monospace;
+  font-size: 16px;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  word-break: break-all;
+}
+
+.card-bottom { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+.card-holder { font-size: 13px; font-weight: 600; }
+.card-exp { font-size: 11px; opacity: 0.7; }
+.card-cvv { font-size: 11px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; margin-top: 6px; }
+
+.btn-reveal {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn-reveal:hover { background: rgba(255,255,255,0.3); }
+
+.alert { padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; font-size: 13px; }
+.alert-success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+.alert-error { background: #fff5f5; color: #e94560; border: 1px solid #fecaca; }
+
+@media (min-width: 768px) {
+  .page h1 { font-size: 28px; }
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+  .card-number { font-size: 20px; letter-spacing: 3px; }
+}

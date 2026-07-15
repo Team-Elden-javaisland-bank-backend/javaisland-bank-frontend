@@ -1,0 +1,45 @@
+<div class="page">
+  <h1>Registrazioni in Attesa</h1>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Caricamento...</div>
+  } @else if (registrations().length === 0) {
+    <div class="empty-state">Nessuna registrazione in attesa.</div>
+  } @else {
+    <div class="registrations-list">
+      @for (reg of registrations(); track reg.userId) {
+        <div class="registration-card">
+          <div class="reg-header">
+            <div class="reg-avatar">{{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}</div>
+            <div class="reg-info">
+              <div class="reg-name">{{ reg.firstName }} {{ reg.lastName }}</div>
+              <div class="reg-email">{{ reg.email }}</div>
+            </div>
+          </div>
+          <div class="reg-details">
+            <div class="reg-detail">
+              <span class="detail-label">Data di nascita</span>
+              <span class="detail-value">{{ reg.birthDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="reg-detail">
+              <span class="detail-label">Account pending</span>
+              <span class="detail-value mono">{{ reg.pendingAccountNumber }}</span>
+            </div>
+            <div class="reg-detail">
+              <span class="detail-label">Registrato il</span>
+              <span class="detail-value">{{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+          <div class="reg-actions">
+            <button class="btn-approve" (click)="validate(reg.userId)">Valida</button>
+            <button class="btn-reject" (click)="reject(reg.userId)">Rifiuta</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

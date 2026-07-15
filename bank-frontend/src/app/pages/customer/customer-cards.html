@@ -1,0 +1,42 @@
+<div class="page">
+  <h1>Le tue Carte</h1>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Caricamento...</div>
+  } @else if (cards().length === 0) {
+    <div class="empty-state">Nessuna carta associata ai tuoi conti.</div>
+  } @else {
+    <div class="cards-grid">
+      @for (card of cards(); track card.id) {
+        <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
+          <div class="card-top">
+            <span class="card-type">{{ card.cardType }}</span>
+            <span [class]="'card-status cs-' + card.status">{{ card.status }}</span>
+          </div>
+          <div class="card-chip"></div>
+          <div class="card-number">
+            @if (revealedId() === card.id && revealedCard()) {
+              {{ revealedCard()!.cardNumber }}
+            } @else {
+              {{ card.maskedCardNumber }}
+            }
+          </div>
+          <div class="card-bottom">
+            <div class="card-holder">{{ card.holderName }}</div>
+            <div class="card-exp">{{ card.expirationDate }}</div>
+            @if (revealedId() === card.id && revealedCard()) {
+              <div class="card-cvv">CVV: {{ revealedCard()!.cvv }}</div>
+            }
+          </div>
+          <button class="btn-reveal" (click)="toggleSensitive(card.id)">
+            {{ revealedId() === card.id ? 'Nascondi' : 'Mostra dati completi' }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

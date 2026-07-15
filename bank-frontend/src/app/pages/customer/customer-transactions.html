@@ -1,0 +1,127 @@
+<div class="page">
+  <h1>Transazioni</h1>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  <div class="tabs">
+    <button [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">Deposito</button>
+    <button [class.active]="activeTab() === 'withdraw'" (click)="activeTab.set('withdraw')">Prelievo</button>
+    <button [class.active]="activeTab() === 'transfer'" (click)="activeTab.set('transfer')">Bonifico</button>
+    <button [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">Storico</button>
+  </div>
+
+  @if (activeTab() === 'deposit' || activeTab() === 'withdraw') {
+    <div class="form-card">
+      <h3>{{ activeTab() === 'deposit' ? 'Deposita sul conto' : 'Preleva dal conto' }}</h3>
+      <div class="form-group">
+        <label>Conto</label>
+        <select [(ngModel)]="dwAccount">
+          @for (account of accounts(); track account.accountNumber) {
+            <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Importo (min. 0.01)</label>
+        <input type="number" [(ngModel)]="dwAmount" min="0.01" step="0.01" />
+      </div>
+      <button class="btn-primary" (click)="activeTab() === 'deposit' ? deposit() : withdraw()">
+        {{ activeTab() === 'deposit' ? 'Deposita' : 'Preleva' }}
+      </button>
+    </div>
+  }
+
+  @if (activeTab() === 'transfer') {
+    <div class="form-card">
+      <h3>Bonifico</h3>
+      <div class="form-group">
+        <label>Conto sorgente</label>
+        <select [(ngModel)]="txSource">
+          @for (account of accounts(); track account.accountNumber) {
+            <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
+          }
+        </select>
+      </div>
+
+      @if (beneficiaries().length > 0) {
+        <div class="form-group">
+          <label>Seleziona beneficiario (opzionale)</label>
+          <div class="beneficiary-chips">
+            @for (b of beneficiaries(); track b.id) {
+              <button
+                class="chip"
+                [class.selected]="txBeneficiaryId === b.id"
+                (click)="selectBeneficiary(b.id, b.destinationAccountNumber)"
+              >{{ b.nickname }}</button>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="form-group">
+        <label>IBAN destinazione</label>
+        <input type="text" [(ngModel)]="txDestination" placeholder="IT..." [disabled]="txBeneficiaryId !== null" />
+      </div>
+      <div class="form-group">
+        <label>Importo (min. 0.01)</label>
+        <input type="number" [(ngModel)]="txAmount" min="0.01" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Descrizione (opzionale)</label>
+        <input type="text" [(ngModel)]="txDescription" placeholder="Causale bonifico" />
+      </div>
+      <button class="btn-primary" (click)="transfer()">Invia Bonifico</button>
+    </div>
+  }
+
+  @if (activeTab() === 'history') {
+    <div class="form-card inline-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Da</label>
+          <input type="date" [(ngModel)]="startDate" />
+        </div>
+        <div class="form-group">
+          <label>A</label>
+          <input type="date" [(ngModel)]="endDate" />
+        </div>
+        <button class="btn-primary" (click)="loadHistory()" style="align-self: flex-end">Cerca</button>
+      </div>
+    </div>
+
+    @if (allTransactions().length > 0) {
+      <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Importo</th>
+            <th>Mittente</th>
+            <th>Destinatario</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tx of allTransactions(); track tx.id) {
+            <tr>
+              <td>{{ getTransactionType(tx.typeId) }}</td>
+              <td [class]="'amount amount-' + tx.typeId">{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="mono">{{ tx.sourceAccountNumber || '-' }}</td>
+              <td class="mono">{{ tx.destinationAccountNumber || '-' }}</td>
+              <td>{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      </div>
+
+      <div class="pagination">
+        <button [disabled]="currentPage() === 0" (click)="prevPage()">Precedente</button>
+        <span>Pagina {{ currentPage() + 1 }} di {{ totalPages }}</span>
+        <button [disabled]="currentPage() >= totalPages - 1" (click)="nextPage()">Successiva</button>
+      </div>
+    }
+  }
+</div>

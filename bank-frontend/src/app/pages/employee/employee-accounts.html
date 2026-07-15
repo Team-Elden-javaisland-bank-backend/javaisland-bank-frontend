@@ -1,0 +1,104 @@
+<div class="page">
+  <h1>Gestione Conti</h1>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  <div class="filters">
+    <button [class.active]="statusFilter() === null" (click)="filterByStatus(null)">Tutti</button>
+    <button [class.active]="statusFilter() === 1" (click)="filterByStatus(1)">Inattivi</button>
+    <button [class.active]="statusFilter() === 2" (click)="filterByStatus(2)">Attivi</button>
+    <button [class.active]="statusFilter() === 3" (click)="filterByStatus(3)">Congelati</button>
+    <button [class.active]="statusFilter() === 4" (click)="filterByStatus(4)">Chiusi</button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Caricamento...</div>
+  } @else if (accounts().length === 0) {
+    <div class="empty-state">Nessun conto trovato.</div>
+  } @else {
+    <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>IBAN</th>
+          <th>Saldo</th>
+          <th>Stato</th>
+          <th>Profilo</th>
+          <th>Aperto il</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (account of accounts(); track account.accountNumber) {
+          <tr>
+            <td class="mono">{{ account.accountNumber }}</td>
+            <td class="balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</td>
+            <td><span [class]="'status status-' + account.statusId">{{ getStatusName(account.statusId) }}</span></td>
+            <td>#{{ account.profileId }}</td>
+            <td>{{ account.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td class="actions-cell">
+              @if (account.statusId === 1) {
+                <button class="btn-sm btn-green" (click)="activate(account.accountNumber)">Attiva</button>
+                <button class="btn-sm btn-red" (click)="reject(account.accountNumber)">Rifiuta</button>
+              }
+              @if (account.statusId === 2) {
+                <button class="btn-sm btn-yellow" (click)="freeze(account.accountNumber)">Congela</button>
+              }
+              @if (account.statusId === 3) {
+                <button class="btn-sm btn-green" (click)="activate(account.accountNumber)">Riattiva</button>
+              }
+              <button class="btn-sm btn-outline" (click)="viewLimits(account.accountNumber)">Limiti</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+  }
+
+  @if (showLimits()) {
+    <div class="modal-overlay" (click)="showLimits.set(false)">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Limiti conto {{ selectedAccount() }}</h3>
+          <button class="btn-close" (click)="showLimits.set(false)">✕</button>
+        </div>
+
+        @if (limitsLoading()) {
+          <div class="loading">Caricamento limiti...</div>
+        } @else {
+          <div class="limits-list">
+            @for (limit of limits(); track limit.id) {
+              <div class="limit-item">
+                <span class="limit-type">{{ limit.limitType }}</span>
+                <span class="limit-amount">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+            }
+            @if (limits().length === 0) {
+              <div class="empty-limits">Nessun limite impostato.</div>
+            }
+          </div>
+
+          <div class="set-limit-form">
+            <h4>Imposta Limite</h4>
+            <div class="form-row">
+              <select [(ngModel)]="limitType">
+                <option value="">Seleziona tipo...</option>
+                <option value="DAILY_TRANSFER">Bonifico Giornaliero</option>
+                <option value="SINGLE_TRANSFER">Bonifico Singolo</option>
+                <option value="INSTANT_TRANSFER_SINGLE">Bonifico Istante</option>
+                <option value="MONTHLY_TRANSFER">Bonifico Mensile</option>
+                <option value="ATM_WITHDRAWAL">Prelievo ATM</option>
+                <option value="POS_SPENDING">Spesa POS</option>
+              </select>
+              <input type="number" [(ngModel)]="limitAmount" min="0.01" step="0.01" placeholder="Importo max" />
+              <button class="btn-sm btn-green" (click)="setLimit()">Salva</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
