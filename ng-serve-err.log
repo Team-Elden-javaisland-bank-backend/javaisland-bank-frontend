@@ -1,0 +1,376 @@
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:34:4:
+[37m      34 │     [32m{ type: 'ATM_WITHDRAWAL', label: 'Prelievo ATM', description: [37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/customer/customer-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:35:4:
+[37m      35 │     [32m{ type: 'POS_SPENDING', label: 'Spesa POS', description: 'Mass[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/customer/customer-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:36:4:
+[37m      36 │     [32m{ type: 'DAILY_TRANSFER', label: 'Bonifico Giornaliero', descr[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/customer/customer-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:37:4:
+[37m      37 │     [32m{ type: 'SINGLE_TRANSFER', label: 'Bonifico Singolo', descript[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/customer/customer-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:38:4:
+[37m      38 │     [32m{ type: 'INSTANT_TRANSFER_SINGLE', label: 'Bonifico Istantaneo[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/customer/customer-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:39:4:
+[37m      39 │     [32m{ type: 'MONTHLY_TRANSFER', label: 'Bonifico Mensile', descrip[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/customer/customer-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:34:4:
+[37m      34 │     [32m{ type: 'DAILY_TRANSFER', label: 'Bonifico Giornaliero', descr[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/employee/employee-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:35:4:
+[37m      35 │     [32m{ type: 'SINGLE_TRANSFER', label: 'Bonifico Singolo', descript[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/employee/employee-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:36:4:
+[37m      36 │     [32m{ type: 'INSTANT_TRANSFER_SINGLE', label: 'Bonifico Istantaneo[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/employee/employee-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:37:4:
+[37m      37 │     [32m{ type: 'MONTHLY_TRANSFER', label: 'Bonifico Mensile', descrip[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/employee/employee-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:38:4:
+[37m      38 │     [32m{ type: 'ATM_WITHDRAWAL', label: 'Prelievo ATM', description: [37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/employee/employee-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2741: Property 'defaultValue' is missing in type '{ type: string; label: string; description: string; }' but required in type 'LimitMeta'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:39:4:
+[37m      39 │     [32m{ type: 'POS_SPENDING', label: 'Spesa POS', description: 'Mass[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'defaultValue' is declared here.
+
+    src/app/pages/employee/employee-limits.component.ts:12:2:
+[37m      12 │   [32mdefaultValue[37m: number;
+         ╵   [32m~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'MAX_VALUES' does not exist on type 'CustomerLimitsSetupComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:107:28:
+[37m      107 │     const maxAllowed = this.[32mMAX_VALUES[37m[type];
+          ╵                             [32m~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:45:4:
+[37m      45 │     [32m{ type: 'ATM_WITHDRAWAL', label: 'Prelievo ATM', description: [37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:46:4:
+[37m      46 │     [32m{ type: 'POS_SPENDING', label: 'Spesa POS', description: 'Mass[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:47:4:
+[37m      47 │     [32m{ type: 'DAILY_TRANSFER', label: 'Bonifico Giornaliero', descr[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:48:4:
+[37m      48 │     [32m{ type: 'SINGLE_TRANSFER', label: 'Bonifico Singolo', descript[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:49:4:
+[37m      49 │     [32m{ type: 'INSTANT_TRANSFER_SINGLE', label: 'Bonifico Istantaneo[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:50:4:
+[37m      50 │     [32m{ type: 'MONTHLY_TRANSFER', label: 'Bonifico Mensile', descrip[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'MAX_VALUES' does not exist on type 'CustomerLimitsComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits.component.ts:108:28:
+[37m      108 │     const maxAllowed = this.[32mMAX_VALUES[37m[type];
+          ╵                             [32m~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:45:4:
+[37m      45 │     [32m{ type: 'DAILY_TRANSFER', label: 'Bonifico Giornaliero', descr[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:46:4:
+[37m      46 │     [32m{ type: 'SINGLE_TRANSFER', label: 'Bonifico Singolo', descript[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:47:4:
+[37m      47 │     [32m{ type: 'INSTANT_TRANSFER_SINGLE', label: 'Bonifico Istantaneo[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:48:4:
+[37m      48 │     [32m{ type: 'MONTHLY_TRANSFER', label: 'Bonifico Mensile', descrip[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:49:4:
+[37m      49 │     [32m{ type: 'ATM_WITHDRAWAL', label: 'Prelievo ATM', description: [37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2739: Type '{ type: string; label: string; description: string; defaultValue: number; }' is missing the following properties from type 'LimitMeta': minValue, maxValue[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:50:4:
+[37m      50 │     [32m{ type: 'POS_SPENDING', label: 'Spesa POS', description: 'Mass[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'MAX_VALUES' does not exist on type 'EmployeeLimitsComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-limits.component.ts:90:28:
+[37m      90 │     const maxAllowed = this.[32mMAX_VALUES[37m[type];
+         ╵                             [32m~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'MAX_VALUES' does not exist on type 'EmployeeAccountsComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/employee/employee-accounts.component.ts:112:28:
+[37m      112 │     const maxAllowed = this.[32mMAX_VALUES[37m[this.limitType];
+          ╵                             [32m~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate member "canEdit" in class body[0m [duplicate-class-member]
+
+    src/app/pages/customer/customer-limits-setup.component.ts:233:4:
+[37m      233 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+  The original member "canEdit" is here:
+
+    src/app/pages/customer/customer-limits-setup.component.ts:229:4:
+[37m      229 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:82:2:
+[37m      82 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:87:2:
+[37m      87 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate member "canEdit" in class body[0m [duplicate-class-member]
+
+    src/app/pages/customer/customer-limits-setup.component.ts:233:4:
+[37m      233 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+  The original member "canEdit" is here:
+
+    src/app/pages/customer/customer-limits-setup.component.ts:229:4:
+[37m      229 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:82:2:
+[37m      82 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:87:2:
+[37m      87 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate member "canEdit" in class body[0m [duplicate-class-member]
+
+    src/app/pages/customer/customer-limits-setup.component.ts:237:4:
+[37m      237 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+  The original member "canEdit" is here:
+
+    src/app/pages/customer/customer-limits-setup.component.ts:233:4:
+[37m      233 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:82:2:
+[37m      82 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:87:2:
+[37m      87 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDuplicate member "canEdit" in class body[0m [duplicate-class-member]
+
+    src/app/pages/customer/customer-limits-setup.component.ts:237:4:
+[37m      237 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+  The original member "canEdit" is here:
+
+    src/app/pages/customer/customer-limits-setup.component.ts:233:4:
+[37m      233 │     [32mcanEdit[37m(type) {
+          ╵     [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:82:2:
+[37m      82 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2393: Duplicate function implementation.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/customer/customer-limits-setup.component.ts:87:2:
+[37m      87 │   [32mcanEdit[37m(type: string): boolean {
+         ╵   [32m~~~~~~~[0m
+
+

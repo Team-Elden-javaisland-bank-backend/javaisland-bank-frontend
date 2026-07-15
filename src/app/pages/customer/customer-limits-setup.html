@@ -1,0 +1,112 @@
+<div class="setup-page">
+  <div class="setup-card">
+    <div class="setup-header">
+      <h1>Benvenuto in JavaIsland Bank</h1>
+      <p class="subtitle">Imposta i tuoi limiti bancari prima di iniziare</p>
+    </div>
+
+    <div class="info-box">
+      <h3>Come funzionano i limiti</h3>
+      <div class="policy-legend">
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #d1fae5; border: 1px solid #065f46;"></span>
+          <div>
+            <strong>Modificabile</strong>
+            <span>Puoi cambiare questo limite quando vuoi, sia alzare che abbassare</span>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #fef3c7; border: 1px solid #92400e;"></span>
+          <div>
+            <strong>Solo abbassamento</strong>
+            <span>Puoi abbassare questo limite. Per alzarlo, contatta la banca</span>
+          </div>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #fee2e2; border: 1px solid #991b1b;"></span>
+          <div>
+            <strong>Solo banca</strong>
+            <span>Questo limite può essere modificato solo da un impiegato. Contattaci per richiedere variazioni</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (message()) {
+      <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+    }
+
+    @if (loading()) {
+      <div class="loading">Caricamento conti...</div>
+    } @else if (accounts().length === 0) {
+      <div class="empty-state">Nessun conto attivo trovato.</div>
+    } @else {
+      <div class="account-display">
+        <span class="account-label">Conto</span>
+        <span class="account-number">{{ accounts()[0].accountNumber }}</span>
+        <span class="account-balance">{{ accounts()[0].balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+
+      @if (limitsLoading()) {
+        <div class="loading">Caricamento limiti...</div>
+      } @else {
+        <div class="limits-grid">
+          @for (meta of allLimitTypes; track meta.type) {
+            <div class="limit-card">
+              <div class="limit-header">
+                <div class="limit-info">
+                  <span class="limit-label">{{ meta.label }}</span>
+                  <span class="limit-desc">{{ meta.description }}</span>
+                  <span class="limit-range">Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — Max: {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
+                </div>
+                <span class="policy-badge" [style.background]="meta.policy === 'USER_FULL' ? '#d1fae5' : meta.policy === 'USER_LOWER_ONLY' ? '#fef3c7' : '#fee2e2'" [style.color]="meta.policyColor">
+                  {{ meta.policyLabel }}
+                </span>
+              </div>
+
+              @if (editingType() === meta.type) {
+                <div class="limit-edit">
+                  <input
+                    type="number"
+                    [(ngModel)]="editAmount"
+                    [min]="meta.minValue"
+                    step="0.01"
+                    placeholder="Importo"
+                  />
+                  @if (editingError()) {
+                    <span class="edit-error">{{ editingError() }}</span>
+                  }
+                  <div class="edit-actions">
+                    <button class="btn-sm btn-green" (click)="saveLimit(meta.type)">Salva</button>
+                    <button class="btn-sm btn-outline" (click)="cancelEdit()">Annulla</button>
+                  </div>
+                </div>
+              } @else {
+                <div class="limit-value">
+                  @if (getLimitForType(meta.type); as limit) {
+                    <span class="amount">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  } @else {
+                    <span class="amount not-set">Non impostato</span>
+                  }
+                </div>
+                <div class="limit-action">
+                  @if (canEdit(meta.type)) {
+                    <button class="btn-sm btn-outline" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
+                      {{ getLimitForType(meta.type) ? 'Modifica' : 'Imposta' }}
+                    </button>
+                  } @else {
+                    <span class="bank-only-label">Contatta la banca</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="setup-actions">
+          <button class="btn-primary" (click)="completeSetup()">Conferma e continua</button>
+        </div>
+      }
+    }
+  </div>
+</div>

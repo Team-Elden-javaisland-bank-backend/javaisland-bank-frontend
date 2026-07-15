@@ -1,0 +1,84 @@
+<div class="page">
+  <h1>Gestione Limiti</h1>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  <!-- Account selector -->
+  <div class="selector-card">
+    <label>Seleziona un conto attivo</label>
+    @if (loading()) {
+      <div class="loading-inline">Caricamento conti...</div>
+    } @else {
+      <select [ngModel]="selectedAccount()" (ngModelChange)="onAccountChange($event)">
+        <option value="">Seleziona conto...</option>
+        @for (account of accounts(); track account.accountNumber) {
+          <option [value]="account.accountNumber">
+            {{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
+          </option>
+        }
+      </select>
+    }
+  </div>
+
+  @if (selectedAccount()) {
+    @if (limitsLoading()) {
+      <div class="loading">Caricamento limiti...</div>
+    } @else {
+      <div class="limits-grid">
+        @for (meta of allLimitTypes; track meta.type) {
+          <div class="limit-card">
+            <div class="limit-header">
+              <div class="limit-info">
+                <span class="limit-label">{{ meta.label }}</span>
+                <span class="limit-desc">{{ meta.description }}</span>
+                <span class="limit-range">Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — Max: {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+              @if (getLimitForType(meta.type); as limit) {
+                <span class="policy-badge" [class]="'policy-' + limit.changePolicy">
+                  @switch (limit.changePolicy) {
+                    @case ('USER_FULL') { Modificabile }
+                    @case ('USER_LOWER_ONLY') { Solo abbassamento }
+                    @case ('BANK_ONLY') { Solo banca }
+                  }
+                </span>
+              }
+            </div>
+
+            @if (editingType() === meta.type) {
+              <div class="limit-edit">
+                <input
+                  type="number"
+                  [(ngModel)]="editAmount"
+                  [min]="meta.minValue"
+                  step="0.01"
+                  placeholder="Importo"
+                />
+                @if (editingError()) {
+                  <span class="edit-error">{{ editingError() }}</span>
+                }
+                <div class="edit-actions">
+                  <button class="btn-sm btn-green" (click)="saveLimit(meta.type)">Salva</button>
+                  <button class="btn-sm btn-outline" (click)="cancelEdit()">Annulla</button>
+                </div>
+              </div>
+            } @else {
+              <div class="limit-value">
+                @if (getLimitForType(meta.type); as limit) {
+                  <span class="amount">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  <span class="updated">Aggiornato: {{ limit.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                } @else {
+                  <span class="amount not-set">Non impostato</span>
+                }
+              </div>
+              <button class="btn-sm btn-outline" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
+                {{ getLimitForType(meta.type) ? 'Modifica' : 'Imposta' }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

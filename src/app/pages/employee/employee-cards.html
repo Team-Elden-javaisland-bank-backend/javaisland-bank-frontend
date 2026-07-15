@@ -1,0 +1,40 @@
+<div class="page">
+  <h1>Gestione Carte</h1>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Caricamento...</div>
+  } @else if (cards().length === 0) {
+    <div class="empty-state">Nessuna carta trovata.</div>
+  } @else {
+    <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Carta</th>
+          <th>Titolare</th>
+          <th>Tipo</th>
+          <th>Scadenza</th>
+          <th>Stato</th>
+          <th>ID Conto</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (card of cards(); track card.id) {
+          <tr>
+            <td class="mono">{{ card.maskedCardNumber }}</td>
+            <td>{{ card.holderName }}</td>
+            <td><span class="card-type-badge" [class]="card.cardType.toLowerCase()">{{ card.cardType }}</span></td>
+            <td>{{ card.expirationDate }}</td>
+            <td><span [class]="'status-badge ' + getStatusClass(card.status)">{{ card.status }}</span></td>
+            <td>#{{ card.accountId }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+  }
+</div>

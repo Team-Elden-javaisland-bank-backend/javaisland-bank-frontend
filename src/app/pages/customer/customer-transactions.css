@@ -1,0 +1,235 @@
+/* ═══ CUSTOMER TRANSACTIONS — MOBILE FIRST ═══ */
+.page h1 { margin: 0 0 20px 0; font-size: 22px; color: #1a1a2e; }
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs button {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tabs button.active { background: #e94560; color: #fff; }
+.tabs button:hover:not(.active) { background: #f3f4f6; }
+
+.form-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.form-card h3 { margin: 0 0 16px 0; font-size: 15px; color: #1a1a2e; }
+
+.transfer-type-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.transfer-type-tabs button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.transfer-type-tabs button.active {
+  background: #fff;
+  color: #1a1a2e;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.transfer-type-tabs button:last-child.active {
+  color: #7c3aed;
+}
+.inline-form { margin-bottom: 16px; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: #e94560; }
+.form-group input:disabled { background: #f3f4f6; cursor: not-allowed; }
+
+.input-hint {
+  display: block;
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+.form-row { display: flex; gap: 10px; flex-direction: column; align-items: stretch; }
+.form-row .form-group { flex: 1; }
+
+.btn-primary { padding: 12px 20px; background: #e94560; color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; }
+.btn-primary.instant { background: #7c3aed; }
+.btn-primary.instant:hover { background: #6d28d9; }
+
+.beneficiary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.beneficiary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 2px solid #e8ecf0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+.beneficiary-item:hover { border-color: #c5cdd6; background: #f9fafb; }
+.beneficiary-item.selected { border-color: #e94560; background: #fff5f7; box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1); }
+
+.b-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+.b-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.beneficiary-item.selected .b-avatar { background: #e94560; color: #fff; }
+
+.b-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.b-name { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+.b-iban { font-family: monospace; font-size: 12px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.b-check { color: #e94560; flex-shrink: 0; }
+
+/* ── IBAN locked state ── */
+.iban-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.iban-header label { margin: 0; }
+
+.locked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.locked .form-group input,
+.locked input {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.locked-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #991b1b;
+  font-style: italic;
+}
+
+/* ── Limit hints ── */
+.limit-hints {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.limit-hint {
+  font-size: 11px;
+  color: #888;
+  font-weight: 500;
+}
+
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.data-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.data-table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  background: #f9fafb;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+.data-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #f3f4f6; white-space: nowrap; }
+.mono { font-family: monospace; font-size: 12px; }
+
+.amount-1 { color: #059669; }
+.amount-2 { color: #dc2626; }
+.amount-3 { color: #2563eb; }
+.amount-4 { color: #7c3aed; }
+.amount-5 { color: #7c3aed; }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 16px; }
+.pagination button { padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; }
+.pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+.pagination span { font-size: 12px; color: #666; }
+
+.alert { padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; font-size: 13px; }
+.alert-success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+.alert-error { background: #fff5f5; color: #e94560; border: 1px solid #fecaca; }
+
+@media (min-width: 768px) {
+  .page h1 { font-size: 28px; }
+  .tabs button { padding: 12px 16px; font-size: 14px; }
+  .form-row { flex-direction: row; align-items: flex-end; }
+}
