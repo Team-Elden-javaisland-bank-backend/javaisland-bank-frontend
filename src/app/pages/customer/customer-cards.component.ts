@@ -50,9 +50,13 @@ export class CustomerCardsComponent {
     });
   }
 
+  formatCardNumber(num: string): string {
+    return num.replace(/(.{4})/g, '$1 ').trim();
+  }
+
   getCardGradient(type: string): string {
-    return type === 'CREDIT'
-      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+    if (type === 'DEBIT') return 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
+    if (type === 'CREDIT') return 'linear-gradient(135deg, #b45309 0%, #d97706 100%)';
+    return '#1e293b';
   }
 }

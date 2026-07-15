@@ -1,38 +1,58 @@
-<div class="page">
-  <h1>Le tue Carte</h1>
+<div class="container py-3">
+  <h2 class="fw-bold mb-1">Le tue Carte</h2>
+  <p class="text-muted mb-4">Gestisci le tue carte di debito e credito</p>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
+    <div class="text-center py-5 text-muted">Caricamento...</div>
   } @else if (cards().length === 0) {
-    <div class="empty-state">Nessuna carta associata ai tuoi conti.</div>
+    <div class="text-center p-5 bg-white rounded-3 text-muted shadow-sm">Nessuna carta associata ai tuoi conti.</div>
   } @else {
-    <div class="cards-grid">
+    <div class="row g-4 justify-content-center">
       @for (card of cards(); track card.id) {
-        <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
-          <div class="card-top">
-            <span class="card-type">{{ card.cardType }}</span>
-            <span [class]="'card-status cs-' + card.status">{{ card.status }}</span>
+        <div class="col-12 col-md-6 col-xl-4 d-flex flex-column align-items-center mb-4">
+          <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
+            <!-- Top row: type + chip + status -->
+            <div class="cc-top">
+              <span class="cc-type">{{ card.cardType }}</span>
+              <div class="cc-chip"></div>
+              <span [class]="'cc-status cs-' + card.status">{{ card.status }}</span>
+            </div>
+
+            <!-- Center: card number -->
+            <div class="cc-number">
+              @if (revealedId() === card.id && revealedCard()) {
+                {{ formatCardNumber(revealedCard()!.cardNumber) }}
+              } @else {
+                {{ card.maskedCardNumber }}
+              }
+            </div>
+
+            <!-- Bottom row: holder + expiry -->
+            <div class="cc-bottom">
+              <div class="cc-holder-group">
+                <span class="cc-label">Titolare</span>
+                <span class="cc-holder">{{ card.holderName }}</span>
+              </div>
+              <div class="cc-expiry-group">
+                <span class="cc-label">Scade</span>
+                <span class="cc-exp">{{ card.expirationDate }}</span>
+              </div>
+              @if (revealedId() === card.id && revealedCard()) {
+                <div class="cc-cvv-group">
+                  <span class="cc-label">CVV</span>
+                  <span class="cc-cvv">{{ revealedCard()!.cvv }}</span>
+                </div>
+              }
+            </div>
           </div>
-          <div class="card-chip"></div>
-          <div class="card-number">
-            @if (revealedId() === card.id && revealedCard()) {
-              {{ revealedCard()!.cardNumber }}
-            } @else {
-              {{ card.maskedCardNumber }}
-            }
-          </div>
-          <div class="card-bottom">
-            <div class="card-holder">{{ card.holderName }}</div>
-            <div class="card-exp">{{ card.expirationDate }}</div>
-            @if (revealedId() === card.id && revealedCard()) {
-              <div class="card-cvv">CVV: {{ revealedCard()!.cvv }}</div>
-            }
-          </div>
-          <button class="btn-reveal" (click)="toggleSensitive(card.id)">
+
+          <!-- Button OUTSIDE the card -->
+          <button class="btn btn-outline-dark btn-sm rounded-3 mt-2 cc-toggle-btn" (click)="toggleSensitive(card.id)">
+            <i class="bi" [class.bi-eye]="revealedId() !== card.id" [class.bi-eye-slash]="revealedId() === card.id"></i>
             {{ revealedId() === card.id ? 'Nascondi' : 'Mostra dati completi' }}
           </button>
         </div>
