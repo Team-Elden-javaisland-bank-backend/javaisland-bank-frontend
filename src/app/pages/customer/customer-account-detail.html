@@ -1,5 +1,5 @@
-<div class="page">
-  <button class="back-btn" (click)="router.navigate(['/customer/accounts'])">
+<div class="container">
+  <button class="btn btn-light border rounded-3 mb-3 d-inline-flex align-items-center gap-2" (click)="router.navigate(['/customer/accounts'])">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     Indietro
   </button>
@@ -35,36 +35,40 @@
     </div>
   }
 
-  <div class="search-card">
-    <h3>Cerca movimenti</h3>
-    <div class="search-row">
-      <div class="form-group">
-        <label>Da</label>
-        <input type="date" [(ngModel)]="startDate" />
+  <div class="card shadow-sm rounded-3 border-0 mb-4">
+    <div class="card-body p-4">
+      <h3 class="h6 fw-bold mb-3">Cerca movimenti</h3>
+      <div class="row g-3 align-items-end">
+        <div class="col">
+          <label class="form-label fw-semibold small">Da</label>
+          <input class="form-control rounded-3" type="date" [(ngModel)]="startDate" />
+        </div>
+        <div class="col">
+          <label class="form-label fw-semibold small">A</label>
+          <input class="form-control rounded-3" type="date" [(ngModel)]="endDate" />
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-success rounded-3" (click)="loadTransactions()">Cerca</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label>A</label>
-        <input type="date" [(ngModel)]="endDate" />
-      </div>
-      <button class="btn-primary" (click)="loadTransactions()">Cerca</button>
     </div>
   </div>
 
   <div class="transactions-section">
-    <h3>Movimenti</h3>
+    <h3 class="h5 fw-bold mb-3">Movimenti</h3>
 
     @if (loading()) {
-      <div class="loading">Caricamento...</div>
+      <div class="text-center py-5 text-muted">Caricamento...</div>
     } @else if (transactions().length === 0) {
       <div class="empty-state">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
         <p>Nessun movimento trovato</p>
       </div>
     } @else {
-      <div class="tx-list">
+      <div class="d-flex flex-column gap-2">
         @for (tx of transactions(); track tx.id) {
-          <div class="tx-item" [class.expanded]="expandedTxId() === tx.id" [class.cancelled]="isCancelled(tx)" (click)="toggleTx(tx.id)">
-            <div class="tx-row">
+          <div class="card shadow-sm rounded-3 border-0 tx-item" [class.expanded]="expandedTxId() === tx.id" [class.cancelled]="isCancelled(tx)" (click)="toggleTx(tx.id)">
+            <div class="d-flex align-items-center gap-3 p-3">
               <div class="tx-icon" [class.tx-in]="getTxDirection(tx) === 'in'" [class.tx-out]="getTxDirection(tx) === 'out'" [class.tx-pending-out]="getTxDirection(tx) === 'pending-out'">
                 @if (getTxDirection(tx) === 'in') {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 17 17 7"/><polyline points="7 7 17 7 17 17"/></svg>
@@ -95,47 +99,47 @@
             </div>
 
             @if (expandedTxId() === tx.id) {
-              <div class="tx-details">
-                <div class="detail-row">
+              <div class="border-top p-3 pt-3">
+                <div class="d-flex justify-content-between align-items-center py-1">
                   <span class="detail-label">Tipo</span>
                   <span class="detail-value">{{ getTypeLabel(tx.typeName) }}</span>
                 </div>
-                <div class="detail-row">
+                <div class="d-flex justify-content-between align-items-center py-1">
                   <span class="detail-label">Stato</span>
                   <span class="detail-value" [class.status-pending]="isPending(tx)" [class.status-cancelled]="isCancelled(tx)">
                     {{ tx.statusName === 'PENDING' ? 'In attesa' : tx.statusName === 'COMPLETED' ? 'Completato' : tx.statusName === 'CANCELLED' ? 'Annullato' : tx.statusName }}
                   </span>
                 </div>
-                <div class="detail-row">
+                <div class="d-flex justify-content-between align-items-center py-1">
                   <span class="detail-label">Importo</span>
                   <span class="detail-value" [class.amount-in]="getTxDirection(tx) === 'in'" [class.amount-out]="getTxDirection(tx) === 'out'" [class.amount-pending-out]="getTxDirection(tx) === 'pending-out'">
                     {{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
                   </span>
                 </div>
-                <div class="detail-row">
+                <div class="d-flex justify-content-between align-items-center py-1">
                   <span class="detail-label">Data e ora</span>
                   <span class="detail-value">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</span>
                 </div>
                 @if (tx.scheduledDate) {
-                  <div class="detail-row">
+                  <div class="d-flex justify-content-between align-items-center py-1">
                     <span class="detail-label">Data esecuzione</span>
                     <span class="detail-value">{{ tx.scheduledDate | date:'dd/MM/yyyy' }}</span>
                   </div>
                 }
                 @if (tx.description) {
-                  <div class="detail-row">
+                  <div class="d-flex justify-content-between align-items-center py-1">
                     <span class="detail-label">Descrizione</span>
                     <span class="detail-value">{{ tx.description }}</span>
                   </div>
                 }
                 @if (tx.sourceAccountNumber) {
-                  <div class="detail-row">
+                  <div class="d-flex justify-content-between align-items-center py-1">
                     <span class="detail-label">Conto origine</span>
                     <span class="detail-value mono">{{ tx.sourceAccountNumber }}</span>
                   </div>
                 }
                 @if (tx.destinationAccountNumber) {
-                  <div class="detail-row">
+                  <div class="d-flex justify-content-between align-items-center py-1">
                     <span class="detail-label">Conto destinazione</span>
                     <span class="detail-value mono">{{ tx.destinationAccountNumber }}</span>
                   </div>

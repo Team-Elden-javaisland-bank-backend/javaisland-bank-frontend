@@ -17,14 +17,13 @@ export class RegisterComponent {
   password = '';
   confirmPassword = '';
   error = signal('');
-  success = signal('');
   loading = signal(false);
+  showSuccessModal = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(): void {
     this.error.set('');
-    this.success.set('');
 
     if (!this.firstName || !this.lastName || !this.birthDate || !this.email || !this.password) {
       this.error.set('Compila tutti i campi');
@@ -59,12 +58,16 @@ export class RegisterComponent {
     }).subscribe({
       next: () => {
         this.loading.set(false);
-        this.success.set('Registrazione completata! Un dipendente dovrà validare il tuo account prima di poter accedere.');
+        this.showSuccessModal.set(true);
       },
       error: (err) => {
         this.loading.set(false);
         this.error.set(err.message);
       },
     });
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

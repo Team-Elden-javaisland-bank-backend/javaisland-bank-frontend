@@ -1,7 +1,23 @@
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ═══════════════════════════════════════════════════
+   GLOBAL THEME — Bootstrap 5 + Banking Theme
+   Palette: Prussian Blue + Warm Gold Accent
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --bi-navy: #0a192f;
+  --bi-navy-light: #172a45;
+  --bi-navy-mid: #112240;
+  --bi-gold: #e5a93c;
+  --bi-gold-light: #f0c264;
+  --bi-gold-dark: #c8912a;
+  --bi-green: #10b981;
+  --bi-green-dark: #059669;
+  --bi-red: #ef4444;
+  --bi-red-dark: #dc2626;
+  --bi-bg: #f4f6f8;
+  --bi-text: #1a202c;
+  --bi-border: #e2e8f0;
+  --bi-surface: #ffffff;
 }
 
 html {
@@ -10,18 +26,140 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f5f6fa;
-  color: #333;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bi-bg);
+  color: var(--bi-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100dvh;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 input, select, textarea { font-family: inherit; }
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+}
+
+/* ── Bootstrap theme overrides ───────────────── */
+.btn-success {
+  background-color: var(--bi-gold) !important;
+  border-color: var(--bi-gold) !important;
+  color: var(--bi-navy) !important;
+  font-weight: 600;
+}
+.btn-success:hover {
+  background-color: var(--bi-gold-dark) !important;
+  border-color: var(--bi-gold-dark) !important;
+  color: var(--bi-navy) !important;
+}
+.btn-success:disabled {
+  background-color: var(--bi-gold) !important;
+  border-color: var(--bi-gold) !important;
+  opacity: 0.6;
+}
+
+.btn-primary {
+  background-color: var(--bi-navy) !important;
+  border-color: var(--bi-navy) !important;
+  color: #fff !important;
+}
+.btn-primary:hover {
+  background-color: var(--bi-navy-light) !important;
+  border-color: var(--bi-navy-light) !important;
+  color: #fff !important;
+}
+
+.btn-danger {
+  background-color: var(--bi-red) !important;
+  border-color: var(--bi-red) !important;
+}
+.btn-danger:hover {
+  background-color: var(--bi-red-dark) !important;
+  border-color: var(--bi-red-dark) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--bi-gold);
+  box-shadow: 0 0 0 0.2rem rgba(229, 169, 60, 0.15);
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* ── Shared component styles ─────────────────── */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bi-navy);
+  margin-bottom: 0.75rem;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+/* Alert overrides */
+.alert { border-radius: 0.5rem; font-size: 0.875rem; }
+.alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+/* ── Button accessibility: min-height 44px ───── */
+.btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Table hover with accent ─────────────────── */
+.table-hover > tbody > tr:hover {
+  background-color: rgba(229, 169, 60, 0.04);
+}
+
+/* ── Nav pills active state ──────────────────── */
+.nav-pills .nav-link.active {
+  background-color: var(--bi-navy) !important;
+  color: #fff !important;
+}
+
+.nav-pills .nav-link {
+  color: var(--bi-text);
+  min-height: 44px;
+  font-weight: 500;
+}
+
+/* ── Scrollbar styling ───────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
 /* Safe area padding for iOS */
 @supports (padding: max(0px)) {

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a192f"/>
+      <stop offset="100%" stop-color="#172a45"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e5a93c"/>
+      <stop offset="100%" stop-color="#f0c264"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="url(#bg)"/>
+  <polygon points="32,6 56,20 56,44 32,58 8,44 8,20" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <text x="32" y="42" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="32" fill="url(#gold)">E</text>
+</svg>

@@ -132,6 +132,13 @@ Documentazione API disponibile su: `http://localhost:8081/swagger-ui/index.html`
 - **Modal** — slide-up dal basso su mobile, centrata su desktop
 - **Card** — gradienti diversi per DEBIT/CREDIT, reveal CVV con toggle
 
+### Miglioramenti Grafici e Accessibilità delle Carte
+
+- **Bug fix responsive**: risolto troncamento visivo delle carte su schermi desktop (>992px e >1024px) riorganizzando le colonne Bootstrap con `col-xl-4`
+- **Aspect-ratio reale**: applicato `aspect-ratio: 1.58/1` per simulare la forma rettangolare standard delle carte di credito
+- **Palette ad alto contrasto**: Blu Notte per le carte di Debito, Oro Caldo per le carte di Credito — palette DSA-friendly per facilitare la lettura visiva
+- **Layout pulsante esterno**: spostato "Mostra dati completi" fuori dal corpo della carta per evitare deformazioni del layout
+
 ---
 
 ## Avvio

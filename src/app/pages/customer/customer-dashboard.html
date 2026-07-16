@@ -1,46 +1,63 @@
-<div class="dashboard">
-  <h1>Dashboard</h1>
+<div class="container">
+  <h2 class="fw-bold mb-4">Dashboard</h2>
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
+    <div class="text-center py-5 text-muted">Caricamento...</div>
   }
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-label">Saldo Totale</span>
-      <span class="stat-value">{{ totalBalance | currency:'EUR':'symbol':'1.2-2' }}</span>
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm rounded-3 border-0 h-100">
+        <div class="card-body">
+          <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Saldo Totale</span>
+          <span class="fs-2 fw-bold">{{ totalBalance | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Conti Attivi</span>
-      <span class="stat-value">{{ activeAccounts }}</span>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm rounded-3 border-0 h-100">
+        <div class="card-body">
+          <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Conti Attivi</span>
+          <span class="fs-2 fw-bold">{{ activeAccounts }}</span>
+        </div>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Transazioni Recenti</span>
-      <span class="stat-value">{{ recentTransactions().length }}</span>
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm rounded-3 border-0 h-100">
+        <div class="card-body">
+          <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Transazioni Recenti</span>
+          <span class="fs-2 fw-bold">{{ recentTransactions().length }}</span>
+        </div>
+      </div>
     </div>
   </div>
 
   @if (accounts().length > 0) {
-    <div class="section">
-      <h2>I tuoi conti</h2>
-      <div class="accounts-list">
+    <div class="mb-4">
+      <h5 class="fw-bold mb-3">I tuoi conti</h5>
+      <div class="row g-3">
         @for (account of accounts(); track account.accountNumber) {
-          <div
-            class="account-card"
-            [class.selected]="selectedAccount() === account.accountNumber"
-            (click)="selectAccount(account.accountNumber)"
-          >
-            <div class="account-number">{{ account.accountNumber }}</div>
-            <div class="account-balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</div>
-            <div class="account-status">
-              <span [class]="'status status-' + account.statusId">
-                @switch (account.statusId) {
-                  @case (1) { Inattivo }
-                  @case (2) { Attivo }
-                  @case (3) { Congelato }
-                  @case (4) { Chiuso }
-                }
-              </span>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div
+              class="card shadow-sm rounded-3 border-0 h-100 account-card cursor-pointer"
+              [class.border-success]="selectedAccount() === account.accountNumber"
+              [class.border-2]="selectedAccount() === account.accountNumber"
+              (click)="selectAccount(account.accountNumber)"
+            >
+              <div class="card-body">
+                <div class="account-number">{{ account.accountNumber }}</div>
+                <div class="account-balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</div>
+                <div class="account-status">
+                  <span [class]="'status status-' + account.statusId">
+                    @switch (account.statusId) {
+                      @case (1) { Inattivo }
+                      @case (2) { Attivo }
+                      @case (3) { Congelato }
+                      @case (4) { Chiuso }
+                    }
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         }
@@ -49,15 +66,15 @@
   } @else {
     <div class="empty-state">
       <p>Non hai ancora conti attivi.</p>
-      <a routerLink="/customer/accounts" class="btn-primary">Apri un conto</a>
+      <a routerLink="/customer/accounts" class="btn btn-success rounded-3">Apri un conto</a>
     </div>
   }
 
   @if (recentTransactions().length > 0) {
-    <div class="section">
-      <h2>Ultime transazioni</h2>
-      <div class="table-wrap">
-      <table class="data-table">
+    <div class="mb-4">
+      <h5 class="fw-bold mb-3">Ultime transazioni</h5>
+      <div class="table-responsive">
+      <table class="table table-hover shadow-sm rounded-3 overflow-hidden">
         <thead>
           <tr>
             <th>Tipo</th>

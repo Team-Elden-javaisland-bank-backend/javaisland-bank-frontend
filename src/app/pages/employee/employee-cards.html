@@ -1,17 +1,17 @@
-<div class="page">
-  <h1>Gestione Carte</h1>
+<div class="container">
+  <h2 class="fw-bold mb-4">Gestione Carte</h2>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
+    <div class="text-center py-5 text-muted">Caricamento...</div>
   } @else if (cards().length === 0) {
-    <div class="empty-state">Nessuna carta trovata.</div>
+    <div class="text-center py-5 bg-white rounded-3 text-muted">Nessuna carta trovata.</div>
   } @else {
-    <div class="table-wrap">
-    <table class="data-table">
+    <div class="table-responsive">
+    <table class="table table-hover shadow-sm rounded-3 overflow-hidden">
       <thead>
         <tr>
           <th>Carta</th>
@@ -27,9 +27,9 @@
           <tr>
             <td class="mono">{{ card.maskedCardNumber }}</td>
             <td>{{ card.holderName }}</td>
-            <td><span class="card-type-badge" [class]="card.cardType.toLowerCase()">{{ card.cardType }}</span></td>
+            <td><span class="badge rounded-pill" [class.bg-primary-subtle]="card.cardType.toLowerCase() === 'debit'" [class.text-primary]="card.cardType.toLowerCase() === 'debit'" [class.bg-purple]="card.cardType.toLowerCase() === 'credit'" [class.text-white]="card.cardType.toLowerCase() === 'credit'">{{ card.cardType }}</span></td>
             <td>{{ card.expirationDate }}</td>
-            <td><span [class]="'status-badge ' + getStatusClass(card.status)">{{ card.status }}</span></td>
+            <td><span class="badge rounded-pill" [class.bg-success]="card.status === 'ACTIVE'" [class.bg-warning]="card.status === 'INACTIVE'" [class.text-dark]="card.status === 'INACTIVE'" [class.bg-danger]="card.status === 'BLOCKED'">{{ card.status }}</span></td>
             <td>#{{ card.accountId }}</td>
           </tr>
         }

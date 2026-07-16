@@ -1,6 +1,5 @@
 /* ═══════════════════════════════════════════════════
-   LAYOUT — MOBILE FIRST
-   Base = mobile | min-width 768px = tablet/desktop
+   LAYOUT — Mobile sidebar + Desktop top navbar
    ═══════════════════════════════════════════════════ */
 
 .app-layout {
@@ -16,30 +15,36 @@
   left: 0;
   right: 0;
   height: 56px;
-  background: #1a1a2e;
+  background: var(--bi-navy);
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
   z-index: 90;
 }
 
 .topbar-title {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
-  margin: 0;
+}
+
+.topbar-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .topbar-logout {
   background: none;
   border: none;
-  color: #e94560;
-  font-size: 13px;
+  color: var(--bi-gold);
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
 }
 
+/* ── Hamburger ──────────────────────────────────── */
 .hamburger {
   width: 36px;
   height: 36px;
@@ -60,9 +65,7 @@
   transition: all 0.3s;
 }
 
-.hamburger span {
-  position: relative;
-}
+.hamburger span { position: relative; }
 
 .hamburger span::before,
 .hamburger span::after {
@@ -94,15 +97,63 @@
   pointer-events: auto;
 }
 
-/* ── Sidebar (mobile: slide-in drawer) ──────────── */
+/* ── Desktop top navbar ─────────────────────────── */
+.desktop-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bi-navy);
+  z-index: 90;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navbar-brand {
+  font-size: 1.125rem;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.navbar-brand-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-link-desktop {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.875rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link-desktop:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-link-desktop.active {
+  color: #fff;
+  background: rgba(229, 169, 60, 0.15);
+  color: var(--bi-gold);
+}
+
+/* ── Sidebar (mobile only) ──────────────────────── */
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   width: 280px;
-  background: #1a1a2e;
-  color: #eee;
+  background: var(--bi-navy);
+  color: #e2e8f0;
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -115,82 +166,79 @@
 }
 
 .sidebar-header {
-  padding: 72px 20px 20px;
-  border-bottom: 1px solid #2a2a4a;
+  padding: 4.5rem 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--bi-navy-light);
 }
 
 .sidebar-header h2 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 700;
+  color: #fff;
+}
+
+.sidebar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
 }
 
 .sidebar-user {
-  font-size: 13px;
-  color: #aaa;
-  margin-top: 8px;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
 }
 
 .role-badge {
   display: inline-block;
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 11px;
+  padding: 0.125rem 0.625rem;
+  border-radius: 1rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
-  background: #16213e;
-  color: #e94560;
-  border: 1px solid #e94560;
+  background: rgba(229, 169, 60, 0.15);
+  color: var(--bi-gold);
+  border: 1px solid rgba(229, 169, 60, 0.3);
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 12px 0;
+  padding: 0.75rem 0;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
 
 .sidebar-nav a {
-  display: block;
-  padding: 14px 20px;
-  color: #aaa;
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1.25rem;
+  color: #94a3b8;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 500;
   transition: all 0.2s;
   border-left: 3px solid transparent;
+  min-height: 44px;
 }
 
 .sidebar-nav a:hover,
 .sidebar-nav a.active {
   color: #fff;
-  background: #16213e;
-  border-left-color: #e94560;
+  background: var(--bi-navy-light);
+  border-left-color: var(--bi-gold);
 }
 
 .sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #2a2a4a;
-}
-
-.btn-logout {
-  width: 100%;
-  padding: 12px;
-  background: #e94560;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--bi-navy-light);
 }
 
 /* ── Main content ───────────────────────────────── */
 .main-content {
   flex: 1;
-  padding: 72px 16px 80px;
-  background: #f5f6fa;
+  padding: 4.5rem 1rem 5rem;
+  background: var(--bi-bg);
   min-height: 100dvh;
 }
 
@@ -202,63 +250,54 @@
   right: 0;
   height: 64px;
   background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--bi-border);
   z-index: 80;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .bottom-nav a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  text-decoration: none;
-  color: #888;
-  font-size: 10px;
+  color: #94a3b8;
+  font-size: 0.625rem;
   font-weight: 600;
   transition: color 0.2s;
-  padding: 6px 12px;
-}
-
-.bottom-nav a svg {
-  width: 22px;
-  height: 22px;
 }
 
 .bottom-nav a.active {
-  color: #e94560;
+  color: var(--bi-gold);
 }
 
 /* ═══════════════════════════════════════════════════
-   TABLET+ (≥ 768px)
+   TABLET+ (>= 768px) — Switch to desktop navbar
    ═══════════════════════════════════════════════════ */
 @media (min-width: 768px) {
   .mobile-topbar { display: none; }
   .mobile-overlay { display: none; }
+  .sidebar { display: none; }
   .bottom-nav { display: none; }
 
-  .sidebar {
-    transform: none;
-    width: 240px;
-  }
-
-  .sidebar-header {
-    padding: 24px 20px;
-  }
-
   .main-content {
-    margin-left: 240px;
-    padding: 32px;
+    margin-top: 60px;
+    padding: 2rem;
   }
 }
 
 /* ═══════════════════════════════════════════════════
-   DESKTOP (≥ 1024px)
+   DESKTOP (>= 1024px)
    ═══════════════════════════════════════════════════ */
 @media (min-width: 1024px) {
-  .sidebar { width: 260px; }
-  .main-content { margin-left: 260px; padding: 40px; }
+  .main-content {
+    padding: 2.5rem 3rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   WIDE DESKTOP (>= 1440px)
+   ═══════════════════════════════════════════════════ */
+@media (min-width: 1440px) {
+  .main-content {
+    padding: 2.5rem 4rem;
+  }
 }
