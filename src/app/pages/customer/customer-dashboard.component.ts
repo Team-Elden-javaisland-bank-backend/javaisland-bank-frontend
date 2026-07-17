@@ -1,6 +1,6 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -22,6 +22,7 @@ export class CustomerDashboardComponent implements OnInit {
   constructor(
     private customerService: CustomerService,
     public authService: AuthService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {

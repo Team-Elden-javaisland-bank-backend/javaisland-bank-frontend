@@ -47,7 +47,6 @@ export class CustomerBeneficiariesComponent implements OnInit {
     this.customerService.saveBeneficiary({
       nickname: this.nickname,
       destinationAccountNumber: this.destinationAccountNumber,
-      destinationHolderName: null,
     }).subscribe({
       next: () => {
         this.message.set('Beneficiario aggiunto!');

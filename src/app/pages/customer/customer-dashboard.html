@@ -40,9 +40,7 @@
           <div class="col-12 col-md-6 col-lg-4">
             <div
               class="card shadow-sm rounded-3 border-0 h-100 account-card cursor-pointer"
-              [class.border-success]="selectedAccount() === account.accountNumber"
-              [class.border-2]="selectedAccount() === account.accountNumber"
-              (click)="selectAccount(account.accountNumber)"
+              [routerLink]="['/customer/accounts', account.accountNumber]"
             >
               <div class="card-body">
                 <div class="account-number">{{ account.accountNumber }}</div>

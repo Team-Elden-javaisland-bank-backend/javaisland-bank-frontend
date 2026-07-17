@@ -1,6 +1,7 @@
 <div class="setup-page">
   <div class="setup-card card shadow-lg border-0 rounded-3">
     <div class="setup-header text-center mb-4">
+      <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="setup-logo mx-auto d-block mb-3">
       <h2 class="fw-bold">Benvenuto in Elden Bank</h2>
       <p class="text-muted">Imposta i tuoi limiti bancari prima di iniziare</p>
     </div>
@@ -56,11 +57,11 @@
           @for (meta of allLimitTypes; track meta.type) {
             <div class="limit-card col-12 col-md-6">
               <div class="card shadow-sm rounded-3 border-0 h-100">
-                <div class="limit-header d-flex justify-content-between align-items-start gap-2 mb-2">
-                  <div class="limit-info">
+                <div class="limit-header d-flex flex-column align-items-center gap-2 mb-2">
+                  <div class="limit-info text-center">
                     <span class="limit-label fw-bold">{{ meta.label }}</span>
-                    <span class="limit-desc text-muted small">{{ meta.description }}</span>
-                    <span class="limit-range text-success small fw-semibold">Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — Max: {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
+                    <span class="limit-desc text-muted small d-block">{{ meta.description }}</span>
+                    <span class="limit-range text-success small fw-semibold d-block">Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — Max: {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
                   </div>
                   <span class="policy-badge badge rounded-pill" [style.background]="meta.policy === 'USER_FULL' ? '#d1fae5' : meta.policy === 'USER_LOWER_ONLY' ? '#fef3c7' : '#fee2e2'" [style.color]="meta.policyColor">
                     {{ meta.policyLabel }}

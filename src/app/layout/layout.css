@@ -237,7 +237,7 @@
 /* ── Main content ───────────────────────────────── */
 .main-content {
   flex: 1;
-  padding: 4.5rem 1rem 5rem;
+  padding: 4.5rem 1.25rem 5rem;
   background: var(--bi-bg);
   min-height: 100dvh;
 }
@@ -277,7 +277,7 @@
 
   .main-content {
     margin-top: 60px;
-    padding: 2rem;
+    padding: 2rem 1.5rem;
   }
 }
 
