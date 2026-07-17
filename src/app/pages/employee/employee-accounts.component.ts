@@ -78,6 +78,13 @@ export class EmployeeAccountsComponent implements OnInit {
     });
   }
 
+  unfreeze(accountNumber: string): void {
+    this.employeeService.unfreezeAccount(accountNumber).subscribe({
+      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
+      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+    });
+  }
+
   validateClosure(accountNumber: string): void {
     this.employeeService.validateClosure(accountNumber).subscribe({
       next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },

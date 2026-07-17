@@ -6,4 +6,5 @@ export interface LoginResponseDto {
   lastName: string;
   email: string;
   limitsSetupComplete: boolean;
+  pinSetupComplete: boolean;
 }

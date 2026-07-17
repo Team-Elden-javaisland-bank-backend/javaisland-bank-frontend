@@ -38,7 +38,7 @@
             <td class="mono">{{ account.accountNumber }}</td>
             <td class="fw-semibold">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</td>
             <td><span class="badge rounded-pill" [class.bg-warning]="account.statusId === 1" [class.text-dark]="account.statusId === 1" [class.bg-success]="account.statusId === 2" [class.bg-danger]="account.statusId === 3" [class.bg-secondary]="account.statusId === 4">{{ getStatusName(account.statusId) }}</span></td>
-            <td>#{{ account.profileId }}</td>
+            <td>{{ account.profileFirstName }} {{ account.profileLastName }}</td>
             <td>{{ account.createdAt | date:'dd/MM/yyyy' }}</td>
             <td class="d-flex gap-1 flex-wrap">
               @if (account.statusId === 1) {
@@ -49,7 +49,7 @@
                 <button class="btn btn-sm btn-warning rounded-3 fw-semibold" (click)="freeze(account.accountNumber)">Congela</button>
               }
               @if (account.statusId === 3) {
-                <button class="btn btn-sm btn-success rounded-3 fw-semibold" (click)="activate(account.accountNumber)">Riattiva</button>
+                <button class="btn btn-sm btn-success rounded-3 fw-semibold" (click)="unfreeze(account.accountNumber)">Scongela</button>
               }
               <button class="btn btn-sm btn-outline-secondary rounded-3 fw-semibold" (click)="viewLimits(account.accountNumber)">Limiti</button>
             </td>

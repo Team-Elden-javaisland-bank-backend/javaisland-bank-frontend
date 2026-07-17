@@ -15,6 +15,7 @@ import { CardResponseDto } from '../models/card/card-response.dto';
 import { CardSensitiveDto } from '../models/card/card-sensitive.dto';
 import { BeneficiaryRequestDto } from '../models/beneficiary/beneficiary-request.dto';
 import { BeneficiaryResponseDto } from '../models/beneficiary/beneficiary-response.dto';
+import { CustomerProfileDto } from '../models/user/customer-profile.dto';
 import { PageResponseDto } from '../models/common/page-response.dto';
 import { ErrorResponseDto } from '../models/common/error-response.dto';
 
@@ -67,6 +68,20 @@ export class CustomerService {
   completeLimitsSetup(): Observable<string> {
     return this.http
       .put(`${this.API_BASE}/accounts/limits-setup-complete`, null, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
+  isLastActiveAccount(): Observable<boolean> {
+    return this.http
+      .get<boolean>(`${this.API_BASE}/accounts/last-active-check`)
+      .pipe(catchError(this.handleError));
+  }
+
+  // ── Profilo ──────────────────────────────────────────────────────
+
+  getProfile(): Observable<CustomerProfileDto> {
+    return this.http
+      .get<CustomerProfileDto>(`${this.API_BASE}/profile`)
       .pipe(catchError(this.handleError));
   }
 
@@ -197,6 +212,20 @@ export class CustomerService {
       .delete(`${this.API_BASE}/beneficiaries/${id}`, {
         responseType: 'text',
       })
+      .pipe(catchError(this.handleError));
+  }
+
+  checkBeneficiary(accountNumber: string): Observable<BeneficiaryResponseDto | null> {
+    return this.http
+      .get<BeneficiaryResponseDto | null>(`${this.API_BASE}/beneficiaries/check`, {
+        params: { accountNumber },
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  renameBeneficiary(id: number, nickname: string): Observable<BeneficiaryResponseDto> {
+    return this.http
+      .put<BeneficiaryResponseDto>(`${this.API_BASE}/beneficiaries/${id}/rename`, { nickname })
       .pipe(catchError(this.handleError));
   }
 

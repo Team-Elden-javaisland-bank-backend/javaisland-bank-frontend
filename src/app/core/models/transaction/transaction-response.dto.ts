@@ -10,6 +10,8 @@ export interface TransactionResponseDto {
   scheduledDate: string | null;
   sourceAccountNumber: string;
   destinationAccountNumber: string;
+  sourceUserName: string;
+  destinationUserName: string;
   sourceBalanceAfter: number;
   destBalanceAfter: number;
 }

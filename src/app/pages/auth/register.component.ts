@@ -16,6 +16,13 @@ export class RegisterComponent {
   email = '';
   password = '';
   confirmPassword = '';
+  gender = '';
+  profession = '';
+  fiscalCode = '';
+  phone = '';
+  residence = '';
+  birthPlace = '';
+  birthProvince = '';
   error = signal('');
   loading = signal(false);
   showSuccessModal = signal(false);
@@ -25,8 +32,20 @@ export class RegisterComponent {
   onSubmit(): void {
     this.error.set('');
 
-    if (!this.firstName || !this.lastName || !this.birthDate || !this.email || !this.password) {
+    if (!this.firstName || !this.lastName || !this.birthDate || !this.email || !this.password
+        || !this.gender || !this.profession || !this.fiscalCode || !this.phone
+        || !this.residence || !this.birthPlace || !this.birthProvince) {
       this.error.set('Compila tutti i campi');
+      return;
+    }
+
+    if (this.fiscalCode.length !== 16) {
+      this.error.set('Il codice fiscale deve essere di 16 caratteri');
+      return;
+    }
+
+    if (this.birthProvince.length !== 2) {
+      this.error.set('La provincia deve essere di 2 caratteri');
       return;
     }
 
@@ -55,6 +74,13 @@ export class RegisterComponent {
       birthDate: this.birthDate,
       email: this.email,
       password: this.password,
+      gender: this.gender,
+      profession: this.profession,
+      fiscalCode: this.fiscalCode.toUpperCase(),
+      phone: this.phone,
+      residence: this.residence,
+      birthPlace: this.birthPlace,
+      birthProvince: this.birthProvince.toUpperCase(),
     }).subscribe({
       next: () => {
         this.loading.set(false);

@@ -4,6 +4,5 @@ export interface PendingRegistrationDto {
   lastName: string;
   birthDate: string;
   email: string;
-  pendingAccountNumber: string;
   registeredAt: string;
 }

@@ -10,6 +10,7 @@ import { AccountLimitResponseDto } from '../models/account/account-limit-respons
 import { SetLimitRequestDto } from '../models/account/set-limit-request.dto';
 import { CardResponseDto } from '../models/card/card-response.dto';
 import { CardSensitiveDto } from '../models/card/card-sensitive.dto';
+import { EmployeeUserDetailDto } from '../models/user/employee-user-detail.dto';
 import { ErrorResponseDto } from '../models/common/error-response.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -77,6 +78,12 @@ export class EmployeeService {
       .pipe(catchError(this.handleError));
   }
 
+  getUserDetailByAccount(accountNumber: string): Observable<EmployeeUserDetailDto> {
+    return this.http
+      .get<EmployeeUserDetailDto>(`${this.API_BASE}/accounts/${accountNumber}/user-detail`)
+      .pipe(catchError(this.handleError));
+  }
+
   activateAccount(accountNumber: string): Observable<string> {
     return this.http
       .put(`${this.API_BASE}/accounts/${accountNumber}/activate`, null, {
@@ -88,6 +95,14 @@ export class EmployeeService {
   freezeAccount(accountNumber: string): Observable<string> {
     return this.http
       .put(`${this.API_BASE}/accounts/${accountNumber}/freeze`, null, {
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  unfreezeAccount(accountNumber: string): Observable<string> {
+    return this.http
+      .put(`${this.API_BASE}/accounts/${accountNumber}/unfreeze`, null, {
         responseType: 'text',
       })
       .pipe(catchError(this.handleError));
