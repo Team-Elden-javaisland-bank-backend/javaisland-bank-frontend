@@ -15,6 +15,7 @@ Frontend Angular 22 per la banca digitale **JavaIsland Bank**. Mobile-first, col
 | RxJS | 7.8 | Gestione asincrona |
 | Angular Router | 22 | Navigazione + guard |
 | HttpClient | 22 | Chiamate REST con interceptor JWT |
+| @angular/animations | 22 | Transizioni pagine + toast |
 
 ---
 
@@ -23,20 +24,80 @@ Frontend Angular 22 per la banca digitale **JavaIsland Bank**. Mobile-first, col
 ```
 src/app/
 ├── core/
-│   ├── guards/           # Auth guard + role guard
-│   ├── interceptors/     # Bearer token injection
-│   ├── models/           # 19 DTO interfaces (7 domini)
-│   └── services/         # 3 servizi API (auth, customer, employee)
+│   ├── animations/        # Route transition animations (fade+slide)
+│   ├── components/
+│   │   ├── empty-state/   # Shared empty state component (8 @Input)
+│   │   ├── skeleton/      # Skeleton loader (4 varianti)
+│   │   └── toast/         # Toast notification component
+│   ├── guards/            # Auth guard + role guard
+│   ├── interceptors/      # Bearer token injection
+│   ├── models/            # 21 DTO interfaces (8 domini)
+│   └── services/          # 4 servizi API (auth, customer, employee, toast)
 ├── layout/
-│   └── layout.*          # Shell: sidebar + bottom nav (mobile-first)
+│   └── layout.*           # Shell: sidebar + bottom nav + toast + route animation
 ├── pages/
-│   ├── auth/             # Login + Registrazione
-│   ├── customer/         # Dashboard, Conti, Transazioni, Beneficiari, Carte
-│   └── employee/         # Dashboard, Registrazioni, Conti, Carte
-├── app.routes.ts         # Routing completo con guard
-├── app.config.ts         # Bootstrap providers
-└── app.*                 # Root component
+│   ├── auth/              # Login + Registrazione
+│   ├── customer/          # Dashboard, Conti, Transazioni, Beneficiari, Carte, Limiti
+│   └── employee/          # Dashboard, Registrazioni, Conti, Carte, Limiti
+├── app.routes.ts          # Routing completo con guard
+├── app.config.ts          # Bootstrap providers (provideAnimations)
+└── app.*                  # Root component
 ```
+
+---
+
+## Design System
+
+### Palette — Prussian Blue + Warm Gold
+
+| Token | Colore | Uso |
+|---|---|---|
+| `--bi-navy` | `#0a192f` | Primario, headers, testi |
+| `--bi-navy-light` | `#172a45` | Variante chiara |
+| `--bi-gold` | `#e5a93c` | Accent, CTA, brand |
+| `--bi-gold-light` | `#f0c264` | Hover states |
+| `--bi-green` | `#10b981` | Successo, depositi |
+| `--bi-red` | `#ef4444` | Errore, prelievi |
+| `--bi-bg` | `#f4f6f8` | Background principale |
+| `--bi-surface` | `#ffffff` | Card, pannelli |
+
+### Font
+
+- **Plus Jakarta Sans** (Google Fonts) — font principale
+- **SF Mono / Cascadia Code** — codici IBAN, numeri carta
+
+### Componenti UI
+
+| Componente | Descrizione |
+|---|---|
+| **Account Card Carousel** | Carosello con effetto mazzo, peek preview su entrambi i lati, animazione `cubic-bezier(0.23, 1, 0.32, 1)` |
+| **Dashboard Mini-Carousel** | Versione compatta del carosello per la dashboard |
+| **2-Column Grid Layout** | Layout sidebar + contenuto per dashboard e pagine con pannelli informativi |
+| **Summary Bar** | Barra riepilogativa con statistiche (conti, saldo, transazioni) |
+| **Sidebar Panels** | Quick actions, security tips, policy explainer, help contacts |
+| **Toast Notifications** | Notifiche slide-in con auto-dismiss (success/error/info/warning) |
+| **Skeleton Loader** | Placeholder animato per caricamento (card/table/stats/lines) |
+| **Empty State** | Componente condiviso per stati vuoti con icona, titolo, messaggio, azione |
+| **Page Transitions** | Animazioni fade+slide (250ms) tra le pagine |
+| **Bottom Nav** | Navigazione mobile con 4 icone + indicatori attivi |
+| **Sidebar** | Slide-in drawer su mobile, fisso su desktop, con avatar e badge ruolo |
+
+### Accessibilita'
+
+- Skip-to-content link
+- `aria-label` su navs, forms, buttons
+- `role="alert"` su messaggi di errore
+- `:focus-visible` con gold outline per navigazione tastiera
+- `prefers-reduced-motion` per disabilitare animazioni
+- `prefers-color-scheme: dark` per dark mode automatico
+
+### Breakpoints
+
+| Breakpoint | Layout |
+|---|---|
+| **< 768px** (mobile) | Top bar + hamburger + bottom nav. Carosello compatto. Grid 1 colonna. |
+| **≥ 768px** (tablet) | Sidebar fissa. Grid multi-colonne. Carosello con peek. |
+| **≥ 1200px** (desktop) | Layout 2 colonne con sidebar. Carosello con peek completo. |
 
 ---
 
@@ -101,52 +162,12 @@ Documentazione API disponibile su: `http://localhost:8081/swagger-ui/index.html`
 
 ---
 
-## Stile Mobile-First
-
-### Design System
-
-| Elemento | Valore |
-|---|---|
-| Font | Inter (Google Fonts) |
-| Primary color | `#e94560` (rosso) |
-| Background | `#f5f6fa` (grigio chiaro) |
-| Sidebar | `#1a1a2e` (blu scuro) |
-| Border radius | `10-16px` |
-| Shadow | `0 2px 8px rgba(0,0,0,0.06)` |
-
-### Breakpoints
-
-| Breakpoint | Layout |
-|---|---|
-| **< 768px** (mobile) | Top bar + hamburger menu + bottom nav con icone SVG. Tabelle scroll orizzontale. Form stack verticali. Grid 1 colonna. Modal slide-up dal basso. |
-| **≥ 768px** (tablet) | Sidebar fissa 240px. Bottom nav nascosto. Grid multi-colonne. Modal centrati. |
-| **≥ 1024px** (desktop) | Sidebar 260px. Padding più ampio. |
-
-### Componenti UI
-
-- **Bottom Nav** — 4 icone SVG (Home, Conti, Transazioni, Carte) con indicatori attivi
-- **Sidebar** — slide-in drawer su mobile, fisso su desktop, con badge ruolo
-- **Tabelle** — wrapper con scroll orizzontale su mobile, `min-width` per mantenere leggibilità
-- **Form** — input `font-size: 16px` (evita zoom iOS), `-webkit-appearance: none`, stack verticali su mobile
-- **Tabs** — scroll orizzontale se non entrano nello schermo
-- **Modal** — slide-up dal basso su mobile, centrata su desktop
-- **Card** — gradienti diversi per DEBIT/CREDIT, reveal CVV con toggle
-
-### Miglioramenti Grafici e Accessibilità delle Carte
-
-- **Bug fix responsive**: risolto troncamento visivo delle carte su schermi desktop (>992px e >1024px) riorganizzando le colonne Bootstrap con `col-xl-4`
-- **Aspect-ratio reale**: applicato `aspect-ratio: 1.58/1` per simulare la forma rettangolare standard delle carte di credito
-- **Palette ad alto contrasto**: Blu Notte per le carte di Debito, Oro Caldo per le carte di Credito — palette DSA-friendly per facilitare la lettura visiva
-- **Layout pulsante esterno**: spostato "Mostra dati completi" fuori dal corpo della carta per evitare deformazioni del layout
-
----
-
 ## Avvio
 
 ### Prerequisiti
 
 - Node.js 20+
-- PostgreSQL in esecuzione su `localhost:5432`
+- PostgreSQL in esecuzione su `localhost:5432` (via Docker: porta `5433`)
 - Keycloak in esecuzione su `localhost:8080`
 - Backend Spring Boot in esecuzione su `localhost:8081`
 
@@ -188,7 +209,7 @@ npm test
 | Swagger UI | `8081` | http://localhost:8081/swagger-ui/index.html |
 | Keycloak | `8080` | http://localhost:8080 |
 | Keycloak Admin Console | `8080` | http://localhost:8080/admin/master/console/ |
-| PostgreSQL | `5432` | jdbc:postgresql://localhost:5432/javaisland_backend |
+| PostgreSQL | `5433` | jdbc:postgresql://localhost:5433/javaisland_backend |
 
 ---
 
