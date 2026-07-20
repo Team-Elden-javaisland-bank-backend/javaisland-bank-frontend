@@ -18,6 +18,9 @@ export class CustomerDashboardComponent implements OnInit {
   loading = signal(true);
   selectedAccount = signal<string>('');
   transactionsLoading = signal(false);
+  currentCardIndex = signal(0);
+
+  today = new Date();
 
   constructor(
     private customerService: CustomerService,
@@ -29,18 +32,52 @@ export class CustomerDashboardComponent implements OnInit {
     this.loadAccounts();
   }
 
+  get greeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Buongiorno';
+    if (hour < 18) return 'Buon pomeriggio';
+    return 'Buonasera';
+  }
+
+  get userName(): string {
+    const user = this.authService.getUser();
+    return user?.firstName ?? '';
+  }
+
   loadAccounts(): void {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
-        this.accounts.set(data);
-        if (data.length > 0) {
-          this.selectAccount(data[0].accountNumber);
+        const sorted = [...data].sort((a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+        this.accounts.set(sorted);
+        this.currentCardIndex.set(0);
+        if (sorted.length > 0) {
+          this.selectAccount(sorted[0].accountNumber);
         } else {
           this.loading.set(false);
         }
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  prevCard(): void {
+    const idx = this.currentCardIndex();
+    if (idx > 0) this.currentCardIndex.set(idx - 1);
+  }
+
+  nextCard(): void {
+    const idx = this.currentCardIndex();
+    if (idx < this.accounts().length - 1) this.currentCardIndex.set(idx + 1);
+  }
+
+  goToCard(index: number): void {
+    this.currentCardIndex.set(index);
+  }
+
+  getCardOffset(account: AccountResponseDto): number {
+    return this.currentCardIndex() - this.accounts().indexOf(account);
   }
 
   selectAccount(accountNumber: string): void {

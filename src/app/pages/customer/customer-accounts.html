@@ -1,30 +1,57 @@
 <div class="container">
-  <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+  <div class="page-header mb-4">
     <div>
-      <h1 class="h3 fw-bold mb-1">I miei Conti</h1>
-      <p class="text-muted mb-0">Gestisci i tuoi conti correnti</p>
+      <h2 class="page-title">I miei Conti</h2>
+      <p class="page-subtitle">Gestisci i tuoi conti correnti</p>
     </div>
     <div class="d-flex gap-2">
-      <button class="btn btn-success rounded-3 d-inline-flex align-items-center gap-2" (click)="showOpenForm.set(!showOpenForm())">
+      <button class="header-btn header-btn-primary" (click)="showOpenForm.set(!showOpenForm())">
         @if (showOpenForm()) {
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          Annulla
+          <i class="bi bi-x-lg me-1"></i>Annulla
         } @else {
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Apri Conto
+          <i class="bi bi-plus-lg me-1"></i>Apri Conto
         }
       </button>
       @if (accounts().some(a => a.statusId === 2)) {
-        <button class="btn btn-outline-danger rounded-3" (click)="showCloseForm.set(!showCloseForm())">
+        <button class="header-btn header-btn-danger" (click)="showCloseForm.set(!showCloseForm())">
           @if (showCloseForm()) {
             Annulla
           } @else {
-            Richiedi Chiusura
+            <i class="bi bi-x-circle me-1"></i>Richiedi Chiusura
           }
         </button>
       }
     </div>
   </div>
+
+  <!-- Summary bar -->
+  @if (accounts().length > 0) {
+    <div class="summary-bar mb-4">
+      <div class="summary-item">
+        <div class="summary-icon si-total"><i class="bi bi-bank"></i></div>
+        <div class="summary-data">
+          <span class="summary-val">{{ accounts().length }}</span>
+          <span class="summary-lbl">Conti Totali</span>
+        </div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-item">
+        <div class="summary-icon si-active"><i class="bi bi-check-circle"></i></div>
+        <div class="summary-data">
+          <span class="summary-val">{{ accounts().filter(a => a.statusId === 2).length }}</span>
+          <span class="summary-lbl">Attivi</span>
+        </div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-item">
+        <div class="summary-icon si-balance"><i class="bi bi-wallet2"></i></div>
+        <div class="summary-data">
+          <span class="summary-val">{{ getTotalBalance() | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <span class="summary-lbl">Saldo Complessivo</span>
+        </div>
+      </div>
+    </div>
+  }
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
@@ -111,61 +138,110 @@
       <button class="btn btn-success rounded-3" (click)="showOpenForm.set(true)">Apri il tuo primo conto</button>
     </div>
   } @else {
-    <div class="row g-4 justify-content-center">
-      @for (account of accounts(); track account.accountNumber) {
-        <div class="col-12 col-lg-6 d-flex justify-content-center">
-          <div>
-            <div class="account-card card-theme-{{ account.statusId }}" [routerLink]="['/customer/accounts', account.accountNumber]">
-              <div class="card-bg-pattern"></div>
+    <!-- Card carousel -->
+    <div class="carousel-section">
+      <div class="carousel-viewport">
+        <div class="carousel-track">
+          @for (account of accounts(); track account.accountNumber; let i = $index) {
+            <div
+              class="carousel-slide"
+              [class.active]="i === currentCardIndex()"
+              [class.before]="i < currentCardIndex()"
+              [class.after]="i > currentCardIndex()"
+              [style.--offset]="getCardOffset(account)"
+              (click)="goToCard(i)"
+            >
+              <div class="account-card card-theme-{{ account.statusId }}">
+                <div class="card-bg-pattern"></div>
 
-              <div class="card-top">
-                <div class="card-chip">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                    <line x1="2" y1="10" x2="22" y2="10"/>
-                    <rect x="6" y="12" width="4" height="3" rx="0.5"/>
-                  </svg>
+                <div class="card-top">
+                  <div class="card-chip">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="2" y="5" width="20" height="14" rx="2"/>
+                      <line x1="2" y1="10" x2="22" y2="10"/>
+                      <rect x="6" y1="12" width="4" height="3" rx="0.5"/>
+                    </svg>
+                  </div>
+                  <span [class]="'status-pill status-' + account.statusId">
+                    @switch (account.statusId) {
+                      @case (1) { Inattivo }
+                      @case (2) { Attivo }
+                      @case (3) { Congelato }
+                      @case (4) { Chiuso }
+                    }
+                  </span>
                 </div>
-                <span [class]="'status-pill status-' + account.statusId">
-                  @switch (account.statusId) {
-                    @case (1) { Inattivo }
-                    @case (2) { Attivo }
-                    @case (3) { Congelato }
-                    @case (4) { Chiuso }
+
+                <div class="card-body">
+                  <span class="card-type">Conto Corrente</span>
+                  <div class="card-iban">{{ account.accountNumber }}</div>
+                </div>
+
+                <div class="card-stripe"></div>
+
+                <div class="card-footer">
+                  <div class="footer-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span>{{ account.createdAt | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  @if (account.closedAt) {
+                    <div class="footer-item closed">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <span>{{ account.closedAt | date:'dd/MM/yyyy' }}</span>
+                    </div>
                   }
+                </div>
+              </div>
+
+              <div class="account-balance-section">
+                <span class="account-balance-label">Saldo disponibile</span>
+                <span class="account-balance-value" [class.negative]="account.balance < 0">
+                  {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
                 </span>
               </div>
-
-              <div class="card-body">
-                <span class="card-type">Conto Corrente</span>
-                <div class="card-iban">{{ account.accountNumber }}</div>
-              </div>
-
-              <div class="card-stripe"></div>
-
-              <div class="card-footer">
-                <div class="footer-item">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  <span>{{ account.createdAt | date:'dd/MM/yyyy' }}</span>
-                </div>
-                @if (account.closedAt) {
-                  <div class="footer-item closed">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>{{ account.closedAt | date:'dd/MM/yyyy' }}</span>
-                  </div>
-                }
-              </div>
             </div>
+          }
+        </div>
+      </div>
 
-            <div class="account-balance-section">
-              <span class="account-balance-label">Saldo disponibile</span>
-              <span class="account-balance-value" [class.negative]="account.balance < 0">
-                {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
-              </span>
-            </div>
+      <!-- Navigation -->
+      @if (accounts().length > 1) {
+        <div class="carousel-nav">
+          <button
+            class="carousel-arrow"
+            [disabled]="currentCardIndex() === 0"
+            (click)="prevCard()"
+            aria-label="Carta precedente"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <div class="carousel-dots">
+            @for (account of accounts(); track account.accountNumber; let i = $index) {
+              <button
+                class="carousel-dot"
+                [class.active]="i === currentCardIndex()"
+                (click)="goToCard(i)"
+                [attr.aria-label]="'Vai alla carta ' + (i + 1)"
+              ></button>
+            }
           </div>
+
+          <button
+            class="carousel-arrow"
+            [disabled]="currentCardIndex() === accounts().length - 1"
+            (click)="nextCard()"
+            aria-label="Carta successiva"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
         </div>
       }
+
+      <!-- Card counter -->
+      <div class="carousel-counter">
+        {{ currentCardIndex() + 1 }} / {{ accounts().length }}
+      </div>
     </div>
   }
 </div>

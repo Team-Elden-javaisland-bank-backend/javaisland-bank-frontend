@@ -1,4 +1,212 @@
 /* ═══ EMPLOYEE CARDS ═══ */
-.bg-purple {
-  background-color: #7c3aed;
+
+/* ── Page header ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--bi-navy);
+  margin-bottom: 0.125rem;
+}
+
+.page-subtitle {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+.page-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.page-stat {
+  text-align: center;
+}
+
+.page-stat-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--bi-navy);
+}
+
+.page-stat-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+}
+
+/* ── Table card ── */
+.table-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+/* ── Styled table ── */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.styled-table thead th {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0.875rem 1rem;
+  background: #fafbfc;
+  white-space: nowrap;
+}
+
+.styled-table tbody td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.styled-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.styled-table tbody tr:hover {
+  background: rgba(229, 169, 60, 0.03);
+}
+
+/* ── Card number cell ── */
+.card-number-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-number-cell i {
+  color: #cbd5e1;
+  font-size: 1rem;
+}
+
+.mono {
+  font-family: 'SF Mono', 'Cascadia Code', monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.5px;
+}
+
+.holder-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ── Avatar ── */
+.avatar-xs {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--bi-navy), #1a3358);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Type pill ── */
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.625rem;
+  border-radius: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.type-debit {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+
+.type-credit {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+}
+
+/* ── Card status pills ── */
+.card-status-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.card-status-inactive {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.card-status-blocked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ── Empty state ── */
+.empty-state-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(229, 169, 60, 0.1);
+  color: var(--bi-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1rem;
+}
+
+.empty-state-title {
+  font-weight: 700;
+  color: var(--bi-navy);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-text {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 767.98px) {
+  .page-stats { display: none; }
+
+  .styled-table {
+    font-size: 0.75rem;
+  }
+
+  .styled-table thead th,
+  .styled-table tbody td {
+    padding: 0.625rem 0.75rem;
+  }
 }

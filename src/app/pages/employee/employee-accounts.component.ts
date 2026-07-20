@@ -147,4 +147,12 @@ export class EmployeeAccountsComponent implements OnInit {
     const names: Record<number, string> = { 1: 'Inattivo', 2: 'Attivo', 3: 'Congelato', 4: 'Chiuso' };
     return names[statusId] ?? 'Sconosciuto';
   }
+
+  getActiveCount(): number {
+    return this.accounts().filter(a => a.statusId === 2).length;
+  }
+
+  getPendingCount(): number {
+    return this.accounts().filter(a => a.statusId === 1).length;
+  }
 }

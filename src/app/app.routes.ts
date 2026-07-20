@@ -11,6 +11,7 @@ import { CustomerBeneficiariesComponent } from './pages/customer/customer-benefi
 import { CustomerCardsComponent } from './pages/customer/customer-cards.component';
 import { CustomerLimitsComponent } from './pages/customer/customer-limits.component';
 import { CustomerLimitsSetupComponent } from './pages/customer/customer-limits-setup.component';
+import { CustomerSavedBeneficiariesComponent } from './pages/customer/customer-saved-beneficiaries.component';
 import { EmployeeDashboardComponent } from './pages/employee/employee-dashboard.component';
 import { EmployeeRegistrationsComponent } from './pages/employee/employee-registrations.component';
 import { EmployeeAccountsComponent } from './pages/employee/employee-accounts.component';
@@ -34,6 +35,7 @@ export const routes: Routes = [
       { path: 'beneficiaries', component: CustomerBeneficiariesComponent },
       { path: 'limits', component: CustomerLimitsComponent },
       { path: 'cards', component: CustomerCardsComponent },
+      { path: 'saved-beneficiaries', component: CustomerSavedBeneficiariesComponent },
     ],
   },
   {

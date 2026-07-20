@@ -1,5 +1,52 @@
 /* ═══ CUSTOMER ACCOUNTS — PREMIUM CARD STYLES ═══ */
 
+/* ── Page header ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--bi-navy);
+  margin-bottom: 0.125rem;
+}
+
+.page-subtitle {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1.125rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header-btn-primary {
+  background: #059669;
+  color: #fff;
+}
+.header-btn-primary:hover { background: #047857; }
+
+.header-btn-danger {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.header-btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
 /* Form icon badges */
 .form-icon {
   width: 44px;
@@ -33,10 +80,151 @@
   font-weight: 600;
 }
 
+/* ═══ SUMMARY BAR ═══ */
+
+.summary-bar {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.summary-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.si-total { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+.si-active { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.si-balance { background: rgba(229, 169, 60, 0.1); color: var(--bi-gold-dark); }
+
+.summary-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bi-navy);
+}
+
+.summary-lbl {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+}
+
+.summary-divider {
+  width: 1px;
+  height: 32px;
+  background: #e2e8f0;
+}
+
+@media (max-width: 767.98px) {
+  .summary-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .summary-divider {
+    width: 100%;
+    height: 1px;
+  }
+}
+
 /* ═══════════════════════════════════
-   ACCOUNT CARDS — PREMIUM STYLE
+   ACCOUNT CARD CAROUSEL
    ═══════════════════════════════════ */
 
+.carousel-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0 0.5rem;
+}
+
+.carousel-viewport {
+  width: 100%;
+  max-width: 720px;
+  overflow: hidden;
+  padding: 20px 0 30px;
+  position: relative;
+}
+
+.carousel-track {
+  position: relative;
+  width: 100%;
+  height: 290px;
+  perspective: 900px;
+}
+
+/* ── Individual slide ── */
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 380px;
+  max-width: calc(100vw - 48px);
+  transform-origin: center center;
+  cursor: pointer;
+  transition:
+    transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    filter 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity;
+  user-select: none;
+}
+
+/* Active card */
+.carousel-slide.active {
+  transform: translateX(-50%) translateX(0) scale(1) rotateY(0);
+  z-index: 10;
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Cards to the left (before) */
+.carousel-slide.before {
+  transform: translateX(-50%) translateX(calc(-100% - 20px)) scale(0.82) rotateY(8deg);
+  z-index: 5;
+  opacity: 0.55;
+  filter: blur(1px);
+  pointer-events: auto;
+}
+
+/* Cards to the right (after) */
+.carousel-slide.after {
+  transform: translateX(-50%) translateX(calc(100% + 20px)) scale(0.82) rotateY(-8deg);
+  z-index: 5;
+  opacity: 0.55;
+  filter: blur(1px);
+  pointer-events: auto;
+}
+
+.carousel-slide:hover:not(.active) {
+  opacity: 0.75;
+  filter: blur(0);
+}
+
+/* ── Account card (premium) ── */
 .account-card {
   position: relative;
   border-radius: 16px;
@@ -45,7 +233,6 @@
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  cursor: pointer;
   text-decoration: none;
   color: inherit;
   aspect-ratio: 1.58 / 1;
@@ -56,7 +243,7 @@
   justify-content: space-between;
 }
 
-.account-card:hover {
+.carousel-slide.active .account-card:hover {
   transform: translateY(-4px) scale(1.01);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
@@ -92,30 +279,25 @@
   left: 30px;
 }
 
-/* ── Card themes (gradients + geometry) ── */
-
-/* Active — Prussian Blue deep */
+/* ── Card themes ── */
 .card-theme-2 {
   background: linear-gradient(135deg, #0a192f 0%, #112240 50%, #1a3358 100%);
   color: #fff;
   box-shadow: 0 4px 20px rgba(10, 25, 47, 0.35);
 }
 
-/* Inactive — Warm amber */
 .card-theme-1 {
   background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
   color: #fff;
   box-shadow: 0 4px 20px rgba(180, 83, 9, 0.25);
 }
 
-/* Frozen — Deep red */
 .card-theme-3 {
   background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #dc2626 100%);
   color: #fff;
   box-shadow: 0 4px 20px rgba(127, 29, 29, 0.25);
 }
 
-/* Closed — Slate */
 .card-theme-4 {
   background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #6b7280 100%);
   color: #fff;
@@ -131,7 +313,7 @@
   z-index: 1;
 }
 
-/* ── Card top: chip + status ── */
+/* ── Card top ── */
 .card-top {
   display: flex;
   justify-content: space-between;
@@ -195,30 +377,7 @@
   letter-spacing: 1.5px;
 }
 
-.card-balance-section {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.balance-label {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.45);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-balance {
-  font-size: 28px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.5px;
-}
-
-.card-balance.negative { color: #fca5a5; }
-
-/* ── Stripe — subtle divider bar with gold ── */
+/* ── Stripe ── */
 .card-stripe {
   height: 2px;
   border-radius: 2px;
@@ -274,4 +433,134 @@
 
 .account-balance-value.negative {
   color: #dc2626;
+}
+
+/* ═══ CAROUSEL NAVIGATION ═══ */
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.carousel-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  color: var(--bi-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  background: var(--bi-navy);
+  color: #fff;
+  border-color: var(--bi-navy);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.carousel-dot.active {
+  background: var(--bi-gold);
+  width: 24px;
+  border-radius: 4px;
+}
+
+.carousel-counter {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-top: 0.625rem;
+}
+
+/* ═══ EMPTY STATE ═══ */
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.empty-state p {
+  color: #94a3b8;
+  margin: 1rem 0 1.5rem;
+}
+
+/* ═══ RESPONSIVE ═══ */
+
+@media (max-width: 575.98px) {
+  .carousel-track {
+    height: 250px;
+  }
+
+  .carousel-slide {
+    width: calc(100vw - 48px);
+  }
+
+  .account-card {
+    padding: 20px 22px;
+    min-width: 260px;
+  }
+
+  .card-iban {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .card-chip {
+    width: 36px;
+    height: 26px;
+  }
+
+  .account-balance-value {
+    font-size: 1.25rem;
+  }
+
+  .carousel-slide.before {
+    transform: translateX(-50%) translateX(calc(-100% - 16px)) scale(0.78) rotateY(10deg);
+  }
+
+  .carousel-slide.after {
+    transform: translateX(-50%) translateX(calc(100% + 16px)) scale(0.78) rotateY(-10deg);
+  }
+}
+
+@media (min-width: 768px) {
+  .carousel-track {
+    height: 300px;
+  }
+
+  .carousel-viewport {
+    max-width: 780px;
+  }
 }

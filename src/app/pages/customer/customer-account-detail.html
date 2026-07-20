@@ -1,7 +1,7 @@
 <div class="container">
-  <button class="btn btn-light border rounded-3 mb-3 d-inline-flex align-items-center gap-2" (click)="router.navigate(['/customer/accounts'])">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Indietro
+  <button class="back-btn" (click)="router.navigate(['/customer/accounts'])" aria-label="Torna ai conti">
+    <i class="bi bi-arrow-left"></i>
+    <span>Indietro</span>
   </button>
 
   @if (account(); as acc) {
@@ -60,9 +60,10 @@
     @if (loading()) {
       <div class="text-center py-5 text-muted">Caricamento...</div>
     } @else if (transactions().length === 0) {
-      <div class="empty-state">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        <p>Nessun movimento trovato</p>
+      <div class="empty-state-card">
+        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+        <h6 class="empty-state-title">Nessun movimento</h6>
+        <p class="empty-state-text">Nessun movimento trovato per il periodo selezionato.</p>
       </div>
     } @else {
       <div class="d-flex flex-column gap-2">

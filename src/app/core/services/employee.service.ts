@@ -9,7 +9,6 @@ import { AccountResponseDto } from '../models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../models/account/account-limit-response.dto';
 import { SetLimitRequestDto } from '../models/account/set-limit-request.dto';
 import { CardResponseDto } from '../models/card/card-response.dto';
-import { CardSensitiveDto } from '../models/card/card-sensitive.dto';
 import { EmployeeUserDetailDto } from '../models/user/employee-user-detail.dto';
 import { ErrorResponseDto } from '../models/common/error-response.dto';
 
@@ -162,12 +161,6 @@ export class EmployeeService {
   getCardDetail(cardId: number): Observable<CardResponseDto> {
     return this.http
       .get<CardResponseDto>(`${this.API_BASE}/cards/${cardId}`)
-      .pipe(catchError(this.handleError));
-  }
-
-  getCardSensitive(cardId: number): Observable<CardSensitiveDto> {
-    return this.http
-      .get<CardSensitiveDto>(`${this.API_BASE}/cards/${cardId}/sensitive`)
       .pipe(catchError(this.handleError));
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 import { RegisterRequestDto } from '../models/auth/register-request.dto';
 import { LoginRequestDto } from '../models/auth/login-request.dto';
@@ -11,6 +11,7 @@ import { ErrorResponseDto } from '../models/common/error-response.dto';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API_BASE = 'http://localhost:8081/api/v1/auth';
+  private readonly PROFILE_PICTURE_API = 'http://localhost:8081/api/v1/profile-picture';
 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
@@ -31,6 +32,38 @@ export class AuthService {
       );
   }
 
+  uploadProfilePicture(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post(this.PROFILE_PICTURE_API, formData, { responseType: 'text' })
+      .pipe(
+        tap((url) => {
+          const user = this.getUser();
+          if (user) {
+            user.profilePictureUrl = url;
+            localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+          }
+        }),
+        catchError(this.handleError),
+      );
+  }
+
+  deleteProfilePicture(): Observable<void> {
+    return this.http
+      .delete<void>(this.PROFILE_PICTURE_API)
+      .pipe(
+        tap(() => {
+          const user = this.getUser();
+          if (user) {
+            user.profilePictureUrl = undefined;
+            localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+          }
+        }),
+        catchError(this.handleError),
+      );
+  }
+
   saveSession(response: LoginResponseDto): void {
     localStorage.setItem(this.TOKEN_KEY, response.token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(response));
@@ -43,6 +76,17 @@ export class AuthService {
   getUser(): LoginResponseDto | null {
     const raw = localStorage.getItem(this.USER_KEY);
     return raw ? JSON.parse(raw) : null;
+  }
+
+  getProfilePictureUrl(): string | null {
+    const user = this.getUser();
+    return user?.profilePictureUrl ?? null;
+  }
+
+  getInitials(): string {
+    const user = this.getUser();
+    if (!user) return '?';
+    return (user.firstName?.[0] ?? '') + (user.lastName?.[0] ?? '');
   }
 
   logout(): void {

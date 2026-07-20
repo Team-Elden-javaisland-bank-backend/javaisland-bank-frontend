@@ -1,13 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 
 @Component({
   selector: 'app-customer-accounts',
-  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink],
+  imports: [CurrencyPipe, DatePipe, FormsModule],
   templateUrl: './customer-accounts.html',
   styleUrl: './customer-accounts.css',
 })
@@ -19,6 +18,7 @@ export class CustomerAccountsComponent {
   selectedAccount = signal<string>('');
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
+  currentCardIndex = signal(0);
 
   sourceAccountNumber = '';
   initialAmount = 0;
@@ -31,11 +31,33 @@ export class CustomerAccountsComponent {
   loadAccounts(): void {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
-        this.accounts.set(data);
+        const sorted = [...data].sort((a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+        this.accounts.set(sorted);
+        this.currentCardIndex.set(0);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  prevCard(): void {
+    const idx = this.currentCardIndex();
+    if (idx > 0) this.currentCardIndex.set(idx - 1);
+  }
+
+  nextCard(): void {
+    const idx = this.currentCardIndex();
+    if (idx < this.accounts().length - 1) this.currentCardIndex.set(idx + 1);
+  }
+
+  goToCard(index: number): void {
+    this.currentCardIndex.set(index);
+  }
+
+  getCardOffset(account: AccountResponseDto): number {
+    return this.currentCardIndex() - this.accounts().indexOf(account);
   }
 
   openAccount(): void {
@@ -86,5 +108,9 @@ export class CustomerAccountsComponent {
         this.messageType.set('error');
       },
     });
+  }
+
+  getTotalBalance(): number {
+    return this.accounts().reduce((sum, acc) => sum + acc.balance, 0);
   }
 }

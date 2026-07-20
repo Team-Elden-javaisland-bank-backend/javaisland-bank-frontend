@@ -1,4 +1,4 @@
-/* ═══ CUSTOMER BENEFICIARIES ═══ */
+/* ═══ CUSTOMER SAVED BENEFICIARIES ═══ */
 
 /* ── Page header ── */
 .page-header {
@@ -167,8 +167,8 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--bi-navy), #1a3358);
-  color: var(--bi-gold);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
   font-size: 1.125rem;
   font-weight: 700;
   display: flex;
@@ -203,29 +203,24 @@
 .beneficiary-card-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 0.75rem 1.25rem;
   border-top: 1px solid #f1f5f9;
   background: #fafbfc;
 }
 
-.beneficiary-date {
-  font-size: 0.6875rem;
-  color: #94a3b8;
-}
-
 .delete-btn {
-  width: 32px;
-  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
   border-radius: 8px;
   border: none;
   background: transparent;
   color: #94a3b8;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.2s;
 }
 

@@ -1,8 +1,8 @@
 <div class="container">
   <div class="page-header mb-4">
     <div>
-      <h2 class="page-title">Beneficiari</h2>
-      <p class="page-subtitle">Gestisci i tuoi beneficiari salvati per i bonifici</p>
+      <h2 class="page-title">Beneficiari Salvati</h2>
+      <p class="page-subtitle">Gestisci i tuoi beneficiari salvati per i bonifici rapidi</p>
     </div>
     <button class="header-btn" (click)="showForm.set(!showForm())">
       @if (showForm()) {
@@ -22,20 +22,20 @@
       <div class="form-card-header">
         <div class="form-icon add"><i class="bi bi-person-plus"></i></div>
         <div>
-          <h3 class="form-card-title">Nuovo Beneficiario</h3>
-          <p class="form-card-subtitle">Aggiungi un nuovo beneficiario per i tuoi bonifici</p>
+          <h3 class="form-card-title">Nuovo Beneficiario Salvato</h3>
+          <p class="form-card-subtitle">Salva un beneficiario per i tuoi bonifici futuri</p>
         </div>
       </div>
       <div class="form-card-body">
         <div class="form-group">
-          <label class="form-label-sm">Nickname</label>
-          <input class="form-input-custom" type="text" [(ngModel)]="nickname" placeholder="Es. Mario Rossi" />
+          <label class="form-label-sm">Nome Beneficiario</label>
+          <input class="form-input-custom" type="text" [(ngModel)]="beneficiaryName" placeholder="Es. Mario Rossi" />
         </div>
         <div class="form-group">
-          <label class="form-label-sm">IBAN Destinazione</label>
-          <input class="form-input-custom" type="text" [(ngModel)]="destinationAccountNumber" placeholder="IT..." />
+          <label class="form-label-sm">Numero Conto</label>
+          <input class="form-input-custom" type="text" [(ngModel)]="accountNumber" placeholder="IT..." />
         </div>
-        <button class="form-btn btn-save" (click)="addBeneficiary()">
+        <button class="form-btn btn-save" (click)="addSavedBeneficiary()">
           <i class="bi bi-check-lg me-1"></i>Salva Beneficiario
         </button>
       </div>
@@ -46,32 +46,29 @@
     <div class="d-flex justify-content-center py-5">
       <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
     </div>
-  } @else if (beneficiaries().length === 0) {
+  } @else if (savedBeneficiaries().length === 0) {
     <div class="empty-state-card">
-      <div class="empty-state-icon"><i class="bi bi-people"></i></div>
-      <h6 class="empty-state-title">Nessun beneficiario</h6>
-      <p class="empty-state-text">Aggiungi un beneficiario per velocizzare i tuoi bonifici.</p>
+      <div class="empty-state-icon"><i class="bi bi-bookmark-check"></i></div>
+      <h6 class="empty-state-title">Nessun beneficiario salvato</h6>
+      <p class="empty-state-text">Salva un beneficiario per velocizzare i tuoi bonifici.</p>
       <button class="empty-state-btn" (click)="showForm.set(true)">
         <i class="bi bi-plus-lg me-1"></i>Aggiungi il primo
       </button>
     </div>
   } @else {
     <div class="beneficiaries-grid">
-      @for (b of beneficiaries(); track b.id) {
+      @for (b of savedBeneficiaries(); track b.id) {
         <div class="beneficiary-card">
           <div class="beneficiary-card-header">
-            <div class="beneficiary-avatar">{{ b.nickname.charAt(0).toUpperCase() }}</div>
+            <div class="beneficiary-avatar">{{ b.beneficiaryName.charAt(0).toUpperCase() }}</div>
             <div class="beneficiary-main">
-              <div class="beneficiary-name">{{ b.nickname }}</div>
-              <div class="beneficiary-iban mono">{{ b.destinationAccountNumber }}</div>
+              <div class="beneficiary-name">{{ b.beneficiaryName }}</div>
+              <div class="beneficiary-iban mono">{{ b.accountNumber }}</div>
             </div>
           </div>
           <div class="beneficiary-card-footer">
-            <span class="beneficiary-date">
-              <i class="bi bi-calendar3 me-1"></i>Aggiunto: {{ b.createdAt | date:'dd/MM/yyyy' }}
-            </span>
-            <button class="delete-btn" (click)="deleteBeneficiary(b.id)">
-              <i class="bi bi-trash3"></i>
+            <button class="delete-btn" (click)="deleteSavedBeneficiary(b.id)">
+              <i class="bi bi-trash3"></i> Elimina
             </button>
           </div>
         </div>

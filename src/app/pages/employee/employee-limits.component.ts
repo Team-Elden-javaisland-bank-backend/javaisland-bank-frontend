@@ -83,6 +83,18 @@ export class EmployeeLimitsComponent {
     this.editingError.set('');
   }
 
+  getLimitIcon(type: string): string {
+    const icons: Record<string, string> = {
+      'ATM_WITHDRAWAL': 'bi bi-cash-stack',
+      'POS_SPENDING': 'bi bi-credit-card-2-front',
+      'DAILY_TRANSFER': 'bi bi-arrow-left-right',
+      'SINGLE_TRANSFER': 'bi bi-send',
+      'INSTANT_TRANSFER_SINGLE': 'bi bi-lightning',
+      'MONTHLY_TRANSFER': 'bi bi-calendar-month',
+    };
+    return icons[type] || 'bi bi-speedometer';
+  }
+
   saveLimit(type: string): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     if (this.editAmount < (meta?.minValue ?? 0)) {

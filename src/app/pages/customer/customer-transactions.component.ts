@@ -280,6 +280,17 @@ export class CustomerTransactionsComponent implements OnInit {
     return typeName ? (map[typeName] ?? typeName) : 'Sconosciuto';
   }
 
+  getTxIcon(typeId: number): string {
+    const icons: Record<number, string> = {
+      1: 'bi bi-plus-circle',
+      2: 'bi bi-dash-circle',
+      3: 'bi bi-send',
+      4: 'bi bi-gift',
+      5: 'bi bi-lightning',
+    };
+    return icons[typeId] ?? 'bi bi-arrow-left-right';
+  }
+
   getStatusNameLabel(statusName: string | undefined): string {
     const map: Record<string, string> = {
       'PENDING': 'In sospeso',

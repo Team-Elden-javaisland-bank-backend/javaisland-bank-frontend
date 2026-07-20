@@ -59,4 +59,12 @@ export class CustomerCardsComponent {
     if (type === 'CREDIT') return 'linear-gradient(135deg, #b45309 0%, #d97706 100%)';
     return '#1e293b';
   }
+
+  getActiveCardsCount(): number {
+    return this.cards().filter(c => c.status === 'ACTIVE').length;
+  }
+
+  getBlockedCardsCount(): number {
+    return this.cards().filter(c => c.status === 'BLOCKED').length;
+  }
 }

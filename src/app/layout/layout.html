@@ -1,18 +1,21 @@
 <div class="app-layout">
+  <!-- Skip to content link -->
+  <a href="#main-content" class="skip-link">Vai al contenuto principale</a>
+
   <!-- Mobile top bar -->
-  <header class="mobile-topbar d-flex align-items-center justify-content-between px-3">
-    <button class="hamburger" (click)="toggleMobileMenu()">
+  <header class="mobile-topbar d-flex align-items-center justify-content-between px-3" role="banner">
+    <button class="hamburger" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-label="Apri menu di navigazione">
       <span [class.open]="mobileMenuOpen()"></span>
     </button>
     <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="topbar-logo">
-    <button class="topbar-logout" (click)="logout()">Esci</button>
+    <button class="topbar-logout" (click)="logout()" aria-label="Esci dall'account">Esci</button>
   </header>
 
   <!-- Desktop top navbar -->
-  <header class="desktop-navbar d-none d-md-flex align-items-center justify-content-between px-4">
+  <header class="desktop-navbar d-none d-md-flex align-items-center justify-content-between px-4" role="banner">
     <div class="d-flex align-items-center gap-4">
       <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="navbar-brand-logo">
-      <nav class="d-flex align-items-center gap-1">
+      <nav aria-label="Navigazione principale" class="d-flex align-items-center gap-1">
         @if (isCustomer) {
           <a routerLink="/customer/dashboard" routerLinkActive="active" class="nav-link-desktop">
             <i class="bi bi-grid-1x2-fill me-1"></i>Dashboard
@@ -31,6 +34,9 @@
           </a>
           <a routerLink="/customer/cards" routerLinkActive="active" class="nav-link-desktop">
             <i class="bi bi-credit-card me-1"></i>Carte
+          </a>
+          <a routerLink="/customer/saved-beneficiaries" routerLinkActive="active" class="nav-link-desktop">
+            <i class="bi bi-bookmark-heart me-1"></i>Benef. Salvati
           </a>
         }
         @if (isEmployee) {
@@ -53,7 +59,16 @@
       </nav>
     </div>
     <div class="d-flex align-items-center gap-3">
-      <span class="navbar-user text-white-50 small">{{ userName }}</span>
+      <div class="navbar-user-info d-flex align-items-center gap-2">
+        <button class="avatar-btn" (click)="openUploadDialog()" title="Cambia foto profilo">
+          @if (profilePictureUrl) {
+            <img [src]="baseUrl + profilePictureUrl" alt="Avatar" class="navbar-avatar">
+          } @else {
+            <div class="navbar-avatar-placeholder">{{ initials }}</div>
+          }
+        </button>
+        <span class="navbar-user text-white-50 small">{{ userName }}</span>
+      </div>
       <button class="btn btn-sm btn-outline-danger rounded-3 fw-semibold" (click)="logout()">
         <i class="bi bi-box-arrow-right me-1"></i>Esci
       </button>
@@ -62,14 +77,23 @@
 
   <!-- Mobile slide menu -->
   <div class="mobile-overlay" [class.visible]="mobileMenuOpen()" (click)="closeMobileMenu()"></div>
-  <aside class="sidebar" [class.mobile-open]="mobileMenuOpen()">
+  <aside class="sidebar" [class.mobile-open]="mobileMenuOpen()" role="complementary" aria-label="Menu laterale">
     <div class="sidebar-header">
       <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="sidebar-logo">
+      <div class="sidebar-avatar-wrapper">
+        <button class="avatar-btn avatar-btn-sidebar" (click)="openUploadDialog()">
+          @if (profilePictureUrl) {
+            <img [src]="baseUrl + profilePictureUrl" alt="Avatar" class="sidebar-avatar">
+          } @else {
+            <div class="sidebar-avatar-placeholder">{{ initials }}</div>
+          }
+        </button>
+      </div>
       <span class="role-badge">{{ isCustomer ? 'Cliente' : 'Dipendente' }}</span>
       <div class="sidebar-user">{{ userName }}</div>
     </div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Navigazione laterale">
       @if (isCustomer) {
         <a routerLink="/customer/dashboard" routerLinkActive="active" (click)="closeMobileMenu()">
           <i class="bi bi-grid-1x2-fill me-2"></i>Dashboard
@@ -88,6 +112,9 @@
         </a>
         <a routerLink="/customer/cards" routerLinkActive="active" (click)="closeMobileMenu()">
           <i class="bi bi-credit-card me-2"></i>Carte
+        </a>
+        <a routerLink="/customer/saved-beneficiaries" routerLinkActive="active" (click)="closeMobileMenu()">
+          <i class="bi bi-bookmark-heart me-2"></i>Benef. Salvati
         </a>
       }
       @if (isEmployee) {
@@ -115,12 +142,15 @@
   </aside>
 
   <!-- Main content -->
-  <main class="main-content">
-    <router-outlet />
+  <main id="main-content" class="main-content" [@routeAnimation]="getRouteAnimationData(outlet)" role="main">
+    <router-outlet #outlet="outlet" />
   </main>
 
+  <!-- Toast notifications -->
+  <app-toast />
+
   <!-- Mobile bottom nav -->
-  <nav class="bottom-nav d-flex d-md-none align-items-center justify-content-around">
+  <nav class="bottom-nav d-flex d-md-none align-items-center justify-content-around" aria-label="Navigazione mobile">
     @if (isCustomer) {
       <a routerLink="/customer/dashboard" routerLinkActive="active" class="d-flex flex-column align-items-center gap-1 text-decoration-none py-1 px-2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"/></svg>
@@ -166,4 +196,46 @@
       </a>
     }
   </nav>
+
+  <!-- Profile picture upload modal -->
+  @if (showUploadModal()) {
+    <div class="modal-overlay" (click)="closeUploadModal()">
+      <div class="modal-content-box" (click)="$event.stopPropagation()">
+        <div class="modal-header-box">
+          <h5 class="modal-title-box">Foto Profilo</h5>
+          <button class="modal-close-btn" (click)="closeUploadModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="modal-body-box">
+          <div class="avatar-preview-large">
+            @if (profilePictureUrl) {
+              <img [src]="baseUrl + profilePictureUrl" alt="Avatar" class="preview-img">
+            } @else {
+              <div class="preview-placeholder">{{ initials }}</div>
+            }
+          </div>
+
+          @if (uploadError()) {
+            <div class="alert alert-danger mt-3">{{ uploadError() }}</div>
+          }
+
+          <div class="modal-actions">
+            <button class="btn btn-success rounded-3 fw-semibold" (click)="triggerFileInput()" [disabled]="uploading()">
+              @if (uploading()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>Caricamento...
+              } @else {
+                <i class="bi bi-camera me-2"></i>Cambia foto
+              }
+            </button>
+            @if (profilePictureUrl) {
+              <button class="btn btn-outline-danger rounded-3 fw-semibold" (click)="removePicture()" [disabled]="uploading()">
+                <i class="bi bi-trash me-2"></i>Rimuovi
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

@@ -31,4 +31,8 @@ export class EmployeeCardsComponent {
   getStatusClass(status: string): string {
     return status.toLowerCase();
   }
+
+  getActiveCount(): number {
+    return this.cards().filter(c => c.status === 'ACTIVE').length;
+  }
 }
