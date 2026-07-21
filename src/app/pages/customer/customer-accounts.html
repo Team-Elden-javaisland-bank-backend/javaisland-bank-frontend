@@ -39,7 +39,7 @@
         <div class="summary-icon si-active"><i class="bi bi-check-circle"></i></div>
         <div class="summary-data">
           <span class="summary-val">{{ accounts().filter(a => a.statusId === 2).length }}</span>
-          <span class="summary-lbl">Attivi</span>
+          <span class="summary-lbl">{{ 'ACCOUNTS.active' | translate }}</span>
         </div>
       </div>
       <div class="summary-divider"></div>
@@ -47,7 +47,7 @@
         <div class="summary-icon si-balance"><i class="bi bi-wallet2"></i></div>
         <div class="summary-data">
           <span class="summary-val">{{ getTotalBalance() | currency:'EUR':'symbol':'1.2-2' }}</span>
-          <span class="summary-lbl">Saldo Complessivo</span>
+          <span class="summary-lbl">{{ 'ACCOUNTS.total_balance' | translate }}</span>
         </div>
       </div>
     </div>
@@ -66,15 +66,15 @@
           </svg>
         </div>
         <div>
-          <h3 class="h6 fw-bold mb-0">Apri un nuovo conto</h3>
-          <p class="text-muted small mb-0 mt-1">Seleziona il conto sorgente e l'importo iniziale</p>
+          <h3 class="h6 fw-bold mb-0">{{ 'ACCOUNTS.new_account_title' | translate }}</h3>
+          <p class="text-muted small mb-0 mt-1">{{ 'ACCOUNTS.new_account_subtitle' | translate }}</p>
         </div>
       </div>
       <div class="card-body p-4">
         <div class="mb-3">
-          <label class="form-label fw-semibold small">Conto sorgente</label>
+          <label class="form-label fw-semibold small">{{ 'ACCOUNTS.source_account' | translate }}</label>
           <select class="form-select rounded-3" [(ngModel)]="sourceAccountNumber">
-            <option value="">Seleziona un conto...</option>
+            <option value="">{{ 'ACCOUNTS.select_account' | translate }}</option>
             @for (account of accounts(); track account.accountNumber) {
               @if (account.statusId === 2) {
                 <option [value]="account.accountNumber">
@@ -85,14 +85,14 @@
           </select>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold small">Importo iniziale</label>
+          <label class="form-label fw-semibold small">{{ 'ACCOUNTS.initial_amount' | translate }}</label>
           <div class="input-wrapper">
             <span class="input-prefix">€</span>
             <input class="form-control rounded-3" type="number" [(ngModel)]="initialAmount" min="0.01" step="0.01" placeholder="0.00" />
           </div>
-          <span class="form-text">Minimo €0.01</span>
+          <span class="form-text">{{ 'ACCOUNTS.minimum' | translate }}</span>
         </div>
-        <button class="btn btn-success rounded-3 w-100" (click)="openAccount()">Conferma Apertura</button>
+        <button class="btn btn-success rounded-3 w-100" (click)="openAccount()">{{ 'ACCOUNTS.confirm_open' | translate }}</button>
       </div>
     </div>
   }
@@ -106,15 +106,15 @@
           </svg>
         </div>
         <div>
-          <h3 class="h6 fw-bold mb-0">Richiedi chiusura conto</h3>
-          <p class="text-muted small mb-0 mt-1">Seleziona il conto da chiudere</p>
+          <h3 class="h6 fw-bold mb-0">{{ 'ACCOUNTS.closure_title' | translate }}</h3>
+          <p class="text-muted small mb-0 mt-1">{{ 'ACCOUNTS.closure_subtitle' | translate }}</p>
         </div>
       </div>
       <div class="card-body p-4">
         <div class="mb-3">
-          <label class="form-label fw-semibold small">Conto da chiudere</label>
+          <label class="form-label fw-semibold small">{{ 'ACCOUNTS.close_account' | translate }}</label>
           <select class="form-select rounded-3" [(ngModel)]="closeAccountNumber">
-            <option value="">Seleziona...</option>
+            <option value="">{{ 'ACCOUNTS.select_one' | translate }}</option>
             @for (account of accounts(); track account.accountNumber) {
               @if (account.statusId === 2) {
                 <option [value]="account.accountNumber">{{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</option>
@@ -122,20 +122,20 @@
             }
           </select>
         </div>
-        <button class="btn btn-danger rounded-3 w-100" (click)="requestClosure()">Conferma Chiusura</button>
+        <button class="btn btn-danger rounded-3 w-100" (click)="requestClosure()">{{ 'ACCOUNTS.confirm_closure' | translate }}</button>
       </div>
     </div>
   }
 
   @if (loading()) {
-    <div class="text-center py-5 text-muted">Caricamento...</div>
+    <div class="text-center py-5 text-muted">{{ 'ACCOUNTS.loading' | translate }}</div>
   } @else if (accounts().length === 0) {
     <div class="empty-state">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
       </svg>
-      <p>Non hai ancora conti</p>
-      <button class="btn btn-success rounded-3" (click)="showOpenForm.set(true)">Apri il tuo primo conto</button>
+      <p>{{ 'ACCOUNTS.no_accounts' | translate }}</p>
+      <button class="btn btn-success rounded-3" (click)="showOpenForm.set(true)">{{ 'ACCOUNTS.open_first' | translate }}</button>
     </div>
   } @else {
     <!-- Card carousel -->
@@ -164,16 +164,16 @@
                   </div>
                   <span [class]="'status-pill status-' + account.statusId">
                     @switch (account.statusId) {
-                      @case (1) { Inattivo }
-                      @case (2) { Attivo }
-                      @case (3) { Congelato }
-                      @case (4) { Chiuso }
+                      @case (1) { {{ 'DASHBOARD.inactive' | translate }} }
+                      @case (2) { {{ 'DASHBOARD.active' | translate }} }
+                      @case (3) { {{ 'DASHBOARD.frozen' | translate }} }
+                      @case (4) { {{ 'DASHBOARD.closed' | translate }} }
                     }
                   </span>
                 </div>
 
                 <div class="card-body">
-                  <span class="card-type">Conto Corrente</span>
+                  <span class="card-type">{{ 'DASHBOARD.current_account' | translate }}</span>
                   <div class="card-iban">{{ account.accountNumber }}</div>
                 </div>
 
@@ -194,7 +194,7 @@
               </div>
 
               <div class="account-balance-section">
-                <span class="account-balance-label">Saldo disponibile</span>
+                <span class="account-balance-label">{{ 'ACCOUNTS.balance' | translate }}</span>
                 <span class="account-balance-value" [class.negative]="account.balance < 0">
                   {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
                 </span>
@@ -211,7 +211,7 @@
             class="carousel-arrow"
             [disabled]="currentCardIndex() === 0"
             (click)="prevCard()"
-            aria-label="Carta precedente"
+            [attr.aria-label]="'ACCOUNTS.card_prev' | translate"
           >
             <i class="bi bi-chevron-left"></i>
           </button>
@@ -222,7 +222,7 @@
                 class="carousel-dot"
                 [class.active]="i === currentCardIndex()"
                 (click)="goToCard(i)"
-                [attr.aria-label]="'Vai alla carta ' + (i + 1)"
+                [attr.aria-label]="'ACCOUNTS.card_goto' | translate"
               ></button>
             }
           </div>
@@ -231,7 +231,7 @@
             class="carousel-arrow"
             [disabled]="currentCardIndex() === accounts().length - 1"
             (click)="nextCard()"
-            aria-label="Carta successiva"
+            [attr.aria-label]="'ACCOUNTS.card_next' | translate"
           >
             <i class="bi bi-chevron-right"></i>
           </button>

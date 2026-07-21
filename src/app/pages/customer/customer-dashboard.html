@@ -87,21 +87,21 @@
                       <div class="account-card-header">
                         <div class="d-flex justify-content-between align-items-start">
                           <div>
-                            <span class="account-type-label">Conto Corrente</span>
+                            <span class="account-type-label">{{ 'DASHBOARD.current_account' | translate }}</span>
                             <div class="account-iban">{{ account.accountNumber }}</div>
                           </div>
                           <span [class]="'account-status-badge status-' + account.statusId">
                             @switch (account.statusId) {
-                              @case (1) { Inattivo }
-                              @case (2) { Attivo }
-                              @case (3) { Congelato }
-                              @case (4) { Chiuso }
+                              @case (1) { {{ 'DASHBOARD.inactive' | translate }} }
+                              @case (2) { {{ 'DASHBOARD.active' | translate }} }
+                              @case (3) { {{ 'DASHBOARD.frozen' | translate }} }
+                              @case (4) { {{ 'DASHBOARD.closed' | translate }} }
                             }
                           </span>
                         </div>
                       </div>
                       <div class="account-card-body">
-                        <span class="account-balance-label">Saldo disponibile</span>
+                        <span class="account-balance-label">{{ 'DASHBOARD.balance_available' | translate }}</span>
                         <span class="account-balance-value">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
                       </div>
                     </div>
@@ -112,15 +112,15 @@
 
             @if (accounts().length > 1) {
               <div class="dash-carousel-nav">
-                <button class="dash-carousel-arrow" [disabled]="currentCardIndex() === 0" (click)="prevCard(); $event.stopPropagation()" aria-label="Precedente">
+                <button class="dash-carousel-arrow" [disabled]="currentCardIndex() === 0" (click)="prevCard(); $event.stopPropagation()" [attr.aria-label]="'DASHBOARD.card_prev' | translate">
                   <i class="bi bi-chevron-left"></i>
                 </button>
                 <div class="dash-carousel-dots">
                   @for (account of accounts(); track account.accountNumber; let i = $index) {
-                    <button class="dash-carousel-dot" [class.active]="i === currentCardIndex()" (click)="goToCard(i); $event.stopPropagation()" [attr.aria-label]="'Carta ' + (i + 1)"></button>
+                    <button class="dash-carousel-dot" [class.active]="i === currentCardIndex()" (click)="goToCard(i); $event.stopPropagation()" [attr.aria-label]="'DASHBOARD.card_goto' | translate"></button>
                   }
                 </div>
-                <button class="dash-carousel-arrow" [disabled]="currentCardIndex() === accounts().length - 1" (click)="nextCard(); $event.stopPropagation()" aria-label="Successiva">
+                <button class="dash-carousel-arrow" [disabled]="currentCardIndex() === accounts().length - 1" (click)="nextCard(); $event.stopPropagation()" [attr.aria-label]="'DASHBOARD.card_next' | translate">
                   <i class="bi bi-chevron-right"></i>
                 </button>
               </div>
@@ -131,18 +131,18 @@
             <div class="empty-state-icon">
               <i class="bi bi-bank"></i>
             </div>
-            <h6 class="empty-state-title">Nessun conto attivo</h6>
-            <p class="empty-state-text">Apri il tuo primo conto per iniziare a gestire le tue finanze.</p>
+            <h6 class="empty-state-title">{{ 'DASHBOARD.no_active_accounts' | translate }}</h6>
+            <p class="empty-state-text">{{ 'DASHBOARD.open_first_account' | translate }}</p>
             <a routerLink="/customer/accounts" class="btn btn-success rounded-3 px-4">
-              <i class="bi bi-plus-lg me-1"></i>Apri un conto
+              <i class="bi bi-plus-lg me-1"></i>{{ 'DASHBOARD.open_account' | translate }}
             </a>
           </div>
         }
 
         <!-- Recent transactions section -->
         <div class="section-header mb-3">
-          <h5 class="section-title"><i class="bi bi-clock-history me-2"></i>Ultime transazioni</h5>
-          <a routerLink="/customer/transactions" class="section-link">Vedi tutte <i class="bi bi-arrow-right"></i></a>
+          <h5 class="section-title"><i class="bi bi-clock-history me-2"></i>{{ 'DASHBOARD.recent_transactions_title' | translate }}</h5>
+          <a routerLink="/customer/transactions" class="section-link">{{ 'DASHBOARD.see_all_transactions' | translate }} <i class="bi bi-arrow-right"></i></a>
         </div>
 
         @if (recentTransactions().length > 0) {
@@ -152,10 +152,10 @@
                 <table class="table table-hover mb-0">
                   <thead>
                     <tr>
-                      <th class="table-header">Tipo</th>
-                      <th class="table-header">Importo</th>
-                      <th class="table-header d-none d-md-table-cell">Data</th>
-                      <th class="table-header">Stato</th>
+                      <th class="table-header">{{ 'DASHBOARD.type' | translate }}</th>
+                      <th class="table-header">{{ 'DASHBOARD.amount' | translate }}</th>
+                      <th class="table-header d-none d-md-table-cell">{{ 'DASHBOARD.date' | translate }}</th>
+                      <th class="table-header">{{ 'DASHBOARD.status' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -179,7 +179,7 @@
                         <td class="d-none d-md-table-cell text-muted">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
                         <td>
                           <span [class]="'tx-status-badge ' + getStatusNameClass(tx.statusName)">
-                            {{ tx.statusName === 'COMPLETED' ? 'Completato' : tx.statusName === 'PENDING' ? 'In sospeso' : tx.statusName === 'FAILED' ? 'Fallito' : 'Rifiutato' }}
+                            {{ tx.statusName === 'COMPLETED' ? ('DASHBOARD.completed' | translate) : tx.statusName === 'PENDING' ? ('DASHBOARD.pending' | translate) : tx.statusName === 'FAILED' ? ('DASHBOARD.failed' | translate) : ('DASHBOARD.rejected' | translate) }}
                           </span>
                         </td>
                       </tr>
@@ -194,8 +194,8 @@
             <div class="empty-state-icon">
               <i class="bi bi-arrow-left-right"></i>
             </div>
-            <h6 class="empty-state-title">Nessuna transazione</h6>
-            <p class="empty-state-text">Le tue transazioni recenti appariranno qui.</p>
+            <h6 class="empty-state-title">{{ 'DASHBOARD.no_transactions' | translate }}</h6>
+            <p class="empty-state-text">{{ 'DASHBOARD.no_transactions_desc' | translate }}</p>
           </div>
         }
       </div>
@@ -205,35 +205,35 @@
         <!-- Quick actions -->
         <div class="sidebar-card mb-3">
           <div class="sidebar-card-header">
-            <i class="bi bi-lightning-charge me-2"></i>Azioni Rapide
+            <i class="bi bi-lightning-charge me-2"></i>{{ 'DASHBOARD.quick_actions' | translate }}
           </div>
           <div class="sidebar-card-body">
             <a routerLink="/customer/transactions" class="quick-action">
               <div class="qa-icon qa-green"><i class="bi bi-arrow-down-left"></i></div>
               <div class="qa-info">
-                <span class="qa-title">Deposito</span>
-                <span class="qa-desc">Versa sul tuo conto</span>
+                <span class="qa-title">{{ 'DASHBOARD.deposit' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.deposit_desc' | translate }}</span>
               </div>
             </a>
             <a routerLink="/customer/transactions" class="quick-action">
               <div class="qa-icon qa-red"><i class="bi bi-arrow-up-right"></i></div>
               <div class="qa-info">
-                <span class="qa-title">Prelievo</span>
-                <span class="qa-desc">Preleva dal tuo conto</span>
+                <span class="qa-title">{{ 'DASHBOARD.withdraw' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.withdraw_desc' | translate }}</span>
               </div>
             </a>
             <a routerLink="/customer/transactions" class="quick-action">
               <div class="qa-icon qa-blue"><i class="bi bi-send"></i></div>
               <div class="qa-info">
-                <span class="qa-title">Bonifico</span>
-                <span class="qa-desc">Invia denaro</span>
+                <span class="qa-title">{{ 'DASHBOARD.transfer' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.transfer_desc' | translate }}</span>
               </div>
             </a>
             <a routerLink="/customer/accounts" class="quick-action">
               <div class="qa-icon qa-purple"><i class="bi bi-plus-lg"></i></div>
               <div class="qa-info">
-                <span class="qa-title">Nuovo Conto</span>
-                <span class="qa-desc">Apri un nuovo conto</span>
+                <span class="qa-title">{{ 'DASHBOARD.new_account' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.new_account_desc' | translate }}</span>
               </div>
             </a>
           </div>
@@ -242,21 +242,21 @@
         <!-- Tips panel -->
         <div class="sidebar-card mb-3">
           <div class="sidebar-card-header">
-            <i class="bi bi-shield-check me-2"></i>Sicurezza
+            <i class="bi bi-shield-check me-2"></i>{{ 'DASHBOARD.security' | translate }}
           </div>
           <div class="sidebar-card-body">
             <div class="tip-item">
               <div class="tip-icon"><i class="bi bi-key"></i></div>
               <div class="tip-text">
-                <span class="tip-title">Proteggi il tuo conto</span>
-                <span class="tip-desc">Mai condividere le tue credenziali con nessuno. La banca non ti chiederà mai la password.</span>
+                <span class="tip-title">{{ 'DASHBOARD.protect_account' | translate }}</span>
+                <span class="tip-desc">{{ 'DASHBOARD.protect_account_desc' | translate }}</span>
               </div>
             </div>
             <div class="tip-item">
               <div class="tip-icon"><i class="bi bi-phone"></i></div>
               <div class="tip-text">
-                <span class="tip-title">Abilita la verifica in due passaggi</span>
-                <span class="tip-desc">Aggiungi un ulteriore livello di sicurezza al tuo account.</span>
+                <span class="tip-title">{{ 'DASHBOARD.enable_2fa' | translate }}</span>
+                <span class="tip-desc">{{ 'DASHBOARD.enable_2fa_desc' | translate }}</span>
               </div>
             </div>
           </div>
@@ -266,24 +266,24 @@
         @if (accounts().length > 1) {
           <div class="sidebar-card">
             <div class="sidebar-card-header">
-              <i class="bi bi-bar-chart me-2"></i>Riepilogo
+              <i class="bi bi-bar-chart me-2"></i>{{ 'DASHBOARD.summary' | translate }}
             </div>
             <div class="sidebar-card-body">
               <div class="summary-row">
-                <span class="summary-label">Conti Totali</span>
+                <span class="summary-label">{{ 'DASHBOARD.total_accounts' | translate }}</span>
                 <span class="summary-value">{{ accounts().length }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Conti Attivi</span>
+                <span class="summary-label">{{ 'DASHBOARD.active_accounts' | translate }}</span>
                 <span class="summary-value text-success">{{ activeAccounts }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Saldo Medio</span>
+                <span class="summary-label">{{ 'DASHBOARD.avg_balance' | translate }}</span>
                 <span class="summary-value">{{ totalBalance / accounts().length | currency:'EUR':'symbol':'1.2-2' }}</span>
               </div>
               <div class="summary-divider"></div>
               <div class="summary-row">
-                <span class="summary-label">Transazioni Oggi</span>
+                <span class="summary-label">{{ 'DASHBOARD.today_transactions' | translate }}</span>
                 <span class="summary-value">{{ recentTransactions().length }}</span>
               </div>
             </div>
