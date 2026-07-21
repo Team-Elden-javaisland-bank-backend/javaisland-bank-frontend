@@ -1,0 +1,92 @@
+<div class="container">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'REQUESTS.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'REQUESTS.page_subtitle' | translate }}</p>
+    </div>
+    <button class="header-btn header-btn-outline" (click)="loadRequests()">
+      <i class="bi bi-arrow-clockwise me-1"></i>{{ 'REQUESTS.refresh' | translate }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Tabs -->
+  <div class="tabs-bar mb-4">
+    @for (tab of tabs; track tab.key) {
+      <button
+        class="tab-item"
+        [class.active]="activeTab() === tab.key"
+        (click)="setTab(tab.key)"
+      >
+        <i class="bi" [ngClass]="tab.icon"></i>
+        <span>{{ tab.labelKey | translate }}</span>
+        <span class="tab-count">{{ getCountForTab(tab.key) }}</span>
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5 text-muted">
+      <div class="spinner-border text-secondary mb-2" role="status"></div>
+      <p class="mb-0">{{ 'REQUESTS.loading' | translate }}</p>
+    </div>
+  } @else if (filteredRequests().length === 0) {
+    <div class="empty-state-card">
+      <div class="empty-state-icon">
+        <i class="bi bi-inbox"></i>
+      </div>
+      <div class="empty-state-title">{{ 'REQUESTS.no_requests' | translate }}</div>
+      <div class="empty-state-text">
+        @switch (activeTab()) {
+          @case ('PENDING') { {{ 'REQUESTS.no_pending' | translate }} }
+          @case ('APPROVED') { {{ 'REQUESTS.no_approved' | translate }} }
+          @case ('REJECTED') { {{ 'REQUESTS.no_rejected' | translate }} }
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="requests-list">
+      @for (req of filteredRequests(); track req.id) {
+        <div class="request-card">
+          <div class="request-card-left">
+            <div class="request-icon" [ngClass]="'ri-' + req.type.toLowerCase()">
+              <i class="bi" [ngClass]="getRequestTypeIcon(req.type)"></i>
+            </div>
+            <div class="request-info">
+              <div class="request-type">{{ getRequestTypeLabel(req.type) }}</div>
+              <div class="request-desc">{{ req.description }}</div>
+              <div class="request-meta">
+                <span class="request-date">
+                  <i class="bi bi-calendar3 me-1"></i>{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+                @if (req.processedAt) {
+                  <span class="request-date processed">
+                    <i class="bi bi-check2-all me-1"></i>{{ req.processedAt | date:'dd/MM/yyyy HH:mm' }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="request-card-right">
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'badge-pending': req.status === 'PENDING',
+                'badge-approved': req.status === 'APPROVED',
+                'badge-rejected': req.status === 'REJECTED'
+              }"
+            >
+              {{ getStatusLabel(req.status) | translate }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

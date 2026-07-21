@@ -1,38 +1,42 @@
-<div class="page">
-  <h1>I miei Limiti</h1>
+<div class="container py-3">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'LIMITS.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'LIMITS.page_subtitle' | translate }}</p>
+    </div>
+  </div>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
   @if (loading()) {
-    <div class="loading">Caricamento conti...</div>
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
   } @else {
-    <!-- Account selector -->
-    <div class="account-card" [class.selected]="selectedAccount()">
-      <div class="account-card-inner">
-        <div class="account-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="5" width="20" height="14" rx="2"/>
-            <line x1="2" y1="10" x2="22" y2="10"/>
-          </svg>
+    <!-- Account selector card -->
+    <div class="account-selector-card mb-4">
+      <div class="selector-content">
+        <div class="selector-icon">
+          <i class="bi bi-wallet2"></i>
         </div>
-        <div class="account-details">
-          <span class="account-label">Conto Selezionato</span>
+        <div class="selector-info">
+          <span class="selector-label">{{ 'LIMITS.selected_account' | translate }}</span>
           @if (selectedAccount()) {
-            <span class="account-iban">{{ selectedAccount() }}</span>
+            <span class="selector-iban mono">{{ selectedAccount() }}</span>
             @for (account of accounts(); track account.accountNumber) {
               @if (account.accountNumber === selectedAccount()) {
-                <span class="account-balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+                <span class="selector-balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
               }
             }
           } @else {
-            <span class="account-placeholder">Seleziona un conto per visualizzare i limiti</span>
+            <span class="selector-empty">{{ 'LIMITS.select_account' | translate }}</span>
           }
         </div>
-        <div class="account-selector">
-          <select [ngModel]="selectedAccount()" (ngModelChange)="onAccountChange($event)">
-            <option value="">Seleziona conto...</option>
+        <div class="selector-action">
+          <select class="styled-select" [ngModel]="selectedAccount()" (ngModelChange)="onAccountChange($event)">
+            <option value="">{{ 'LIMITS.select_account_placeholder' | translate }}</option>
             @for (account of accounts(); track account.accountNumber) {
               <option [value]="account.accountNumber">
                 {{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
@@ -43,64 +47,179 @@
       </div>
     </div>
 
-    @if (selectedAccount()) {
-      @if (limitsLoading()) {
-        <div class="loading">Caricamento limiti...</div>
-      } @else {
-        <div class="limits-grid">
-          @for (meta of allLimitTypes; track meta.type) {
-            <div class="limit-card" [class.read-only]="!canEdit(meta.type)">
-              <div class="limit-header">
-                <div class="limit-info">
-                  <span class="limit-label">{{ meta.label }}</span>
-                  <span class="limit-desc">{{ meta.description }}</span>
-                  <span class="limit-range">Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — Max: {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
-                </div>
-                <span class="policy-badge" [class]="'policy-' + (getLimitForType(meta.type)?.changePolicy ?? '')">
-                  {{ getPolicyLabel(meta.type) }}
-                </span>
-              </div>
+    <!-- Main 2-col grid -->
+    <div class="limits-layout">
+      <div class="limits-main">
+        @if (selectedAccount()) {
+          @if (limitsLoading()) {
+            <div class="d-flex justify-content-center py-5">
+              <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+            </div>
+          } @else {
+            <!-- Limits section header -->
+            <div class="section-header mb-3">
+              <h5 class="section-title">{{ 'LIMITS.account_limits' | translate }}</h5>
+              <span class="section-badge">{{ allLimitTypes.length }} {{ 'LIMITS.types' | translate }}</span>
+            </div>
 
-              @if (editingType() === meta.type) {
-                <div class="limit-edit">
-                  <input
-                    type="number"
-                    [(ngModel)]="editAmount"
-                    [min]="meta.minValue"
-                    step="0.01"
-                    placeholder="Importo"
-                  />
-                  @if (editingError()) {
-                    <span class="edit-error">{{ editingError() }}</span>
-                  }
-                  <div class="edit-actions">
-                    <button class="btn-sm btn-green" (click)="saveLimit(meta.type)">Salva</button>
-                    <button class="btn-sm btn-outline" (click)="cancelEdit()">Annulla</button>
-                  </div>
-                </div>
-              } @else {
-                <div class="limit-value">
-                  @if (getLimitForType(meta.type); as limit) {
-                    <span class="amount">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
-                    <span class="updated">Aggiornato: {{ limit.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            <!-- Limits grid -->
+            <div class="limits-grid mb-4">
+              @for (meta of allLimitTypes; track meta.type; let i = $index) {
+                <div class="limit-card">
+                  @if (editingType() === meta.type) {
+                    <!-- Edit mode -->
+                    <div class="limit-card-body">
+                      <div class="limit-card-header">
+                        <div [class]="'limit-icon limit-icon-' + (i % 3)">
+                          <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <div>
+                          <div class="limit-type-name">{{ meta.label }}</div>
+                          <div class="limit-type-desc">{{ meta.description }}</div>
+                        </div>
+                      </div>
+                      <div class="limit-edit-area">
+                        <div class="limit-input-wrapper">
+                          <span class="limit-input-prefix">€</span>
+                          <input class="limit-input" type="number" [(ngModel)]="editAmount" [min]="meta.minValue" step="0.01" [placeholder]="'LIMITS.importo' | translate" />
+                        </div>
+                        <div class="limit-range">{{ 'LIMITS.range' | translate }}: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</div>
+                        @if (editingError()) {
+                          <div class="limit-error">{{ editingError() }}</div>
+                        }
+                        <div class="limit-edit-actions">
+                          <button class="limit-btn limit-btn-save" (click)="saveLimit(meta.type)">
+                            <i class="bi bi-check-lg me-1"></i>{{ 'LIMITS.save' | translate }}
+                          </button>
+                          <button class="limit-btn limit-btn-cancel" (click)="cancelEdit()">
+                            <i class="bi bi-x-lg me-1"></i>{{ 'LIMITS.cancel' | translate }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   } @else {
-                    <span class="amount not-set">Non impostato</span>
-                  }
-                </div>
-                <div class="limit-action">
-                  @if (canEdit(meta.type)) {
-                    <button class="btn-sm btn-outline" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
-                      {{ getLimitForType(meta.type) ? 'Modifica' : 'Imposta' }}
-                    </button>
-                  } @else {
-                    <span class="bank-only-label">Contatta la banca</span>
+                    <!-- View mode -->
+                    <div class="limit-card-body">
+                      <div class="limit-card-header">
+                        <div [class]="'limit-icon limit-icon-' + (i % 3)">
+                          <i [class]="getLimitIcon(meta.type)"></i>
+                        </div>
+                        <div class="limit-header-text">
+                          <div class="limit-type-name">{{ meta.label }}</div>
+                          <div class="limit-type-desc">{{ meta.description }}</div>
+                        </div>
+                        <span [class]="'policy-badge policy-' + (getLimitForType(meta.type)?.changePolicy ?? '')">
+                          {{ getPolicyLabel(meta.type) }}
+                        </span>
+                      </div>
+
+                      <!-- Progress bar -->
+                      <div class="limit-progress-section">
+                        @if (getLimitForType(meta.type); as limit) {
+                          <div class="limit-value-row">
+                            <span class="limit-current">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+                            <span class="limit-max">/ {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
+                          </div>
+                          <div class="progress-track">
+                            <div class="progress-fill" [style.width.%]="(limit.maxAmount / meta.maxValue) * 100" [class]="'progress-fill-' + (i % 3)"></div>
+                          </div>
+                          <div class="limit-updated">{{ 'LIMITS.updated' | translate }} {{ limit.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                        } @else {
+                          <div class="limit-not-set">
+                            <i class="bi bi-dash-circle me-1"></i>{{ 'LIMITS.not_set' | translate }}
+                          </div>
+                        }
+                      </div>
+
+                      <div class="limit-card-footer">
+                        <span class="limit-range-label">
+                          <i class="bi bi-info-circle me-1"></i>Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }}
+                        </span>
+                        @if (canEdit(meta.type)) {
+                          <button class="limit-btn limit-btn-edit" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
+                            <i class="bi bi-pencil me-1"></i>{{ (getLimitForType(meta.type) ? 'LIMITS.modify' : 'LIMITS.set') | translate }}
+                          </button>
+                        } @else {
+                          <span class="limit-locked">
+                            <i class="bi bi-lock me-1"></i>{{ 'LIMITS.contact_bank' | translate }}
+                          </span>
+                        }
+                      </div>
+                    </div>
                   }
                 </div>
               }
             </div>
           }
+        } @else {
+          <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="bi bi-speedometer2"></i></div>
+            <h6 class="empty-state-title">{{ 'LIMITS.select_account_title' | translate }}</h6>
+            <p class="empty-state-text">{{ 'LIMITS.select_account_text' | translate }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Sidebar -->
+      <div class="limits-sidebar">
+        <!-- Policies info -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-info-circle me-2"></i>{{ 'LIMITS.policies' | translate }}
+          </div>
+          <div class="sidebar-card-body">
+            <div class="policy-info-item">
+              <span class="policy-badge policy-USER_FULL">{{ 'LIMITS.free' | translate }}</span>
+              <span class="policy-desc">{{ 'LIMITS.free_desc' | translate }}</span>
+            </div>
+            <div class="policy-info-item">
+              <span class="policy-badge policy-USER_LOWER_ONLY">{{ 'LIMITS.lower_only' | translate }}</span>
+              <span class="policy-desc">{{ 'LIMITS.lower_only_desc' | translate }}</span>
+            </div>
+            <div class="policy-info-item">
+              <span class="policy-badge policy-BANK_ONLY">{{ 'LIMITS.bank_only' | translate }}</span>
+              <span class="policy-desc">{{ 'LIMITS.bank_only_desc' | translate }}</span>
+            </div>
+          </div>
         </div>
-      }
-    }
+
+        <!-- Tips -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-lightbulb me-2"></i>{{ 'LIMITS.tips' | translate }}
+          </div>
+          <div class="sidebar-card-body">
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-shield-check"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">{{ 'LIMITS.security_first' | translate }}</span>
+                <span class="tip-desc">{{ 'LIMITS.security_first_desc' | translate }}</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-graph-up-arrow"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">{{ 'LIMITS.monitor' | translate }}</span>
+                <span class="tip-desc">{{ 'LIMITS.monitor_desc' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Need help -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <i class="bi bi-headset me-2"></i>{{ 'LIMITS.need_help' | translate }}
+          </div>
+          <div class="sidebar-card-body">
+            <p class="help-text">{{ 'LIMITS.help_desc' | translate }}</p>
+            <div class="help-contact">
+              <div class="help-row"><i class="bi bi-telephone me-2"></i>+39 02 1234 5678</div>
+              <div class="help-row"><i class="bi bi-envelope me-2"></i>support&#64;javaislandbank.it</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   }
 </div>

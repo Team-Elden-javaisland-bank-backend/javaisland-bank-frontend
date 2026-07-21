@@ -1,12 +1,13 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { BeneficiaryResponseDto } from '../../core/models/beneficiary/beneficiary-response.dto';
 
 @Component({
   selector: 'app-customer-beneficiaries',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-beneficiaries.html',
   styleUrl: './customer-beneficiaries.css',
 })

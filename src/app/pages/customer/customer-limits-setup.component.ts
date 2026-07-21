@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -21,7 +22,7 @@ interface LimitMeta {
 
 @Component({
   selector: 'app-customer-limits-setup',
-  imports: [CurrencyPipe, FormsModule],
+  imports: [CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-limits-setup.html',
   styleUrl: './customer-limits-setup.css',
 })

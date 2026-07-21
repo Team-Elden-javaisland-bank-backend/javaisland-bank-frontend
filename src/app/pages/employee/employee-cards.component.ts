@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { CardResponseDto } from '../../core/models/card/card-response.dto';
 
 @Component({
   selector: 'app-employee-cards',
-  imports: [],
+  imports: [TranslatePipe, TranslateDirective],
   templateUrl: './employee-cards.html',
   styleUrl: './employee-cards.css',
 })
@@ -30,5 +31,9 @@ export class EmployeeCardsComponent {
 
   getStatusClass(status: string): string {
     return status.toLowerCase();
+  }
+
+  getActiveCount(): number {
+    return this.cards().filter(c => c.status === 'ACTIVE').length;
   }
 }

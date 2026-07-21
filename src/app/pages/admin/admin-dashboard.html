@@ -1,0 +1,223 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header mb-4">
+    <h1 class="dashboard-title">
+      <i class="bi bi-speedometer2 me-2"></i>
+      {{ 'ADMIN.dashboard.title' | translate }}
+    </h1>
+    <p class="dashboard-subtitle text-muted">{{ 'ADMIN.dashboard.subtitle' | translate }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Caricamento...</span>
+      </div>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <div>{{ error() }}</div>
+      <button class="btn btn-outline-danger btn-sm ms-auto" (click)="loadDashboard()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Riprova
+      </button>
+    </div>
+  } @else if (stats()) {
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-customers h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.total_customers' | translate }}</p>
+                <h2 class="stat-value mb-0">{{ formatNumber(stats()!.totalCustomers) }}</h2>
+              </div>
+              <div class="stat-icon bg-primary bg-opacity-10">
+                <i class="bi bi-people-fill text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-employees h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.employees' | translate }}</p>
+                <h2 class="stat-value mb-0">{{ formatNumber(stats()!.totalEmployees) }}</h2>
+              </div>
+              <div class="stat-icon bg-info bg-opacity-10">
+                <i class="bi bi-person-badge-fill text-info"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-accounts h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.total_accounts' | translate }}</p>
+                <h2 class="stat-value mb-0">{{ formatNumber(stats()!.totalAccounts) }}</h2>
+              </div>
+              <div class="stat-icon bg-success bg-opacity-10">
+                <i class="bi bi-wallet2 text-success"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-active h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.active_accounts' | translate }}</p>
+                <h2 class="stat-value mb-0 text-gold">{{ formatNumber(stats()!.activeAccounts) }}</h2>
+              </div>
+              <div class="stat-icon bg-gold bg-opacity-10">
+                <i class="bi bi-check-circle-fill text-gold"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-frozen h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.frozen_accounts' | translate }}</p>
+                <h2 class="stat-value text-danger mb-0">{{ formatNumber(stats()!.frozenAccounts) }}</h2>
+              </div>
+              <div class="stat-icon bg-danger bg-opacity-10">
+                <i class="bi bi-shield-lock-fill text-danger"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-pending h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.pending_registrations' | translate }}</p>
+                <h2 class="stat-value text-warning mb-0">{{ formatNumber(stats()!.pendingRegistrations) }}</h2>
+              </div>
+              <div class="stat-icon bg-warning bg-opacity-10">
+                <i class="bi bi-hourglass-split text-warning"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-transactions h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.transactions' | translate }}</p>
+                <h2 class="stat-value mb-0">{{ formatNumber(stats()!.totalTransactions) }}</h2>
+              </div>
+              <div class="stat-icon bg-primary bg-opacity-10">
+                <i class="bi bi-arrow-left-right text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card stat-card stat-card-balance h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="stat-label text-muted mb-1">{{ 'ADMIN.dashboard.total_balance' | translate }}</p>
+                <h2 class="stat-value text-gold mb-0">{{ formatCurrency(stats()!.totalBalance) }}</h2>
+              </div>
+              <div class="stat-icon bg-gold bg-opacity-10">
+                <i class="bi bi-cash-stack text-gold"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-transparent">
+            <h5 class="mb-0">
+              <i class="bi bi-people me-2"></i>{{ 'ADMIN.dashboard.manage_clients' | translate }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.manage_clients_desc' | translate }}</p>
+            <a routerLink="/admin/customers" class="btn btn-primary">
+              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_clients' | translate }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-transparent">
+            <h5 class="mb-0">
+              <i class="bi bi-person-badge me-2"></i>{{ 'ADMIN.dashboard.manage_employees' | translate }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.manage_employees_desc' | translate }}</p>
+            <a routerLink="/admin/employees" class="btn btn-info">
+              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_employees' | translate }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-transparent">
+            <h5 class="mb-0">
+              <i class="bi bi-wallet2 me-2"></i>{{ 'ADMIN.dashboard.manage_accounts' | translate }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.manage_accounts_desc' | translate }}</p>
+            <a routerLink="/admin/accounts" class="btn btn-success">
+              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_accounts' | translate }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-transparent">
+            <h5 class="mb-0">
+              <i class="bi bi-arrow-left-right me-2"></i>{{ 'ADMIN.dashboard.transactions' | translate }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.transactions_desc' | translate }}</p>
+            <a routerLink="/admin/transactions" class="btn btn-outline-primary">
+              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_transactions' | translate }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,202 @@
+<div class="admin-audit-logs">
+  <div class="logs-header mb-4">
+    <h1 class="logs-title">
+      <i class="bi bi-journal-text me-2"></i>{{ 'ADMIN.audit.title' | translate }}
+    </h1>
+    <p class="logs-subtitle text-muted">{{ 'ADMIN.audit.subtitle' | translate }}</p>
+  </div>
+
+  <div class="filters-card card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="filter-label text-muted mb-2 d-block">{{ 'ADMIN.audit.action_type' | translate }}</label>
+          <ul class="nav nav-pills flex-wrap gap-2">
+            @for (at of actionTypes; track at.value) {
+              <li class="nav-item">
+                <button
+                  class="nav-link action-pill"
+                  [class.active]="selectedAction() === at.value"
+                  (click)="setActionFilter(at.value)">
+                  @if (at.value) {
+                    <i class="bi" [ngClass]="getActionIcon(at.value)"></i>
+                  }
+                  {{ at.label }}
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+        <div class="col-12">
+          <label class="filter-label text-muted mb-2 d-block">{{ 'ADMIN.audit.period' | translate }}</label>
+          <ul class="nav nav-pills flex-wrap gap-2">
+            @for (tp of timePeriods; track tp.value) {
+              <li class="nav-item">
+                <button
+                  class="nav-link time-pill"
+                  [class.active]="selectedDays() === tp.value"
+                  (click)="setTimePeriod(tp.value)">
+                  {{ tp.label }}
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Caricamento...</span>
+      </div>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <div>{{ error() }}</div>
+      <button class="btn btn-outline-danger btn-sm ms-auto" (click)="loadLogs()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Riprova
+      </button>
+    </div>
+  } @else {
+    <div class="logs-summary d-flex justify-content-between align-items-center mb-3">
+      <span class="text-muted">
+        <i class="bi bi-list-ul me-1"></i>{{ logCount() }} {{ 'ADMIN.audit.records_found' | translate }}
+      </span>
+    </div>
+
+    @if (filteredLogs().length === 0) {
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
+          <p class="text-muted mb-0">{{ 'ADMIN.audit.no_logs' | translate }}</p>
+        </div>
+      </div>
+    } @else {
+      <div class="card logs-table-card">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'ADMIN.audit.date_time' | translate }}</th>
+                <th scope="col">{{ 'ADMIN.audit.action' | translate }}</th>
+                <th scope="col">{{ 'ADMIN.audit.entity' | translate }}</th>
+                <th scope="col">{{ 'ADMIN.audit.details' | translate }}</th>
+                <th scope="col">{{ 'ADMIN.audit.performed_by' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of filteredLogs(); track log.id) {
+                <tr class="log-row">
+                  <td class="text-nowrap">
+                    <span class="date-text">{{ formatDateTime(log.performedAt) }}</span>
+                  </td>
+                  <td>
+                    <span class="badge action-badge" [ngClass]="getActionBadgeClass(log.action)">
+                      <i class="bi me-1" [ngClass]="getActionIcon(log.action)"></i>
+                      {{ getActionLabel(log.action) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="entity-type">{{ log.entityType }}</span>
+                    <span class="entity-id text-muted">#{{ log.entityId }}</span>
+                  </td>
+                  <td>
+                    <span class="details-text">{{ log.details }}</span>
+                  </td>
+                  <td>
+                    @if (log.performedByUserId) {
+                      <button
+                        class="btn btn-link performer-link p-0"
+                        (click)="openPerformerDetail(log)">
+                        <i class="bi bi-person-circle me-1"></i>{{ log.performedBy }}
+                      </button>
+                    } @else {
+                      <span class="text-muted">
+                        <i class="bi bi-person me-1"></i>{{ log.performedBy }}
+                      </span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+@if (showModal()) {
+  <div class="modal-backdrop fade show" (click)="closeModal()"></div>
+  <div class="modal fade show d-block" tabindex="-1" (keydown.escape)="closeModal()">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content performer-modal">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-person-badge me-2"></i>{{ 'ADMIN.audit.detail_employee' | translate }}
+          </h5>
+          <button type="button" class="btn-close" [attr.aria-label]="'ADMIN.audit.close' | translate" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          @if (modalLoading()) {
+            <div class="d-flex justify-content-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Caricamento...</span>
+              </div>
+            </div>
+          } @else if (modalError()) {
+            <div class="alert alert-danger mb-0">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ modalError() }}
+            </div>
+          } @else if (selectedEmployee()) {
+            <div class="employee-detail">
+              <div class="detail-header text-center mb-4">
+                <div class="employee-avatar mx-auto mb-3">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <h4 class="mb-1">{{ selectedEmployee()!.firstName }} {{ selectedEmployee()!.lastName }}</h4>
+                <span class="badge" [ngClass]="selectedEmployee()!.status === 'ACTIVE' ? 'bg-success' : 'bg-danger'">
+                  {{ selectedEmployee()!.status === 'ACTIVE' ? ('ROLE.employee' | translate) : 'Sospeso' }}
+                </span>
+              </div>
+              <div class="detail-rows">
+                <div class="detail-row">
+                  <span class="detail-label text-muted">
+                    <i class="bi bi-envelope me-2"></i>{{ 'ADMIN.employees.email' | translate }}
+                  </span>
+                  <span class="detail-value">{{ selectedEmployee()!.email }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label text-muted">
+                    <i class="bi bi-calendar me-2"></i>{{ 'ADMIN.employees.birth_date' | translate }}
+                  </span>
+                  <span class="detail-value">{{ selectedEmployee()!.birthDate }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label text-muted">
+                    <i class="bi bi-hash me-2"></i>User ID
+                  </span>
+                  <span class="detail-value">{{ selectedEmployee()!.userId }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label text-muted">
+                    <i class="bi bi-clock me-2"></i>{{ 'ADMIN.employees.created_on' | translate }}
+                  </span>
+                  <span class="detail-value">{{ formatDateTime(selectedEmployee()!.createdAt) }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">
+            <i class="bi bi-x-lg me-1"></i>{{ 'ADMIN.employees.close' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

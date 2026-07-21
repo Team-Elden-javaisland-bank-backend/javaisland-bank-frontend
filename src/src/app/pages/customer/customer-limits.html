@@ -1,0 +1,225 @@
+<div class="container py-3">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">I miei Limiti</h2>
+      <p class="page-subtitle">Gestisci i limiti di transazione per i tuoi conti</p>
+    </div>
+  </div>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
+  } @else {
+    <!-- Account selector card -->
+    <div class="account-selector-card mb-4">
+      <div class="selector-content">
+        <div class="selector-icon">
+          <i class="bi bi-wallet2"></i>
+        </div>
+        <div class="selector-info">
+          <span class="selector-label">Conto Selezionato</span>
+          @if (selectedAccount()) {
+            <span class="selector-iban mono">{{ selectedAccount() }}</span>
+            @for (account of accounts(); track account.accountNumber) {
+              @if (account.accountNumber === selectedAccount()) {
+                <span class="selector-balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+              }
+            }
+          } @else {
+            <span class="selector-empty">Seleziona un conto per visualizzare i limiti</span>
+          }
+        </div>
+        <div class="selector-action">
+          <select class="styled-select" [ngModel]="selectedAccount()" (ngModelChange)="onAccountChange($event)">
+            <option value="">Seleziona conto...</option>
+            @for (account of accounts(); track account.accountNumber) {
+              <option [value]="account.accountNumber">
+                {{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main 2-col grid -->
+    <div class="limits-layout">
+      <div class="limits-main">
+        @if (selectedAccount()) {
+          @if (limitsLoading()) {
+            <div class="d-flex justify-content-center py-5">
+              <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+            </div>
+          } @else {
+            <!-- Limits section header -->
+            <div class="section-header mb-3">
+              <h5 class="section-title">Limiti del conto</h5>
+              <span class="section-badge">{{ allLimitTypes.length }} tipi</span>
+            </div>
+
+            <!-- Limits grid -->
+            <div class="limits-grid mb-4">
+              @for (meta of allLimitTypes; track meta.type; let i = $index) {
+                <div class="limit-card">
+                  @if (editingType() === meta.type) {
+                    <!-- Edit mode -->
+                    <div class="limit-card-body">
+                      <div class="limit-card-header">
+                        <div [class]="'limit-icon limit-icon-' + (i % 3)">
+                          <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <div>
+                          <div class="limit-type-name">{{ meta.label }}</div>
+                          <div class="limit-type-desc">{{ meta.description }}</div>
+                        </div>
+                      </div>
+                      <div class="limit-edit-area">
+                        <div class="limit-input-wrapper">
+                          <span class="limit-input-prefix">€</span>
+                          <input class="limit-input" type="number" [(ngModel)]="editAmount" [min]="meta.minValue" step="0.01" placeholder="Importo" />
+                        </div>
+                        <div class="limit-range">Range: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</div>
+                        @if (editingError()) {
+                          <div class="limit-error">{{ editingError() }}</div>
+                        }
+                        <div class="limit-edit-actions">
+                          <button class="limit-btn limit-btn-save" (click)="saveLimit(meta.type)">
+                            <i class="bi bi-check-lg me-1"></i>Salva
+                          </button>
+                          <button class="limit-btn limit-btn-cancel" (click)="cancelEdit()">
+                            <i class="bi bi-x-lg me-1"></i>Annulla
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  } @else {
+                    <!-- View mode -->
+                    <div class="limit-card-body">
+                      <div class="limit-card-header">
+                        <div [class]="'limit-icon limit-icon-' + (i % 3)">
+                          <i [class]="getLimitIcon(meta.type)"></i>
+                        </div>
+                        <div class="limit-header-text">
+                          <div class="limit-type-name">{{ meta.label }}</div>
+                          <div class="limit-type-desc">{{ meta.description }}</div>
+                        </div>
+                        <span [class]="'policy-badge policy-' + (getLimitForType(meta.type)?.changePolicy ?? '')">
+                          {{ getPolicyLabel(meta.type) }}
+                        </span>
+                      </div>
+
+                      <!-- Progress bar -->
+                      <div class="limit-progress-section">
+                        @if (getLimitForType(meta.type); as limit) {
+                          <div class="limit-value-row">
+                            <span class="limit-current">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+                            <span class="limit-max">/ {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
+                          </div>
+                          <div class="progress-track">
+                            <div class="progress-fill" [style.width.%]="(limit.maxAmount / meta.maxValue) * 100" [class]="'progress-fill-' + (i % 3)"></div>
+                          </div>
+                          <div class="limit-updated">Aggiornato: {{ limit.updatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                        } @else {
+                          <div class="limit-not-set">
+                            <i class="bi bi-dash-circle me-1"></i>Non impostato
+                          </div>
+                        }
+                      </div>
+
+                      <div class="limit-card-footer">
+                        <span class="limit-range-label">
+                          <i class="bi bi-info-circle me-1"></i>Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }}
+                        </span>
+                        @if (canEdit(meta.type)) {
+                          <button class="limit-btn limit-btn-edit" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
+                            <i class="bi bi-pencil me-1"></i>{{ getLimitForType(meta.type) ? 'Modifica' : 'Imposta' }}
+                          </button>
+                        } @else {
+                          <span class="limit-locked">
+                            <i class="bi bi-lock me-1"></i>Contatta la banca
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="bi bi-speedometer2"></i></div>
+            <h6 class="empty-state-title">Seleziona un conto</h6>
+            <p class="empty-state-text">Seleziona un conto per visualizzare i limiti di transazione.</p>
+          </div>
+        }
+      </div>
+
+      <!-- Sidebar -->
+      <div class="limits-sidebar">
+        <!-- Policies info -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-info-circle me-2"></i>Policy dei Limiti
+          </div>
+          <div class="sidebar-card-body">
+            <div class="policy-info-item">
+              <span class="policy-badge policy-USER_FULL">Libero</span>
+              <span class="policy-desc">Puoi modificare il limite liberamente entro il range consentito.</span>
+            </div>
+            <div class="policy-info-item">
+              <span class="policy-badge policy-USER_LOWER_ONLY">Solo diminuzione</span>
+              <span class="policy-desc">Puoi solo diminuire il limite. Per aumentarlo, contatta la banca.</span>
+            </div>
+            <div class="policy-info-item">
+              <span class="policy-badge policy-BANK_ONLY">Solo banca</span>
+              <span class="policy-desc">Solo la banca può modificare questo limite. Contatta il tuo dipendente.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-lightbulb me-2"></i>Suggerimenti
+          </div>
+          <div class="sidebar-card-body">
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-shield-check"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">Sicurezza prima</span>
+                <span class="tip-desc">Imposta limiti appropriati per proteggere il tuo conto da transazioni non autorizzate.</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-graph-up-arrow"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">Monitora le transazioni</span>
+                <span class="tip-desc">Controlla regolarmente i tuoi limiti e adattali alle tue esigenze finanziarie.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Need help -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <i class="bi bi-headset me-2"></i>Bisogno di Aiuto?
+          </div>
+          <div class="sidebar-card-body">
+            <p class="help-text">Se hai bisogno di aumentare un limite oltre il massimo consentito, contattaci.</p>
+            <div class="help-contact">
+              <div class="help-row"><i class="bi bi-telephone me-2"></i>+39 02 1234 5678</div>
+              <div class="help-row"><i class="bi bi-envelope me-2"></i>support&#64;javaislandbank.it</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

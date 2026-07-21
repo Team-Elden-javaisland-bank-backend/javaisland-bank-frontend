@@ -1,6 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -9,7 +10,7 @@ import { BeneficiaryResponseDto } from '../../core/models/beneficiary/beneficiar
 
 @Component({
   selector: 'app-customer-transactions',
-  imports: [CurrencyPipe, DatePipe, FormsModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-transactions.html',
   styleUrl: './customer-transactions.css',
 })
@@ -278,6 +279,17 @@ export class CustomerTransactionsComponent implements OnInit {
       'INITIAL_TRANSFER': 'Bonifico Iniziale',
     };
     return typeName ? (map[typeName] ?? typeName) : 'Sconosciuto';
+  }
+
+  getTxIcon(typeId: number): string {
+    const icons: Record<number, string> = {
+      1: 'bi bi-plus-circle',
+      2: 'bi bi-dash-circle',
+      3: 'bi bi-send',
+      4: 'bi bi-gift',
+      5: 'bi bi-lightning',
+    };
+    return icons[typeId] ?? 'bi bi-arrow-left-right';
   }
 
   getStatusNameLabel(statusName: string | undefined): string {

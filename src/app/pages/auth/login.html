@@ -1,46 +1,83 @@
 <div class="auth-page">
+  <!-- Decorative background elements -->
+  <div class="auth-bg-decor">
+    <div class="decor-circle decor-1"></div>
+    <div class="decor-circle decor-2"></div>
+    <div class="decor-line decor-3"></div>
+  </div>
+
   <div class="auth-card">
-    <div class="auth-header">
-      <h1>🏦 JavaIsland Bank</h1>
-      <p>Accedi al tuo account</p>
+    <div class="auth-card-header">
+      <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="auth-logo" />
+      <div class="auth-brand-text">
+        <span class="auth-brand-name">Elden Bank</span>
+        <span class="auth-brand-tagline">{{ 'AUTH.brand_tagline' | translate }}</span>
+      </div>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-error">{{ error() }}</div>
-    }
+    <div class="auth-card-body">
+      <h1 class="auth-title">{{ 'AUTH.welcome_back' | translate }}</h1>
+      <p class="auth-subtitle">{{ 'AUTH.login_subtitle' | translate }}</p>
 
-    <form (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          [(ngModel)]="username"
-          name="username"
-          placeholder="Inserisci username"
-          autocomplete="username"
-        />
-      </div>
+      @if (error()) {
+        <div class="auth-alert auth-alert-error" role="alert">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          <span>{{ error() }}</span>
+        </div>
+      }
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="Inserisci password"
-          autocomplete="current-password"
-        />
-      </div>
+      <form (ngSubmit)="onSubmit()" aria-label="Form di accesso">
+        <div class="auth-field">
+          <label for="username" class="auth-label">
+            <i class="bi bi-person"></i>
+            {{ 'AUTH.username' | translate }}
+          </label>
+          <input
+            id="username"
+            type="text"
+            [(ngModel)]="username"
+            name="username"
+            class="auth-input"
+            [placeholder]="'AUTH.enter_username' | translate"
+            autocomplete="username"
+            aria-required="true"
+          />
+        </div>
 
-      <button type="submit" class="btn-primary" [disabled]="loading()">
-        @if (loading()) { Accesso in corso... } @else { Accedi }
-      </button>
-    </form>
+        <div class="auth-field">
+          <label for="password" class="auth-label">
+            <i class="bi bi-lock"></i>
+            {{ 'AUTH.password' | translate }}
+          </label>
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            class="auth-input"
+            [placeholder]="'AUTH.enter_password' | translate"
+            autocomplete="current-password"
+            aria-required="true"
+          />
+        </div>
 
-    <div class="auth-footer">
-      <p>Non hai un account? <a routerLink="/register">Registrati</a></p>
+        <button type="submit" class="auth-submit" [disabled]="loading()" [attr.aria-label]="'AUTH.login' | translate">
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>{{ 'AUTH.logging_in' | translate }}
+          } @else {
+            <i class="bi bi-arrow-right-short"></i>{{ 'AUTH.login' | translate }}
+          }
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-card-footer">
+      <p class="auth-footer-text">
+        {{ 'AUTH.no_account' | translate }}
+        <a routerLink="/register" class="auth-link">{{ 'AUTH.register' | translate }}</a>
+      </p>
     </div>
   </div>
+
+  <p class="auth-copyright">&copy; {{ 'AUTH.copyright' | translate }}</p>
 </div>

@@ -1,11 +1,12 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { PendingRegistrationDto } from '../../core/models/user/pending-registration.dto';
 
 @Component({
   selector: 'app-employee-registrations',
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe, TranslateDirective],
   templateUrl: './employee-registrations.html',
   styleUrl: './employee-registrations.css',
 })

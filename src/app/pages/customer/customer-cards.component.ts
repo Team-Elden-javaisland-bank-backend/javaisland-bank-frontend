@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { CardResponseDto } from '../../core/models/card/card-response.dto';
 import { CardSensitiveDto } from '../../core/models/card/card-sensitive.dto';
 
 @Component({
   selector: 'app-customer-cards',
-  imports: [],
+  imports: [TranslatePipe, TranslateDirective],
   templateUrl: './customer-cards.html',
   styleUrl: './customer-cards.css',
 })
@@ -50,9 +51,21 @@ export class CustomerCardsComponent {
     });
   }
 
+  formatCardNumber(num: string): string {
+    return num.replace(/(.{4})/g, '$1 ').trim();
+  }
+
   getCardGradient(type: string): string {
-    return type === 'CREDIT'
-      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+    if (type === 'DEBIT') return 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
+    if (type === 'CREDIT') return 'linear-gradient(135deg, #b45309 0%, #d97706 100%)';
+    return '#1e293b';
+  }
+
+  getActiveCardsCount(): number {
+    return this.cards().filter(c => c.status === 'ACTIVE').length;
+  }
+
+  getBlockedCardsCount(): number {
+    return this.cards().filter(c => c.status === 'BLOCKED').length;
   }
 }

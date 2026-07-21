@@ -1,0 +1,78 @@
+<div class="container">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'BENEFICIARIES.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'BENEFICIARIES.page_subtitle' | translate }}</p>
+    </div>
+    <button class="header-btn" (click)="showForm.set(!showForm())">
+      @if (showForm()) {
+        <i class="bi bi-x-lg me-1"></i>Annulla
+      } @else {
+        <i class="bi bi-plus-lg me-1"></i>{{ 'BENEFICIARIES.add' | translate }}
+      }
+    </button>
+  </div>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  @if (showForm()) {
+    <div class="form-card mb-4">
+      <div class="form-card-header">
+        <div class="form-icon add"><i class="bi bi-person-plus"></i></div>
+        <div>
+          <h3 class="form-card-title">{{ 'BENEFICIARIES.new_beneficiary' | translate }}</h3>
+          <p class="form-card-subtitle">{{ 'BENEFICIARIES.new_beneficiary_desc' | translate }}</p>
+        </div>
+      </div>
+      <div class="form-card-body">
+        <div class="form-group">
+          <label class="form-label-sm">{{ 'BENEFICIARIES.nickname' | translate }}</label>
+          <input class="form-input-custom" type="text" [(ngModel)]="beneficiaryName" [placeholder]="'BENEFICIARIES.nickname_placeholder' | translate" />
+        </div>
+        <div class="form-group">
+          <label class="form-label-sm">{{ 'BENEFICIARIES.iban_dest' | translate }}</label>
+          <input class="form-input-custom" type="text" [(ngModel)]="accountNumber" placeholder="IT..." />
+        </div>
+        <button class="form-btn btn-save" (click)="addSavedBeneficiary()">
+          <i class="bi bi-check-lg me-1"></i>{{ 'BENEFICIARIES.save' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
+  } @else if (savedBeneficiaries().length === 0) {
+    <div class="empty-state-card">
+      <div class="empty-state-icon"><i class="bi bi-bookmark-check"></i></div>
+      <h6 class="empty-state-title">{{ 'BENEFICIARIES.no_beneficiaries' | translate }}</h6>
+      <p class="empty-state-text">{{ 'BENEFICIARIES.add_first_desc' | translate }}</p>
+      <button class="empty-state-btn" (click)="showForm.set(true)">
+        <i class="bi bi-plus-lg me-1"></i>{{ 'BENEFICIARIES.add_first' | translate }}
+      </button>
+    </div>
+  } @else {
+    <div class="beneficiaries-grid">
+      @for (b of savedBeneficiaries(); track b.id) {
+        <div class="beneficiary-card">
+          <div class="beneficiary-card-header">
+            <div class="beneficiary-avatar">{{ b.beneficiaryName.charAt(0).toUpperCase() }}</div>
+            <div class="beneficiary-main">
+              <div class="beneficiary-name">{{ b.beneficiaryName }}</div>
+              <div class="beneficiary-iban mono">{{ b.accountNumber }}</div>
+            </div>
+          </div>
+          <div class="beneficiary-card-footer">
+            <button class="delete-btn" (click)="deleteSavedBeneficiary(b.id)">
+              <i class="bi bi-trash3"></i> Elimina
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -2,10 +2,11 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TranslatePipe, TranslateDirective],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -16,18 +17,36 @@ export class RegisterComponent {
   email = '';
   password = '';
   confirmPassword = '';
+  gender = '';
+  profession = '';
+  fiscalCode = '';
+  phone = '';
+  residence = '';
+  birthPlace = '';
+  birthProvince = '';
   error = signal('');
-  success = signal('');
   loading = signal(false);
+  showSuccessModal = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(): void {
     this.error.set('');
-    this.success.set('');
 
-    if (!this.firstName || !this.lastName || !this.birthDate || !this.email || !this.password) {
+    if (!this.firstName || !this.lastName || !this.birthDate || !this.email || !this.password
+        || !this.gender || !this.profession || !this.fiscalCode || !this.phone
+        || !this.residence || !this.birthPlace || !this.birthProvince) {
       this.error.set('Compila tutti i campi');
+      return;
+    }
+
+    if (this.fiscalCode.length !== 16) {
+      this.error.set('Il codice fiscale deve essere di 16 caratteri');
+      return;
+    }
+
+    if (this.birthProvince.length !== 2) {
+      this.error.set('La provincia deve essere di 2 caratteri');
       return;
     }
 
@@ -56,15 +75,26 @@ export class RegisterComponent {
       birthDate: this.birthDate,
       email: this.email,
       password: this.password,
+      gender: this.gender,
+      profession: this.profession,
+      fiscalCode: this.fiscalCode.toUpperCase(),
+      phone: this.phone,
+      residence: this.residence,
+      birthPlace: this.birthPlace,
+      birthProvince: this.birthProvince.toUpperCase(),
     }).subscribe({
       next: () => {
         this.loading.set(false);
-        this.success.set('Registrazione completata! Un dipendente dovrà validare il tuo account prima di poter accedere.');
+        this.showSuccessModal.set(true);
       },
       error: (err) => {
         this.loading.set(false);
         this.error.set(err.message);
       },
     });
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }

@@ -1,6 +1,6 @@
-# JavaIsland Bank — Frontend
+# EldenBank — Frontend
 
-Frontend Angular 22 per la banca digitale **JavaIsland Bank**. Mobile-first, collegato al backend Spring Boot + Keycloak + PostgreSQL.
+Frontend Angular 22 per la banca digitale **EldenBank**. Mobile-first, collegato al backend Spring Boot + Keycloak + PostgreSQL.
 
 ---
 

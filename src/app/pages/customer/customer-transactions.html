@@ -1,188 +1,254 @@
-<div class="page">
-  <h1>Transazioni</h1>
+<div class="container">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'TRANSACTIONS.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'TRANSACTIONS.page_subtitle' | translate }}</p>
+    </div>
+  </div>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
-  <div class="tabs">
-    <button [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">Deposito</button>
-    <button [class.active]="activeTab() === 'withdraw'" (click)="activeTab.set('withdraw')">Prelievo</button>
-    <button [class.active]="activeTab() === 'transfer'" (click)="activeTab.set('transfer')">Bonifico</button>
-    <button [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">Storico</button>
+  <!-- Tabs -->
+  <div class="tabs-bar mb-4">
+    <button class="tab-item" [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">
+      <i class="bi bi-plus-circle"></i><span>{{ 'TRANSACTIONS.deposit' | translate }}</span>
+    </button>
+    <button class="tab-item" [class.active]="activeTab() === 'withdraw'" (click)="activeTab.set('withdraw')">
+      <i class="bi bi-dash-circle"></i><span>{{ 'TRANSACTIONS.withdraw_tab' | translate }}</span>
+    </button>
+    <button class="tab-item" [class.active]="activeTab() === 'transfer'" (click)="activeTab.set('transfer')">
+      <i class="bi bi-send"></i><span>{{ 'TRANSACTIONS.transfer_tab' | translate }}</span>
+    </button>
+    <button class="tab-item" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
+      <i class="bi bi-clock-history"></i><span>{{ 'TRANSACTIONS.history' | translate }}</span>
+    </button>
   </div>
 
+  <!-- DEPOSIT / WITHDRAW -->
   @if (activeTab() === 'deposit' || activeTab() === 'withdraw') {
     <div class="form-card">
-      <h3>{{ activeTab() === 'deposit' ? 'Deposita sul conto' : 'Preleva dal conto' }}</h3>
-      <div class="form-group">
-        <label>Conto</label>
-        <select [(ngModel)]="dwAccount" (change)="onAccountChange()">
-          @for (account of accounts(); track account.accountNumber) {
-            <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
-          }
-        </select>
+      <div class="form-card-header">
+        <div [class]="'form-icon ' + activeTab()">
+          <i [class]="activeTab() === 'deposit' ? 'bi bi-plus-circle' : 'bi bi-dash-circle'"></i>
+        </div>
+        <div>
+          <h3 class="form-card-title">{{ (activeTab() === 'deposit' ? 'TRANSACTIONS.deposit_to' : 'TRANSACTIONS.withdraw_from') | translate }}</h3>
+          <p class="form-card-subtitle">{{ (activeTab() === 'deposit' ? 'TRANSACTIONS.deposit_desc' : 'TRANSACTIONS.withdraw_desc') | translate }}</p>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Importo</label>
-        <input type="number" [(ngModel)]="dwAmount" [attr.min]="activeTab() === 'withdraw' ? 10 : 0.01" step="0.01" placeholder="0.00" />
-        @if (activeTab() === 'withdraw') {
-          <div class="limit-hints">
-            <span class="limit-hint">Min: €10.00</span>
-            @if (getLimitValue('ATM_WITHDRAWAL') !== null) {
-              <span class="limit-hint">Max: €{{ getLimitValue('ATM_WITHDRAWAL')!.toFixed(2) }}</span>
+      <div class="form-card-body">
+        <div class="form-group">
+          <label class="form-label-sm">{{ 'TRANSACTIONS.account' | translate }}</label>
+          <select class="form-select-custom" [(ngModel)]="dwAccount" (change)="onAccountChange()">
+            @for (account of accounts(); track account.accountNumber) {
+              <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
             }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label-sm">{{ 'TRANSACTIONS.amount' | translate }}</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">€</span>
+            <input class="form-input-custom" type="number" [(ngModel)]="dwAmount" [attr.min]="activeTab() === 'withdraw' ? 10 : 0.01" step="0.01" placeholder="0.00" />
           </div>
-        }
+          @if (activeTab() === 'withdraw') {
+            <div class="limit-hints">
+              <span class="limit-hint"><i class="bi bi-info-circle me-1"></i>{{ 'TRANSACTIONS.min_withdraw' | translate }}</span>
+              @if (getLimitValue('ATM_WITHDRAWAL') !== null) {
+                <span class="limit-hint"><i class="bi bi-arrow-up me-1"></i>{{ 'TRANSACTIONS.max' | translate }}: €{{ getLimitValue('ATM_WITHDRAWAL')!.toFixed(2) }}</span>
+              }
+            </div>
+          }
+        </div>
+        <button class="form-btn" [class.btn-deposit]="activeTab() === 'deposit'" [class.btn-withdraw]="activeTab() === 'withdraw'" (click)="activeTab() === 'deposit' ? deposit() : withdraw()">
+          <i [class]="activeTab() === 'deposit' ? 'bi bi-plus-lg' : 'bi bi-dash-lg'"></i>
+          {{ (activeTab() === 'deposit' ? 'TRANSACTIONS.deposit_btn' : 'TRANSACTIONS.withdraw_btn') | translate }}
+        </button>
       </div>
-      <button class="btn-primary" (click)="activeTab() === 'deposit' ? deposit() : withdraw()">
-        {{ activeTab() === 'deposit' ? 'Deposita' : 'Preleva' }}
-      </button>
     </div>
   }
 
+  <!-- TRANSFER -->
   @if (activeTab() === 'transfer') {
     <div class="form-card">
-      <div class="transfer-type-tabs">
-        <button [class.active]="txTransferType() === 'normal'" (click)="txTransferType.set('normal')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Bonifico Normale
-        </button>
-        <button [class.active]="txTransferType() === 'instant'" (click)="txTransferType.set('instant')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Bonifico Istantaneo
-        </button>
+      <div class="form-card-header">
+        <div class="form-icon transfer">
+          <i class="bi bi-send"></i>
+        </div>
+        <div>
+          <h3 class="form-card-title">{{ (txTransferType() === 'instant' ? 'TRANSACTIONS.instant_transfer' : 'TRANSACTIONS.normal_transfer') | translate }}</h3>
+          <p class="form-card-subtitle">{{ 'TRANSACTIONS.send_funds' | translate }}</p>
+        </div>
       </div>
+      <div class="form-card-body">
+        <!-- Transfer type toggle -->
+        <div class="transfer-toggle">
+          <button class="toggle-btn" [class.active]="txTransferType() === 'normal'" (click)="txTransferType.set('normal')">
+            <i class="bi bi-clock"></i> {{ 'TRANSACTIONS.normal' | translate }}
+          </button>
+          <button class="toggle-btn instant" [class.active]="txTransferType() === 'instant'" (click)="txTransferType.set('instant')">
+            <i class="bi bi-lightning"></i> {{ 'TRANSACTIONS.instant' | translate }}
+          </button>
+        </div>
 
-      <h3>{{ txTransferType() === 'instant' ? 'Bonifico Istantaneo' : 'Bonifico Normale' }}</h3>
-      <div class="form-group">
-        <label>Conto sorgente</label>
-        <select [(ngModel)]="txSource" (change)="onSourceChange()">
-          @for (account of accounts(); track account.accountNumber) {
-            <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
-          }
-        </select>
-      </div>
-
-      @if (beneficiaries().length > 0) {
         <div class="form-group">
-          <label>Beneficiario salvato</label>
-          <div class="beneficiary-list">
-            @for (b of beneficiaries(); track b.id; let last = $last) {
-              <div
-                class="beneficiary-item"
-                [class.selected]="txBeneficiaryId === b.id"
-                (click)="toggleBeneficiary(b.id, b.destinationAccountNumber)"
-              >
-                <div class="b-left">
-                  <div class="b-avatar">{{ b.nickname.charAt(0) }}</div>
-                  <div class="b-info">
-                    <span class="b-name">{{ b.nickname }}</span>
-                    <span class="b-iban">{{ b.destinationAccountNumber }}</span>
+          <label class="form-label-sm">{{ 'TRANSACTIONS.source_account' | translate }}</label>
+          <select class="form-select-custom" [(ngModel)]="txSource" (change)="onSourceChange()">
+            @for (account of accounts(); track account.accountNumber) {
+              <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
+            }
+          </select>
+        </div>
+
+        @if (beneficiaries().length > 0) {
+          <div class="form-group">
+            <label class="form-label-sm">{{ 'TRANSACTIONS.saved_beneficiary' | translate }}</label>
+            <div class="beneficiary-list">
+              @for (b of beneficiaries(); track b.id) {
+                <div class="beneficiary-item" [class.selected]="txBeneficiaryId === b.id" (click)="toggleBeneficiary(b.id, b.destinationAccountNumber)">
+                  <div class="beneficiary-avatar">{{ b.nickname.charAt(0) }}</div>
+                  <div class="beneficiary-info">
+                    <span class="beneficiary-name">{{ b.nickname }}</span>
+                    <span class="beneficiary-iban mono">{{ b.destinationAccountNumber }}</span>
                   </div>
+                  @if (txBeneficiaryId === b.id) {
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                  }
                 </div>
-                @if (txBeneficiaryId === b.id) {
-                  <svg class="b-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                }
-              </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="form-group" [class.locked]="txBeneficiaryId !== null">
+          <div class="iban-header">
+            <label class="form-label-sm mb-0">{{ 'TRANSACTIONS.iban_dest' | translate }}</label>
+            @if (txBeneficiaryId !== null) {
+              <span class="locked-badge"><i class="bi bi-lock-fill me-1"></i>{{ 'TRANSACTIONS.locked' | translate }}</span>
+            }
+          </div>
+          <input class="form-input-custom" type="text" [(ngModel)]="txDestination" placeholder="IT..." [disabled]="txBeneficiaryId !== null" />
+          @if (txBeneficiaryId !== null) {
+            <span class="locked-hint">{{ 'TRANSACTIONS.locked_hint' | translate }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label-sm">{{ 'TRANSACTIONS.amount' | translate }}</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">€</span>
+            <input class="form-input-custom" type="number" [(ngModel)]="txAmount" min="1" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="limit-hints">
+            <span class="limit-hint"><i class="bi bi-info-circle me-1"></i>Min: €1.00</span>
+            @if (txTransferType() === 'instant') {
+              @if (getLimitValue('INSTANT_TRANSFER_SINGLE') !== null) {
+                <span class="limit-hint"><i class="bi bi-arrow-up me-1"></i>{{ 'TRANSACTIONS.max' | translate }}: €{{ getLimitValue('INSTANT_TRANSFER_SINGLE')!.toFixed(2) }}</span>
+              }
+            } @else {
+              @if (getLimitValue('SINGLE_TRANSFER') !== null) {
+                <span class="limit-hint"><i class="bi bi-arrow-up me-1"></i>{{ 'TRANSACTIONS.max' | translate }}: €{{ getLimitValue('SINGLE_TRANSFER')!.toFixed(2) }}</span>
+              }
             }
           </div>
         </div>
-      }
 
-      <div class="form-group" [class.locked]="txBeneficiaryId !== null">
-        <div class="iban-header">
-          <label>IBAN destinazione</label>
-          @if (txBeneficiaryId !== null) {
-            <span class="locked-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              Bloccato
-            </span>
-          }
-        </div>
-        <input type="text" [(ngModel)]="txDestination" placeholder="IT..." [disabled]="txBeneficiaryId !== null" />
-        @if (txBeneficiaryId !== null) {
-          <span class="locked-hint">IBAN precompilato dal beneficiario selezionato</span>
-        }
-      </div>
-      <div class="form-group">
-        <label>Importo</label>
-        <input type="number" [(ngModel)]="txAmount" min="1" step="0.01" placeholder="0.00" />
-        <div class="limit-hints">
-          <span class="limit-hint">Min: €1.00</span>
-          @if (txTransferType() === 'instant') {
-            @if (getLimitValue('INSTANT_TRANSFER_SINGLE') !== null) {
-              <span class="limit-hint">Max: €{{ getLimitValue('INSTANT_TRANSFER_SINGLE')!.toFixed(2) }}</span>
-            }
-          } @else {
-            @if (getLimitValue('SINGLE_TRANSFER') !== null) {
-              <span class="limit-hint">Max: €{{ getLimitValue('SINGLE_TRANSFER')!.toFixed(2) }}</span>
-            }
-          }
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Descrizione (opzionale)</label>
-        <input type="text" [(ngModel)]="txDescription" placeholder="Causale bonifico" />
-      </div>
-      @if (txTransferType() === 'normal') {
         <div class="form-group">
-          <label>Data di esecuzione</label>
-          <input type="date" [(ngModel)]="txScheduledDate" [attr.min]="today" [attr.max]="maxScheduleDate" />
-          <span class="input-hint">Da domani, massimo 30 giorni</span>
+          <label class="form-label-sm">{{ 'TRANSACTIONS.optional_description' | translate }}</label>
+          <input class="form-input-custom" type="text" [(ngModel)]="txDescription" [placeholder]="'TRANSACTIONS.description_placeholder' | translate" />
         </div>
-      }
-      <button class="btn-primary" [class.instant]="txTransferType() === 'instant'" (click)="transfer()">
-        {{ txTransferType() === 'instant' ? 'Invia Bonifico Istantaneo' : 'Pianifica Bonifico' }}
-      </button>
+
+        @if (txTransferType() === 'normal') {
+          <div class="form-group">
+            <label class="form-label-sm">{{ 'TRANSACTIONS.exec_date' | translate }}</label>
+            <input class="form-input-custom" type="date" [(ngModel)]="txScheduledDate" [attr.min]="today" [attr.max]="maxScheduleDate" />
+            <span class="input-hint">{{ 'TRANSACTIONS.schedule_hint' | translate }}</span>
+          </div>
+        }
+
+        <button class="form-btn" [class.btn-transfer]="txTransferType() === 'normal'" [class.btn-instant]="txTransferType() === 'instant'" (click)="transfer()">
+          <i [class]="txTransferType() === 'instant' ? 'bi bi-lightning-fill' : 'bi bi-send-fill'"></i>
+          {{ (txTransferType() === 'instant' ? 'TRANSACTIONS.send_instant' : 'TRANSACTIONS.schedule_transfer') | translate }}
+        </button>
+      </div>
     </div>
   }
 
+  <!-- HISTORY -->
   @if (activeTab() === 'history') {
-    <div class="form-card inline-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Da</label>
-          <input type="date" [(ngModel)]="startDate" />
+    <div class="form-card mb-4">
+      <div class="form-card-body">
+        <div class="date-filter-row">
+          <div class="form-group flex-grow-1">
+            <label class="form-label-sm">Da</label>
+            <input class="form-input-custom" type="date" [(ngModel)]="startDate" />
+          </div>
+          <div class="form-group flex-grow-1">
+            <label class="form-label-sm">A</label>
+            <input class="form-input-custom" type="date" [(ngModel)]="endDate" />
+          </div>
+          <button class="form-btn btn-search" (click)="loadHistory()">
+            <i class="bi bi-search me-1"></i>{{ 'TRANSACTIONS.search' | translate }}
+          </button>
         </div>
-        <div class="form-group">
-          <label>A</label>
-          <input type="date" [(ngModel)]="endDate" />
-        </div>
-        <button class="btn-primary" (click)="loadHistory()" style="align-self: flex-end">Cerca</button>
       </div>
     </div>
 
     @if (allTransactions().length > 0) {
-      <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Importo</th>
-            <th>Mittente</th>
-            <th>Destinatario</th>
-            <th>Data</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (tx of allTransactions(); track tx.id) {
-            <tr>
-              <td>{{ getTypeNameLabel(tx.typeName) }}</td>
-              <td [class]="'amount amount-' + tx.typeId">{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}</td>
-              <td class="mono">{{ tx.sourceAccountNumber || '-' }}</td>
-              <td class="mono">{{ tx.destinationAccountNumber || '-' }}</td>
-              <td>{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>{{ 'TRANSACTIONS.table_type' | translate }}</th>
+                <th>{{ 'TRANSACTIONS.table_amount' | translate }}</th>
+                <th>{{ 'TRANSACTIONS.table_sender' | translate }}</th>
+                <th>{{ 'TRANSACTIONS.table_recipient' | translate }}</th>
+                <th>{{ 'TRANSACTIONS.table_date' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tx of allTransactions(); track tx.id) {
+                <tr>
+                  <td>
+                    <div class="tx-type-cell">
+                      <div [class]="'tx-type-icon tx-type-' + tx.typeId">
+                        <i [class]="getTxIcon(tx.typeId)"></i>
+                      </div>
+                      <span>{{ getTypeNameLabel(tx.typeName) }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span [class]="'tx-amount tx-amount-' + tx.typeId">
+                      {{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                    </span>
+                  </td>
+                  <td><span class="mono text-muted">{{ tx.sourceAccountNumber || '-' }}</span></td>
+                  <td><span class="mono text-muted">{{ tx.destinationAccountNumber || '-' }}</span></td>
+                  <td><span class="text-muted">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="pagination">
-        <button [disabled]="currentPage() === 0" (click)="prevPage()">Precedente</button>
-        <span>Pagina {{ currentPage() + 1 }} di {{ totalPages }}</span>
-        <button [disabled]="currentPage() >= totalPages - 1" (click)="nextPage()">Successiva</button>
+      <div class="pagination-row">
+        <button class="pagination-btn" [disabled]="currentPage() === 0" (click)="prevPage()">
+          <i class="bi bi-chevron-left"></i> {{ 'TRANSACTIONS.prev' | translate }}
+        </button>
+        <span class="pagination-info">{{ 'TRANSACTIONS.page_of' | translate: {current: currentPage() + 1, total: totalPages} }}</span>
+        <button class="pagination-btn" [disabled]="currentPage() >= totalPages - 1" (click)="nextPage()">
+          {{ 'TRANSACTIONS.next' | translate }} <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    } @else if (startDate && endDate) {
+      <div class="empty-state-card">
+        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+        <h6 class="empty-state-title">{{ 'TRANSACTIONS.no_transactions' | translate }}</h6>
+        <p class="empty-state-text">{{ 'TRANSACTIONS.no_transactions_desc' | translate }}</p>
       </div>
     }
   }

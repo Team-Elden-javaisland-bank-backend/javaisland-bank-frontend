@@ -1,0 +1,322 @@
+<div class="profile-container">
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-wrapper">
+      <div class="spinner-border text-gold" role="status">
+        <span class="visually-hidden">Caricamento...</span>
+      </div>
+      <p class="loading-text">Caricamento profilo...</p>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ errorMessage() }}
+      <button type="button" class="btn-close" (click)="errorMessage.set(null)"></button>
+    </div>
+  }
+
+  @if (!isLoading() && profile()) {
+    <!-- Profile Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="profile-header-card">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="avatar-circle">
+                <span class="avatar-initials">{{ getInitials() }}</span>
+              </div>
+            </div>
+            <div class="col">
+              <h2 class="profile-name">{{ profile()!.name }}</h2>
+              <p class="profile-email">{{ profile()!.email }}</p>
+              <span class="badge badge-status" [ngClass]="getStatusBadgeClass(profile()!.status)">
+                {{ getStatusLabel(profile()!.status) }}
+              </span>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-outline-gold me-2" (click)="openPasswordModal()">
+                <i class="bi bi-key me-1"></i>Cambia Password
+              </button>
+              <button class="btn btn-gold" (click)="openPdfModal()">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Genera PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Details -->
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-3">
+        <div class="card info-card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0"><i class="bi bi-person me-2"></i>Informazioni Personali</h5>
+          </div>
+          <div class="card-body">
+            <div class="info-row">
+              <span class="info-label">Nome Completo</span>
+              <span class="info-value">{{ profile()!.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Codice Fiscale</span>
+              <span class="info-value font-monospace">{{ profile()!.fiscalCode }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Data di Nascita</span>
+              <span class="info-value">{{ formatDate(profile()!.birthDate) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Residenza</span>
+              <span class="info-value">{{ profile()!.residence }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Data Registrazione</span>
+              <span class="info-value">{{ formatDate(profile()!.registrationDate) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-3">
+        <div class="card info-card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0"><i class="bi bi-envelope me-2"></i>Contatti</h5>
+          </div>
+          <div class="card-body">
+            <div class="info-row">
+              <span class="info-label">Email</span>
+              <span class="info-value">{{ profile()!.email }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Telefono</span>
+              <span class="info-value">{{ profile()!.phone }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card info-card">
+          <div class="card-header">
+            <h5 class="card-title mb-0"><i class="bi bi-bank me-2"></i>I Miei Conti</h5>
+            <span class="badge bg-secondary">{{ accounts().length }}</span>
+          </div>
+          <div class="card-body">
+            @if (accounts().length === 0) {
+              <p class="text-muted text-center py-3">Nessun conto trovato</p>
+            }
+            <div class="row">
+              @for (account of accounts(); track account.id) {
+                <div class="col-lg-6 mb-3">
+                  <div class="account-card">
+                    <div class="account-card-header">
+                      <span class="account-type">{{ account.type }}</span>
+                      <span class="badge badge-status" [ngClass]="getStatusBadgeClass(account.status)">
+                        {{ getStatusLabel(account.status) }}
+                      </span>
+                    </div>
+                    <div class="account-card-body">
+                      <div class="account-iban font-monospace">{{ maskIban(account.iban) }}</div>
+                      <div class="account-balance">{{ formatCurrency(account.balance) }}</div>
+                      <div class="account-date">Aperto il {{ formatDate(account.creationDate) }}</div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card info-card">
+          <div class="card-header">
+            <h5 class="card-title mb-0"><i class="bi bi-credit-card me-2"></i>Le Mie Carte</h5>
+            <span class="badge bg-secondary">{{ cards().length }}</span>
+          </div>
+          <div class="card-body">
+            @if (cards().length === 0) {
+              <p class="text-muted text-center py-3">Nessuna carta trovata</p>
+            }
+            <div class="row">
+              @for (card of cards(); track card.id) {
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <div class="bank-card" [ngClass]="getCardGradient(card.cardType)">
+                    <div class="bank-card-chip"></div>
+                    <div class="bank-card-number">{{ maskCardNumber(card.cardNumber) }}</div>
+                    <div class="bank-card-footer">
+                      <div>
+                        <div class="bank-card-label">Intestatario</div>
+                        <div class="bank-card-value">{{ profile()!.name }}</div>
+                      </div>
+                      <div>
+                        <div class="bank-card-label">Scadenza</div>
+                        <div class="bank-card-value">{{ card.expiryDate }}</div>
+                      </div>
+                      <div>
+                        <div class="bank-card-label">Tipo</div>
+                        <div class="bank-card-value">{{ getCardTypeLabel(card.cardType) }}</div>
+                      </div>
+                    </div>
+                    <div class="bank-card-status">
+                      <span class="badge badge-status" [ngClass]="getStatusBadgeClass(card.status)">
+                        {{ getStatusLabel(card.status) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Password Change Modal -->
+  @if (showPasswordModal()) {
+    <div class="modal-backdrop fade show" (click)="closePasswordModal()"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-key me-2"></i>Cambia Password</h5>
+            <button type="button" class="btn-close btn-close-white" (click)="closePasswordModal()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Password Attuale</label>
+              <input
+                type="password"
+                class="form-control form-control-dark"
+                [value]="passwordRequest().currentPassword"
+                (input)="updatePasswordField('currentPassword', $any($event.target).value)"
+                placeholder="Inserisci la password attuale"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nuova Password</label>
+              <input
+                type="password"
+                class="form-control form-control-dark"
+                [value]="passwordRequest().newPassword"
+                (input)="updatePasswordField('newPassword', $any($event.target).value)"
+                placeholder="Minimo 8 caratteri"
+              />
+              <!-- Strength Meter -->
+              @if (passwordRequest().newPassword) {
+                <div class="strength-meter mt-2">
+                  <div class="strength-bar">
+                    <div
+                      class="strength-fill"
+                      [ngClass]="'strength-' + passwordStrength().level"
+                      [style.width.%]="passwordStrength().score"
+                    ></div>
+                  </div>
+                  <small class="strength-label" [ngClass]="'text-strength-' + passwordStrength().level">
+                    {{ passwordStrength().label }}
+                  </small>
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Conferma Nuova Password</label>
+              <input
+                type="password"
+                class="form-control form-control-dark"
+                [value]="passwordRequest().confirmPassword"
+                (input)="updatePasswordField('confirmPassword', $any($event.target).value)"
+                placeholder="Ripeti la nuova password"
+              />
+              @if (passwordRequest().confirmPassword && passwordRequest().newPassword !== passwordRequest().confirmPassword) {
+                <small class="text-danger">Le password non coincidono</small>
+              }
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closePasswordModal()">Annulla</button>
+            <button
+              type="button"
+              class="btn btn-gold"
+              [disabled]="!isPasswordValid() || isSubmittingPassword()"
+              (click)="submitPasswordChange()"
+            >
+              @if (isSubmittingPassword()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              Conferma
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PDF Generation Modal -->
+  @if (showPdfModal()) {
+    <div class="modal-backdrop fade show" (click)="closePdfModal()"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-file-earmark-pdf me-2"></i>Genera Estratto Conto PDF</h5>
+            <button type="button" class="btn-close btn-close-white" (click)="closePdfModal()"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-muted mb-3">Seleziona il conto per generare l'estratto conto:</p>
+            <div class="list-group">
+              <button
+                type="button"
+                class="list-group-item list-group-item-action"
+                [ngClass]="{ 'active-account': selectedAccountForPdf() === null }"
+                (click)="selectAccountForPdf(null)"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>Tutti i conti</span>
+                  <span class="badge bg-secondary">{{ transactions().length }} transazioni</span>
+                </div>
+              </button>
+              @for (account of accounts(); track account.id) {
+                <button
+                  type="button"
+                  class="list-group-item list-group-item-action"
+                  [ngClass]="{ 'active-account': selectedAccountForPdf() === account.id }"
+                  (click)="selectAccountForPdf(account.id)"
+                >
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="font-monospace">{{ maskIban(account.iban) }}</span>
+                    <span class="badge bg-secondary">{{ account.type }}</span>
+                  </div>
+                </button>
+              }
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closePdfModal()">Annulla</button>
+            <button
+              type="button"
+              class="btn btn-gold"
+              [disabled]="isGeneratingPdf()"
+              (click)="generatePdf()"
+            >
+              @if (isGeneratingPdf()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              <i class="bi bi-download me-1"></i>Scarica PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

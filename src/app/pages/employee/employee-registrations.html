@@ -1,42 +1,61 @@
-<div class="page">
-  <h1>Registrazioni in Attesa</h1>
+<div class="container">
+  <!-- Page header -->
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'EMPLOYEE.registrations.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'EMPLOYEE.registrations.page_subtitle' | translate }}</p>
+    </div>
+    @if (registrations().length > 0) {
+      <div class="pending-badge">
+        <i class="bi bi-clock-history me-1"></i>{{ registrations().length }} {{ 'EMPLOYEE.registrations.in_attesa' | translate }}
+      </div>
+    }
+  </div>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
   } @else if (registrations().length === 0) {
-    <div class="empty-state">Nessuna registrazione in attesa.</div>
+    <div class="empty-state-card">
+      <div class="empty-state-icon"><i class="bi bi-person-check"></i></div>
+      <h6 class="empty-state-title">{{ 'EMPLOYEE.registrations.all_processed' | translate }}</h6>
+      <p class="empty-state-text">{{ 'EMPLOYEE.registrations.no_pending' | translate }}</p>
+    </div>
   } @else {
-    <div class="registrations-list">
+    <div class="row g-3">
       @for (reg of registrations(); track reg.userId) {
-        <div class="registration-card">
-          <div class="reg-header">
-            <div class="reg-avatar">{{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}</div>
-            <div class="reg-info">
-              <div class="reg-name">{{ reg.firstName }} {{ reg.lastName }}</div>
-              <div class="reg-email">{{ reg.email }}</div>
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="reg-card">
+            <div class="reg-card-header">
+              <div class="reg-avatar">{{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}</div>
+              <div class="reg-user-info">
+                <div class="reg-name">{{ reg.firstName }} {{ reg.lastName }}</div>
+                <div class="reg-email">{{ reg.email }}</div>
+              </div>
             </div>
-          </div>
-          <div class="reg-details">
-            <div class="reg-detail">
-              <span class="detail-label">Data di nascita</span>
-              <span class="detail-value">{{ reg.birthDate | date:'dd/MM/yyyy' }}</span>
+            <div class="reg-card-details">
+              <div class="reg-detail">
+                <span class="reg-detail-label">{{ 'EMPLOYEE.registrations.birth_date' | translate }}</span>
+                <span class="reg-detail-value">{{ reg.birthDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="reg-detail">
+                <span class="reg-detail-label">{{ 'EMPLOYEE.registrations.registered_on' | translate }}</span>
+                <span class="reg-detail-value">{{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
             </div>
-            <div class="reg-detail">
-              <span class="detail-label">Account pending</span>
-              <span class="detail-value mono">{{ reg.pendingAccountNumber }}</span>
+            <div class="reg-card-actions">
+              <button class="reg-btn reg-btn-approve" (click)="validate(reg.userId)">
+                <i class="bi bi-check-lg me-1"></i>{{ 'EMPLOYEE.registrations.validate' | translate }}
+              </button>
+              <button class="reg-btn reg-btn-reject" (click)="reject(reg.userId)">
+                <i class="bi bi-x-lg me-1"></i>{{ 'EMPLOYEE.registrations.reject' | translate }}
+              </button>
             </div>
-            <div class="reg-detail">
-              <span class="detail-label">Registrato il</span>
-              <span class="detail-value">{{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
-          </div>
-          <div class="reg-actions">
-            <button class="btn-approve" (click)="validate(reg.userId)">Valida</button>
-            <button class="btn-reject" (click)="reject(reg.userId)">Rifiuta</button>
           </div>
         </div>
       }

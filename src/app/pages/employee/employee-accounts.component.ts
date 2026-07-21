@@ -1,13 +1,14 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
 
 @Component({
   selector: 'app-employee-accounts',
-  imports: [CurrencyPipe, DatePipe, FormsModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './employee-accounts.html',
   styleUrl: './employee-accounts.css',
 })
@@ -78,6 +79,13 @@ export class EmployeeAccountsComponent implements OnInit {
     });
   }
 
+  unfreeze(accountNumber: string): void {
+    this.employeeService.unfreezeAccount(accountNumber).subscribe({
+      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
+      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+    });
+  }
+
   validateClosure(accountNumber: string): void {
     this.employeeService.validateClosure(accountNumber).subscribe({
       next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
@@ -139,5 +147,13 @@ export class EmployeeAccountsComponent implements OnInit {
   getStatusName(statusId: number): string {
     const names: Record<number, string> = { 1: 'Inattivo', 2: 'Attivo', 3: 'Congelato', 4: 'Chiuso' };
     return names[statusId] ?? 'Sconosciuto';
+  }
+
+  getActiveCount(): number {
+    return this.accounts().filter(a => a.statusId === 2).length;
+  }
+
+  getPendingCount(): number {
+    return this.accounts().filter(a => a.statusId === 1).length;
   }
 }

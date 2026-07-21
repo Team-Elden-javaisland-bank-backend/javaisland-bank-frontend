@@ -1,40 +1,84 @@
-<div class="page">
-  <h1>Gestione Carte</h1>
+<div class="container">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'EMPLOYEE.cards.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'EMPLOYEE.cards.page_subtitle' | translate }}</p>
+    </div>
+    @if (cards().length > 0) {
+      <div class="page-stats">
+        <div class="page-stat">
+          <span class="page-stat-value">{{ cards().length }}</span>
+          <span class="page-stat-label">{{ 'EMPLOYEE.cards.total' | translate }}</span>
+        </div>
+        <div class="page-stat">
+          <span class="page-stat-value">{{ getActiveCount() }}</span>
+          <span class="page-stat-label">{{ 'EMPLOYEE.cards.active' | translate }}</span>
+        </div>
+      </div>
+    }
+  </div>
 
   @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+    <div class="alert-alert">{{ message() }}</div>
   }
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
   } @else if (cards().length === 0) {
-    <div class="empty-state">Nessuna carta trovata.</div>
+    <div class="empty-state-card">
+      <div class="empty-state-icon"><i class="bi bi-credit-card"></i></div>
+      <h6 class="empty-state-title">{{ 'EMPLOYEE.cards.no_cards' | translate }}</h6>
+      <p class="empty-state-text">{{ 'EMPLOYEE.cards.no_cards_desc' | translate }}</p>
+    </div>
   } @else {
-    <div class="table-wrap">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Carta</th>
-          <th>Titolare</th>
-          <th>Tipo</th>
-          <th>Scadenza</th>
-          <th>Stato</th>
-          <th>ID Conto</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (card of cards(); track card.id) {
-          <tr>
-            <td class="mono">{{ card.maskedCardNumber }}</td>
-            <td>{{ card.holderName }}</td>
-            <td><span class="card-type-badge" [class]="card.cardType.toLowerCase()">{{ card.cardType }}</span></td>
-            <td>{{ card.expirationDate }}</td>
-            <td><span [class]="'status-badge ' + getStatusClass(card.status)">{{ card.status }}</span></td>
-            <td>#{{ card.accountId }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>{{ 'EMPLOYEE.cards.card' | translate }}</th>
+              <th>{{ 'EMPLOYEE.cards.holder' | translate }}</th>
+              <th>{{ 'EMPLOYEE.cards.type' | translate }}</th>
+              <th>{{ 'EMPLOYEE.cards.expires' | translate }}</th>
+              <th>{{ 'EMPLOYEE.cards.status' | translate }}</th>
+              <th>{{ 'EMPLOYEE.cards.account' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (card of cards(); track card.id) {
+              <tr>
+                <td>
+                  <div class="card-number-cell">
+                    <i class="bi bi-credit-card-2-front"></i>
+                    <span class="mono">{{ card.maskedCardNumber }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-xs">{{ card.holderName.charAt(0) }}</div>
+                    <span class="holder-name">{{ card.holderName }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span [class]="'type-pill type-' + card.cardType.toLowerCase()">
+                    <i [class]="card.cardType.toLowerCase() === 'credit' ? 'bi bi-gem' : 'bi bi-wallet2'"></i>
+                    {{ card.cardType }}
+                  </span>
+                </td>
+                <td><span class="mono">{{ card.expirationDate }}</span></td>
+                <td>
+                  <span [class]="'status-pill card-status-' + card.status.toLowerCase()">
+                    {{ card.status }}
+                  </span>
+                </td>
+                <td><span class="mono text-muted">#{{ card.accountId }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 </div>

@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -16,7 +17,7 @@ interface LimitMeta {
 
 @Component({
   selector: 'app-employee-limits',
-  imports: [CurrencyPipe, DatePipe, FormsModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './employee-limits.html',
   styleUrl: './employee-limits.css',
 })
@@ -81,6 +82,18 @@ export class EmployeeLimitsComponent {
   cancelEdit(): void {
     this.editingType.set('');
     this.editingError.set('');
+  }
+
+  getLimitIcon(type: string): string {
+    const icons: Record<string, string> = {
+      'ATM_WITHDRAWAL': 'bi bi-cash-stack',
+      'POS_SPENDING': 'bi bi-credit-card-2-front',
+      'DAILY_TRANSFER': 'bi bi-arrow-left-right',
+      'SINGLE_TRANSFER': 'bi bi-send',
+      'INSTANT_TRANSFER_SINGLE': 'bi bi-lightning',
+      'MONTHLY_TRANSFER': 'bi bi-calendar-month',
+    };
+    return icons[type] || 'bi bi-speedometer';
   }
 
   saveLimit(type: string): void {

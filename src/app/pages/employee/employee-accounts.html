@@ -1,103 +1,173 @@
-<div class="page">
-  <h1>Gestione Conti</h1>
+<div class="container">
+  <!-- Page header -->
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'EMPLOYEE.accounts.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'EMPLOYEE.accounts.page_subtitle' | translate }}</p>
+    </div>
+    <div class="page-stats">
+      <div class="page-stat">
+        <span class="page-stat-value">{{ accounts().length }}</span>
+        <span class="page-stat-label">{{ 'EMPLOYEE.accounts.total' | translate }}</span>
+      </div>
+      <div class="page-stat">
+        <span class="page-stat-value">{{ getActiveCount() }}</span>
+        <span class="page-stat-label">{{ 'EMPLOYEE.accounts.active' | translate }}</span>
+      </div>
+      <div class="page-stat">
+        <span class="page-stat-value">{{ getPendingCount() }}</span>
+        <span class="page-stat-label">{{ 'EMPLOYEE.accounts.pending' | translate }}</span>
+      </div>
+    </div>
+  </div>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
-  <div class="filters">
-    <button [class.active]="statusFilter() === null" (click)="filterByStatus(null)">Tutti</button>
-    <button [class.active]="statusFilter() === 1" (click)="filterByStatus(1)">Inattivi</button>
-    <button [class.active]="statusFilter() === 2" (click)="filterByStatus(2)">Attivi</button>
-    <button [class.active]="statusFilter() === 3" (click)="filterByStatus(3)">Congelati</button>
-    <button [class.active]="statusFilter() === 4" (click)="filterByStatus(4)">Chiusi</button>
-  </div>
+  <!-- Filter pills -->
+  <nav class="mb-4">
+    <div class="filter-bar">
+      <button class="filter-pill" [class.active]="statusFilter() === null" (click)="filterByStatus(null)">
+        <i class="bi bi-grid me-1"></i>{{ 'EMPLOYEE.accounts.all' | translate }}
+      </button>
+      <button class="filter-pill" [class.active]="statusFilter() === 1" (click)="filterByStatus(1)">
+        <i class="bi bi-clock me-1"></i>{{ 'EMPLOYEE.accounts.inactive' | translate }}
+      </button>
+      <button class="filter-pill" [class.active]="statusFilter() === 2" (click)="filterByStatus(2)">
+        <i class="bi bi-check-circle me-1"></i>{{ 'EMPLOYEE.accounts.active' | translate }}
+      </button>
+      <button class="filter-pill" [class.active]="statusFilter() === 3" (click)="filterByStatus(3)">
+        <i class="bi bi-snow me-1"></i>{{ 'EMPLOYEE.accounts.frozen' | translate }}
+      </button>
+      <button class="filter-pill" [class.active]="statusFilter() === 4" (click)="filterByStatus(4)">
+        <i class="bi bi-x-circle me-1"></i>{{ 'EMPLOYEE.accounts.closed' | translate }}
+      </button>
+    </div>
+  </nav>
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
   } @else if (accounts().length === 0) {
-    <div class="empty-state">Nessun conto trovato.</div>
+    <div class="empty-state-card">
+      <div class="empty-state-icon"><i class="bi bi-bank"></i></div>
+      <h6 class="empty-state-title">{{ 'EMPLOYEE.accounts.no_accounts' | translate }}</h6>
+      <p class="empty-state-text">{{ 'EMPLOYEE.accounts.no_accounts_desc' | translate }}</p>
+    </div>
   } @else {
-    <div class="table-wrap">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>IBAN</th>
-          <th>Saldo</th>
-          <th>Stato</th>
-          <th>Profilo</th>
-          <th>Aperto il</th>
-          <th>Azioni</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (account of accounts(); track account.accountNumber) {
-          <tr>
-            <td class="mono">{{ account.accountNumber }}</td>
-            <td class="balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</td>
-            <td><span [class]="'status status-' + account.statusId">{{ getStatusName(account.statusId) }}</span></td>
-            <td>#{{ account.profileId }}</td>
-            <td>{{ account.createdAt | date:'dd/MM/yyyy' }}</td>
-            <td class="actions-cell">
-              @if (account.statusId === 1) {
-                <button class="btn-sm btn-green" (click)="activate(account.accountNumber)">Attiva</button>
-                <button class="btn-sm btn-red" (click)="reject(account.accountNumber)">Rifiuta</button>
-              }
-              @if (account.statusId === 2) {
-                <button class="btn-sm btn-yellow" (click)="freeze(account.accountNumber)">Congela</button>
-              }
-              @if (account.statusId === 3) {
-                <button class="btn-sm btn-green" (click)="activate(account.accountNumber)">Riattiva</button>
-              }
-              <button class="btn-sm btn-outline" (click)="viewLimits(account.accountNumber)">Limiti</button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <div class="account-table-card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th class="table-header">{{ 'EMPLOYEE.accounts.holder' | translate }}</th>
+              <th class="table-header">{{ 'EMPLOYEE.accounts.iban' | translate }}</th>
+              <th class="table-header">{{ 'EMPLOYEE.accounts.balance' | translate }}</th>
+              <th class="table-header">{{ 'EMPLOYEE.accounts.status' | translate }}</th>
+              <th class="table-header d-none d-lg-table-cell">{{ 'EMPLOYEE.accounts.opened' | translate }}</th>
+              <th class="table-header text-end">{{ 'EMPLOYEE.accounts.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (account of accounts(); track account.accountNumber) {
+              <tr class="table-row">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm">{{ account.profileFirstName?.charAt(0) }}{{ account.profileLastName?.charAt(0) }}</div>
+                    <div>
+                      <div class="fw-semibold">{{ account.profileFirstName }} {{ account.profileLastName }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="mono text-muted">{{ account.accountNumber }}</td>
+                <td class="fw-bold">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</td>
+                <td>
+                  <span [class]="'status-pill status-' + account.statusId">
+                    {{ getStatusName(account.statusId) }}
+                  </span>
+                </td>
+                <td class="d-none d-lg-table-cell text-muted">{{ account.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="text-end">
+                  <div class="d-flex gap-1 justify-content-end flex-wrap">
+                    @if (account.statusId === 1) {
+                      <button class="btn-action btn-activate" (click)="activate(account.accountNumber)">
+                        <i class="bi bi-check-lg"></i> {{ 'EMPLOYEE.accounts.activate' | translate }}
+                      </button>
+                      <button class="btn-action btn-reject" (click)="reject(account.accountNumber)">
+                        <i class="bi bi-x-lg"></i> {{ 'EMPLOYEE.accounts.reject' | translate }}
+                      </button>
+                    }
+                    @if (account.statusId === 2) {
+                      <button class="btn-action btn-freeze" (click)="freeze(account.accountNumber)">
+                        <i class="bi bi-snow"></i> {{ 'EMPLOYEE.accounts.freeze' | translate }}
+                      </button>
+                    }
+                    @if (account.statusId === 3) {
+                      <button class="btn-action btn-activate" (click)="unfreeze(account.accountNumber)">
+                        <i class="bi bi-sun"></i> {{ 'EMPLOYEE.accounts.unfreeze' | translate }}
+                      </button>
+                    }
+                    <button class="btn-action btn-limits" (click)="viewLimits(account.accountNumber)">
+                      <i class="bi bi-sliders"></i> {{ 'EMPLOYEE.accounts.limits' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 
+  <!-- Limits modal -->
   @if (showLimits()) {
     <div class="modal-overlay" (click)="showLimits.set(false)">
-      <div class="modal" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>Limiti conto {{ selectedAccount() }}</h3>
-          <button class="btn-close" (click)="showLimits.set(false)">✕</button>
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header-box">
+          <h3 class="modal-title-text">{{ 'EMPLOYEE.accounts.limits_title' | translate }}</h3>
+          <button class="modal-close-btn" (click)="showLimits.set(false)"><i class="bi bi-x-lg"></i></button>
         </div>
+        <div class="modal-body-content">
+          <div class="modal-iban">{{ selectedAccount() }}</div>
 
-        @if (limitsLoading()) {
-          <div class="loading">Caricamento limiti...</div>
-        } @else {
-          <div class="limits-list">
-            @for (limit of limits(); track limit.id) {
-              <div class="limit-item">
-                <span class="limit-type">{{ limit.limitType }}</span>
-                <span class="limit-amount">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
-              </div>
-            }
-            @if (limits().length === 0) {
-              <div class="empty-limits">Nessun limite impostato.</div>
-            }
-          </div>
-
-          <div class="set-limit-form">
-            <h4>Imposta Limite</h4>
-            <div class="form-row">
-              <select [(ngModel)]="limitType">
-                <option value="">Seleziona tipo...</option>
-                <option value="DAILY_TRANSFER">Bonifico Giornaliero</option>
-                <option value="SINGLE_TRANSFER">Bonifico Singolo</option>
-                <option value="INSTANT_TRANSFER_SINGLE">Bonifico Istantaneo</option>
-                <option value="MONTHLY_TRANSFER">Movimenti Mensili</option>
-                <option value="ATM_WITHDRAWAL">Prelievo ATM</option>
-                <option value="POS_SPENDING">Spesa POS</option>
-              </select>
-              <input type="number" [(ngModel)]="limitAmount" min="0.01" step="0.01" placeholder="Importo max (es. 5.000)" />
-              <button class="btn-sm btn-green" (click)="setLimit()">Salva</button>
+          @if (limitsLoading()) {
+            <div class="text-center py-4">
+              <div class="spinner-border spinner-border-sm" style="color: var(--bi-gold) !important;"></div>
             </div>
-          </div>
-        }
+          } @else {
+            <div class="limits-list mb-4">
+              @for (limit of limits(); track limit.id) {
+                <div class="limit-row">
+                  <span class="limit-type-label">{{ limit.limitType }}</span>
+                  <span class="limit-amount-value">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+                </div>
+              }
+              @if (limits().length === 0) {
+                <div class="empty-limits-text">{{ 'EMPLOYEE.accounts.no_limits' | translate }}</div>
+              }
+            </div>
+
+            <div class="limit-form">
+              <h6 class="limit-form-title">{{ 'EMPLOYEE.accounts.set_limit' | translate }}</h6>
+              <div class="d-flex gap-2 flex-column flex-md-row">
+                <select class="form-select rounded-3" [(ngModel)]="limitType">
+                  <option value="">{{ 'EMPLOYEE.accounts.select_type' | translate }}</option>
+                  <option value="DAILY_TRANSFER">{{ 'EMPLOYEE.accounts.daily_transfer' | translate }}</option>
+                  <option value="SINGLE_TRANSFER">{{ 'EMPLOYEE.accounts.single_transfer' | translate }}</option>
+                  <option value="INSTANT_TRANSFER_SINGLE">{{ 'EMPLOYEE.accounts.instant_transfer' | translate }}</option>
+                  <option value="MONTHLY_TRANSFER">{{ 'EMPLOYEE.accounts.monthly_transfer' | translate }}</option>
+                  <option value="ATM_WITHDRAWAL">{{ 'EMPLOYEE.accounts.atm_withdrawal' | translate }}</option>
+                  <option value="POS_SPENDING">{{ 'EMPLOYEE.accounts.pos_spending' | translate }}</option>
+                </select>
+                <input class="form-control rounded-3" type="number" [(ngModel)]="limitAmount" min="0.01" step="0.01" placeholder="Importo max (es. 5.000)" />
+                <button class="btn btn-success rounded-3 fw-semibold" (click)="setLimit()">{{ 'EMPLOYEE.accounts.save' | translate }}</button>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </div>
   }

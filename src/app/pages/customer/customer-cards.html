@@ -1,42 +1,154 @@
-<div class="page">
-  <h1>Le tue Carte</h1>
+<div class="container py-3">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'CARDS.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'CARDS.page_subtitle' | translate }}</p>
+    </div>
+  </div>
 
   @if (message()) {
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
   @if (loading()) {
-    <div class="loading">Caricamento...</div>
-  } @else if (cards().length === 0) {
-    <div class="empty-state">Nessuna carta associata ai tuoi conti.</div>
+    <div class="text-center py-5 text-muted">{{ 'CARDS.loading' | translate }}</div>
   } @else {
-    <div class="cards-grid">
-      @for (card of cards(); track card.id) {
-        <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
-          <div class="card-top">
-            <span class="card-type">{{ card.cardType }}</span>
-            <span [class]="'card-status cs-' + card.status">{{ card.status }}</span>
+    <div class="cards-layout">
+      <!-- Main cards area -->
+      <div class="cards-main">
+        @if (cards().length === 0) {
+          <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="bi bi-credit-card"></i></div>
+            <h6 class="empty-state-title">{{ 'CARDS.no_cards' | translate }}</h6>
+            <p class="empty-state-text">{{ 'CARDS.no_cards_desc' | translate }}</p>
           </div>
-          <div class="card-chip"></div>
-          <div class="card-number">
-            @if (revealedId() === card.id && revealedCard()) {
-              {{ revealedCard()!.cardNumber }}
-            } @else {
-              {{ card.maskedCardNumber }}
+        } @else {
+          <div class="row g-4 justify-content-center">
+            @for (card of cards(); track card.id) {
+              <div class="col-12 col-md-6 col-xl-4 d-flex flex-column align-items-center mb-4">
+                <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
+                  <!-- Top row: type + chip + status -->
+                  <div class="cc-top">
+                    <span class="cc-type">{{ card.cardType }}</span>
+                    <div class="cc-chip"></div>
+                    <span [class]="'cc-status cs-' + card.status">{{ card.status }}</span>
+                  </div>
+
+                  <!-- Center: card number -->
+                  <div class="cc-number">
+                    @if (revealedId() === card.id && revealedCard()) {
+                      {{ formatCardNumber(revealedCard()!.cardNumber) }}
+                    } @else {
+                      {{ card.maskedCardNumber }}
+                    }
+                  </div>
+
+                  <!-- Bottom row: holder + expiry -->
+                  <div class="cc-bottom">
+                    <div class="cc-holder-group">
+                      <span class="cc-label">{{ 'CARDS.holder' | translate }}</span>
+                      <span class="cc-holder">{{ card.holderName }}</span>
+                    </div>
+                    <div class="cc-expiry-group">
+                      <span class="cc-label">{{ 'CARDS.expires' | translate }}</span>
+                      <span class="cc-exp">{{ card.expirationDate }}</span>
+                    </div>
+                    @if (revealedId() === card.id && revealedCard()) {
+                      <div class="cc-cvv-group">
+                        <span class="cc-label">CVV</span>
+                        <span class="cc-cvv">{{ revealedCard()!.cvv }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Button OUTSIDE the card -->
+                <button class="btn btn-outline-dark btn-sm rounded-3 mt-2 cc-toggle-btn" (click)="toggleSensitive(card.id)">
+                  <i class="bi" [class.bi-eye]="revealedId() !== card.id" [class.bi-eye-slash]="revealedId() === card.id"></i>
+                  {{ (revealedId() === card.id ? 'CARDS.hide' : 'CARDS.show_data') | translate }}
+                </button>
+              </div>
             }
           </div>
-          <div class="card-bottom">
-            <div class="card-holder">{{ card.holderName }}</div>
-            <div class="card-exp">{{ card.expirationDate }}</div>
-            @if (revealedId() === card.id && revealedCard()) {
-              <div class="card-cvv">CVV: {{ revealedCard()!.cvv }}</div>
-            }
+        }
+      </div>
+
+      <!-- Sidebar -->
+      <div class="cards-sidebar">
+        <!-- Card stats -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-credit-card me-2"></i>{{ 'CARDS.summary' | translate }}
           </div>
-          <button class="btn-reveal" (click)="toggleSensitive(card.id)">
-            {{ revealedId() === card.id ? 'Nascondi' : 'Mostra dati completi' }}
-          </button>
+          <div class="sidebar-card-body">
+            <div class="summary-row">
+              <span class="summary-label">{{ 'CARDS.total_cards' | translate }}</span>
+              <span class="summary-value">{{ cards().length }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">{{ 'CARDS.active_cards' | translate }}</span>
+              <span class="summary-value text-gold">{{ getActiveCardsCount() }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">{{ 'CARDS.blocked_cards' | translate }}</span>
+              <span class="summary-value text-danger">{{ getBlockedCardsCount() }}</span>
+            </div>
+          </div>
         </div>
-      }
+
+        <!-- Tips -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-shield-check me-2"></i>{{ 'CARDS.card_security' | translate }}
+          </div>
+          <div class="sidebar-card-body">
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-eye-slash"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">{{ 'CARDS.protect_data' | translate }}</span>
+                <span class="tip-desc">{{ 'CARDS.protect_data_desc' | translate }}</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-phone"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">{{ 'CARDS.push_notifications' | translate }}</span>
+                <span class="tip-desc">{{ 'CARDS.push_notifications_desc' | translate }}</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-lock"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">{{ 'CARDS.quick_block' | translate }}</span>
+                <span class="tip-desc">{{ 'CARDS.quick_block_desc' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card types info -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <i class="bi bi-info-circle me-2"></i>{{ 'CARDS.card_types' | translate }}
+          </div>
+          <div class="sidebar-card-body">
+            <div class="card-type-info">
+              <div class="cti-icon cti-debit"><i class="bi bi-credit-card"></i></div>
+              <div class="cti-text">
+                <span class="cti-title">{{ 'CARDS.debit_card' | translate }}</span>
+                <span class="cti-desc">{{ 'CARDS.debit_desc' | translate }}</span>
+              </div>
+            </div>
+            <div class="card-type-info">
+              <div class="cti-icon cti-credit"><i class="bi bi-credit-card-2-front"></i></div>
+              <div class="cti-text">
+                <span class="cti-title">{{ 'CARDS.credit_card' | translate }}</span>
+                <span class="cti-desc">{{ 'CARDS.credit_desc' | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   }
 </div>

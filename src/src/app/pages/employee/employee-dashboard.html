@@ -1,0 +1,231 @@
+<div class="container">
+  @if (loading()) {
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+      <div class="text-center">
+        <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+        <p class="text-muted mt-3">Caricamento pannello...</p>
+      </div>
+    </div>
+  } @else {
+    <!-- Hero greeting -->
+    <div class="emp-hero mb-4">
+      <div class="emp-hero-content">
+        <div>
+          <h1 class="emp-hero-title">Pannello Dipendente</h1>
+          <p class="emp-hero-sub">Gestione conti, registrazioni e operazioni bancarie</p>
+        </div>
+        <div class="emp-hero-date">
+          <i class="bi bi-calendar3 me-1"></i>{{ today | date:'dd/MM/yyyy' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <a routerLink="/employee/registrations" class="text-decoration-none">
+          <div class="kpi-card kpi-registrations">
+            <div class="kpi-icon-box">
+              <i class="bi bi-person-check"></i>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Registrazioni in attesa</span>
+              <span class="kpi-value">{{ pendingCount() }}</span>
+            </div>
+            @if (pendingCount() > 0) {
+              <div class="kpi-badge">Da processare</div>
+            }
+          </div>
+        </a>
+      </div>
+      <div class="col-12 col-md-4">
+        <a routerLink="/employee/accounts" class="text-decoration-none">
+          <div class="kpi-card kpi-accounts">
+            <div class="kpi-icon-box">
+              <i class="bi bi-bank"></i>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Conti totali</span>
+              <span class="kpi-value">{{ totalAccounts() }}</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="kpi-card kpi-customers">
+          <div class="kpi-icon-box">
+            <i class="bi bi-people"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">Clienti registrati</span>
+            <span class="kpi-value">{{ totalCustomers() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main 2-col grid -->
+    <div class="emp-grid">
+      <!-- Left: Quick actions -->
+      <div class="emp-main">
+        <div class="section-header mb-3">
+          <h5 class="section-title"><i class="bi bi-lightning me-2"></i>Azioni Rapide</h5>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-4">
+            <a routerLink="/employee/registrations" class="text-decoration-none">
+              <div class="action-card">
+                <div class="action-icon action-icon-green">
+                  <i class="bi bi-person-check"></i>
+                </div>
+                <div class="action-content">
+                  <h6 class="action-title">Valida Registrazioni</h6>
+                  <p class="action-desc">Approva o rifiuta nuove richieste di registrazione</p>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-md-4">
+            <a routerLink="/employee/accounts" class="text-decoration-none">
+              <div class="action-card">
+                <div class="action-icon action-icon-blue">
+                  <i class="bi bi-bank"></i>
+                </div>
+                <div class="action-content">
+                  <h6 class="action-title">Gestisci Conti</h6>
+                  <p class="action-desc">Attiva, congela o gestisci i limiti dei conti</p>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-md-4">
+            <a routerLink="/employee/cards" class="text-decoration-none">
+              <div class="action-card">
+                <div class="action-icon action-icon-purple">
+                  <i class="bi bi-credit-card"></i>
+                </div>
+                <div class="action-content">
+                  <h6 class="action-title">Gestisci Carte</h6>
+                  <p class="action-desc">Visualizza e gestisci le carte dei clienti</p>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Stats overview -->
+        <div class="section-header mb-3">
+          <h5 class="section-title"><i class="bi bi-bar-chart me-2"></i>Panoramica</h5>
+        </div>
+
+        <div class="overview-grid mb-4">
+          <div class="overview-card">
+            <div class="overview-icon ov-blue"><i class="bi bi-person-plus"></i></div>
+            <div class="overview-info">
+              <span class="overview-value">{{ totalCustomers() }}</span>
+              <span class="overview-label">Clienti Totali</span>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-icon ov-green"><i class="bi bi-bank"></i></div>
+            <div class="overview-info">
+              <span class="overview-value">{{ totalAccounts() }}</span>
+              <span class="overview-label">Conti Aperti</span>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-icon ov-gold"><i class="bi bi-hourglass-split"></i></div>
+            <div class="overview-info">
+              <span class="overview-value">{{ pendingCount() }}</span>
+              <span class="overview-label">In Attesa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right sidebar -->
+      <div class="emp-sidebar">
+        <!-- Pending registrations preview -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-bell me-2"></i>Notifiche
+          </div>
+          <div class="sidebar-card-body">
+            @if (pendingCount() > 0) {
+              <div class="notif-item notif-warning">
+                <div class="notif-icon"><i class="bi bi-person-exclamation"></i></div>
+                <div class="notif-text">
+                  <span class="notif-title">{{ pendingCount() }} registrazioni in attesa</span>
+                  <span class="notif-desc">Hai richieste di registrazione da processare</span>
+                </div>
+              </div>
+            } @else {
+              <div class="notif-item notif-success">
+                <div class="notif-icon"><i class="bi bi-check-circle"></i></div>
+                <div class="notif-text">
+                  <span class="notif-title">Tutto processato</span>
+                  <span class="notif-desc">Nessuna registrazione in attesa</span>
+                </div>
+              </div>
+            }
+            <div class="notif-item">
+              <div class="notif-icon notif-info"><i class="bi bi-info-circle"></i></div>
+              <div class="notif-text">
+                <span class="notif-title">Sistema operativo</span>
+                <span class="notif-desc">Tutti i servizi sono attivi e funzionanti</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick stats sidebar -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-graph-up me-2"></i>Statistiche
+          </div>
+          <div class="sidebar-card-body">
+            <div class="stat-row">
+              <span class="stat-label-side">Tasso di approvazione</span>
+              <span class="stat-value-side">98.5%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label-side">Tempo medio risposta</span>
+              <span class="stat-value-side">2.3h</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label-side">Conti attivi / totali</span>
+              <span class="stat-value-side">{{ totalAccounts() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tips panel -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <i class="bi bi-lightbulb me-2"></i>Suggerimenti
+          </div>
+          <div class="sidebar-card-body">
+            <div class="tip-item">
+              <div class="tip-icon-side"><i class="bi bi-shield-check"></i></div>
+              <div class="tip-text-side">
+                <span class="tip-title-side">Verifica le registrazioni</span>
+                <span class="tip-desc-side">Controlla sempre i documenti prima di approvare una registrazione.</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon-side"><i class="bi bi-clock-history"></i></div>
+              <div class="tip-text-side">
+                <span class="tip-title-side">Monitora i limiti</span>
+                <span class="tip-desc-side">Aggiorna regolarmente i limiti di transazione dei conti according to bank policy.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

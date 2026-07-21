@@ -1,0 +1,249 @@
+<div class="container">
+  <!-- Page header -->
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">{{ 'EMPLOYEE.requests.page_title' | translate }}</h2>
+      <p class="page-subtitle">{{ 'EMPLOYEE.requests.page_subtitle' | translate }}</p>
+    </div>
+    @if (typeCounts().ALL > 0) {
+      <div class="pending-badge">
+        <i class="bi bi-clock-history me-1"></i>{{ typeCounts().ALL }} {{ 'EMPLOYEE.requests.in_attesa' | translate }}
+      </div>
+    }
+  </div>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  <!-- Type filter tabs -->
+  <nav class="mb-3">
+    <div class="filter-bar">
+      <button class="filter-pill" [class.active]="activeType() === 'ALL'" (click)="setType('ALL')">
+        <i class="bi bi-grid me-1"></i>{{ 'EMPLOYEE.requests.all' | translate }}
+        <span class="filter-count">{{ typeCounts().ALL }}</span>
+      </button>
+      <button class="filter-pill" [class.active]="activeType() === 'PASSWORD_CHANGE'" (click)="setType('PASSWORD_CHANGE')">
+        <i class="bi bi-key me-1"></i>{{ 'EMPLOYEE.requests.password' | translate }}
+        <span class="filter-count">{{ typeCounts().PASSWORD_CHANGE }}</span>
+      </button>
+      <button class="filter-pill" [class.active]="activeType() === 'ACCOUNT_OPENING'" (click)="setType('ACCOUNT_OPENING')">
+        <i class="bi bi-bank me-1"></i>{{ 'EMPLOYEE.requests.opening' | translate }}
+        <span class="filter-count">{{ typeCounts().ACCOUNT_OPENING }}</span>
+      </button>
+      <button class="filter-pill" [class.active]="activeType() === 'ACCOUNT_CLOSURE'" (click)="setType('ACCOUNT_CLOSURE')">
+        <i class="bi bi-lock me-1"></i>{{ 'EMPLOYEE.requests.closure' | translate }}
+        <span class="filter-count">{{ typeCounts().ACCOUNT_CLOSURE }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Status tabs -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <nav>
+      <ul class="nav nav-pills status-nav">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeStatus() === 'PENDING'" (click)="setStatus('PENDING')">
+            <i class="bi bi-clock me-1"></i>{{ 'EMPLOYEE.requests.in_attesa_tab' | translate }}
+            <span class="status-nav-count">{{ statusCounts().PENDING }}</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeStatus() === 'APPROVED'" (click)="setStatus('APPROVED')">
+            <i class="bi bi-check-circle me-1"></i>{{ 'EMPLOYEE.requests.approved' | translate }}
+            <span class="status-nav-count">{{ statusCounts().APPROVED }}</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeStatus() === 'REJECTED'" (click)="setStatus('REJECTED')">
+            <i class="bi bi-x-circle me-1"></i>{{ 'EMPLOYEE.requests.rejected' | translate }}
+            <span class="status-nav-count">{{ statusCounts().REJECTED }}</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Search & Sort -->
+    <div class="d-flex gap-2 align-items-center">
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          class="form-control search-input"
+          type="text"
+          [placeholder]="'EMPLOYEE.requests.search_placeholder' | translate"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+        />
+      </div>
+      <button class="btn-icon" (click)="toggleSort('createdAt')" [class.active-sort]="sortField() === 'createdAt'" [title]="'EMPLOYEE.requests.sort_by_date' | translate">
+        <i class="bi" [class.bi-sort-down]="sortOrder() === 'desc'" [class.bi-sort-up]="sortOrder() === 'asc'"></i>
+      </button>
+      <button class="btn-icon" (click)="toggleSort('userFirstName')" [class.active-sort]="sortField() === 'userFirstName'" [title]="'EMPLOYEE.requests.sort_by_name' | translate">
+        <i class="bi bi-sort-alpha-down"></i>
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
+  } @else if (filteredRequests().length === 0) {
+    <div class="empty-state-card">
+      <div class="empty-state-icon">
+        <i class="bi" [class.bi-inbox]="activeStatus() === 'PENDING'" [class.bi-check-circle]="activeStatus() === 'APPROVED'" [class.bi-x-circle]="activeStatus() === 'REJECTED'"></i>
+      </div>
+      <h6 class="empty-state-title">{{ 'EMPLOYEE.requests.no_requests' | translate }}</h6>
+      <p class="empty-state-text">{{ 'EMPLOYEE.requests.no_requests_desc' | translate }}</p>
+    </div>
+  } @else {
+    <div class="requests-table-card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th class="table-header">{{ 'EMPLOYEE.requests.type' | translate }}</th>
+              <th class="table-header">{{ 'EMPLOYEE.requests.applicant' | translate }}</th>
+              <th class="table-header d-none d-md-table-cell">{{ 'EMPLOYEE.requests.description' | translate }}</th>
+              <th class="table-header" [class.sortable]="true" (click)="toggleSort('createdAt')">
+                {{ 'EMPLOYEE.requests.date' | translate }}
+                @if (sortField() === 'createdAt') {
+                  <i class="bi ms-1" [class.bi-chevron-down]="sortOrder() === 'desc'" [class.bi-chevron-up]="sortOrder() === 'asc'"></i>
+                }
+              </th>
+              <th class="table-header">{{ 'EMPLOYEE.requests.status' | translate }}</th>
+              <th class="table-header text-end">{{ 'EMPLOYEE.requests.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (req of filteredRequests(); track req.id + '-' + req.type) {
+              <tr class="table-row">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="type-icon-box" [class]="'type-' + req.type.toLowerCase()">
+                      <i class="bi" [class]="getTypeIcon(req.type)"></i>
+                    </div>
+                    <span class="type-label d-none d-lg-inline">{{ getTypeLabel(req.type) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cursor-pointer" (click)="viewUser(req.userId)">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-sm">{{ req.userFirstName?.charAt(0) }}{{ req.userLastName?.charAt(0) }}</div>
+                      <div>
+                        <div class="fw-semibold">{{ req.userFirstName }} {{ req.userLastName }}</div>
+                        <div class="text-muted small">{{ req.userEmail }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="d-none d-md-table-cell text-muted small">{{ req.description }}</td>
+                <td class="text-nowrap">
+                  <span class="text-muted small">{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </td>
+                <td>
+                  <span [class]="'status-badge badge-' + req.status.toLowerCase()">{{ req.status }}</span>
+                </td>
+                <td class="text-end">
+                  @if (req.status === 'PENDING') {
+                    <div class="d-flex gap-1 justify-content-end flex-wrap">
+                      <button class="btn-action btn-approve" (click)="approve(req)" [title]="'EMPLOYEE.requests.approve' | translate">
+                        <i class="bi bi-check-lg"></i>
+                        <span class="d-none d-sm-inline">{{ 'EMPLOYEE.requests.approve' | translate }}</span>
+                      </button>
+                      <button class="btn-action btn-reject" (click)="reject(req)" [title]="'EMPLOYEE.requests.reject' | translate">
+                        <i class="bi bi-x-lg"></i>
+                        <span class="d-none d-sm-inline">{{ 'EMPLOYEE.requests.reject' | translate }}</span>
+                      </button>
+                    </div>
+                  } @else {
+                    <button class="btn-action btn-detail" (click)="viewUser(req.userId)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- User detail modal -->
+  @if (showUserModal()) {
+    <div class="modal-overlay" (click)="closeUserModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-header-box">
+          <h3 class="modal-title-text">
+            <i class="bi bi-person me-2"></i>{{ 'EMPLOYEE.requests.user_detail' | translate }}
+          </h3>
+          <button class="modal-close-btn" (click)="closeUserModal()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body-content">
+          @if (userDetailLoading()) {
+            <div class="text-center py-4">
+              <div class="spinner-border spinner-border-sm" style="color: var(--bi-gold) !important;"></div>
+            </div>
+          } @else if (userDetail()) {
+            <div class="user-detail-header">
+              <div class="user-detail-avatar">
+                {{ userDetail()!.firstName?.charAt(0) }}{{ userDetail()!.lastName?.charAt(0) }}
+              </div>
+              <div>
+                <h5 class="user-detail-name">{{ userDetail()!.firstName }} {{ userDetail()!.lastName }}</h5>
+                <span class="text-muted">{{ userDetail()!.email }}</span>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h6 class="detail-section-title">{{ 'EMPLOYEE.requests.personal_info' | translate }}</h6>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.tax_code' | translate }}</span>
+                  <span class="detail-value mono">{{ userDetail()!.fiscalCode }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.birth_date' | translate }}</span>
+                  <span class="detail-value">{{ userDetail()!.birthDate | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.birth_place' | translate }}</span>
+                  <span class="detail-value">{{ userDetail()!.birthPlace }} ({{ userDetail()!.birthProvince }})</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.profession' | translate }}</span>
+                  <span class="detail-value">{{ userDetail()!.profession }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h6 class="detail-section-title">{{ 'EMPLOYEE.requests.account' | translate }}</h6>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.tax_code' | translate }}</span>
+                  <span class="detail-value mono">{{ userDetail()!.accountNumber }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.balance' | translate }}</span>
+                  <span class="detail-value fw-bold">{{ userDetail()!.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.account_status' | translate }}</span>
+                  <span class="detail-value">{{ userDetail()!.accountStatus }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.requests.user_status' | translate }}</span>
+                  <span class="detail-value">{{ userDetail()!.userStatus }}</span>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="text-center text-muted py-4">{{ 'EMPLOYEE.requests.cannot_load' | translate }}</div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

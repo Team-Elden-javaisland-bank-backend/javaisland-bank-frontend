@@ -1,0 +1,154 @@
+<div class="container py-3">
+  <div class="page-header mb-4">
+    <div>
+      <h2 class="page-title">Le tue Carte</h2>
+      <p class="page-subtitle">Gestisci le tue carte di debito e credito</p>
+    </div>
+  </div>
+
+  @if (message()) {
+    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5 text-muted">Caricamento...</div>
+  } @else {
+    <div class="cards-layout">
+      <!-- Main cards area -->
+      <div class="cards-main">
+        @if (cards().length === 0) {
+          <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="bi bi-credit-card"></i></div>
+            <h6 class="empty-state-title">Nessuna carta</h6>
+            <p class="empty-state-text">Non hai ancora carte associate ai tuoi conti.</p>
+          </div>
+        } @else {
+          <div class="row g-4 justify-content-center">
+            @for (card of cards(); track card.id) {
+              <div class="col-12 col-md-6 col-xl-4 d-flex flex-column align-items-center mb-4">
+                <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
+                  <!-- Top row: type + chip + status -->
+                  <div class="cc-top">
+                    <span class="cc-type">{{ card.cardType }}</span>
+                    <div class="cc-chip"></div>
+                    <span [class]="'cc-status cs-' + card.status">{{ card.status }}</span>
+                  </div>
+
+                  <!-- Center: card number -->
+                  <div class="cc-number">
+                    @if (revealedId() === card.id && revealedCard()) {
+                      {{ formatCardNumber(revealedCard()!.cardNumber) }}
+                    } @else {
+                      {{ card.maskedCardNumber }}
+                    }
+                  </div>
+
+                  <!-- Bottom row: holder + expiry -->
+                  <div class="cc-bottom">
+                    <div class="cc-holder-group">
+                      <span class="cc-label">Titolare</span>
+                      <span class="cc-holder">{{ card.holderName }}</span>
+                    </div>
+                    <div class="cc-expiry-group">
+                      <span class="cc-label">Scade</span>
+                      <span class="cc-exp">{{ card.expirationDate }}</span>
+                    </div>
+                    @if (revealedId() === card.id && revealedCard()) {
+                      <div class="cc-cvv-group">
+                        <span class="cc-label">CVV</span>
+                        <span class="cc-cvv">{{ revealedCard()!.cvv }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Button OUTSIDE the card -->
+                <button class="btn btn-outline-dark btn-sm rounded-3 mt-2 cc-toggle-btn" (click)="toggleSensitive(card.id)">
+                  <i class="bi" [class.bi-eye]="revealedId() !== card.id" [class.bi-eye-slash]="revealedId() === card.id"></i>
+                  {{ revealedId() === card.id ? 'Nascondi' : 'Mostra dati completi' }}
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Sidebar -->
+      <div class="cards-sidebar">
+        <!-- Card stats -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-credit-card me-2"></i>Riepilogo Carte
+          </div>
+          <div class="sidebar-card-body">
+            <div class="summary-row">
+              <span class="summary-label">Carte Totali</span>
+              <span class="summary-value">{{ cards().length }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Carte Attive</span>
+              <span class="summary-value text-gold">{{ getActiveCardsCount() }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Carte Bloccate</span>
+              <span class="summary-value text-danger">{{ getBlockedCardsCount() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="sidebar-card mb-3">
+          <div class="sidebar-card-header">
+            <i class="bi bi-shield-check me-2"></i>Sicurezza Carta
+          </div>
+          <div class="sidebar-card-body">
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-eye-slash"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">Proteggi i dati</span>
+                <span class="tip-desc">Non condividere mai il numero completo, CVV o PIN della tua carta.</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-phone"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">Notifiche push</span>
+                <span class="tip-desc">Attiva le notifiche per ricevere avvisi su ogni transazione.</span>
+              </div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon"><i class="bi bi-lock"></i></div>
+              <div class="tip-text">
+                <span class="tip-title">Blocco rapido</span>
+                <span class="tip-desc">In caso di smarrimento, contattaci subito per bloccare la carta.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card types info -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <i class="bi bi-info-circle me-2"></i>Tipi di Carta
+          </div>
+          <div class="sidebar-card-body">
+            <div class="card-type-info">
+              <div class="cti-icon cti-debit"><i class="bi bi-credit-card"></i></div>
+              <div class="cti-text">
+                <span class="cti-title">Carta di Debito</span>
+                <span class="cti-desc">Preleva e paga direttamente dal tuo conto corrente.</span>
+              </div>
+            </div>
+            <div class="card-type-info">
+              <div class="cti-icon cti-credit"><i class="bi bi-credit-card-2-front"></i></div>
+              <div class="cti-text">
+                <span class="cti-title">Carta di Credito</span>
+                <span class="cti-desc">Paga con credito e paga il saldo mensilmente.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

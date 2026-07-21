@@ -1,0 +1,47 @@
+<div class="pin-page">
+  <div class="pin-card">
+    <div class="pin-header">
+      <div class="pin-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e5a93c" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h1>{{ 'PIN.verify_title' | translate }}</h1>
+      <p>{{ 'PIN.verify_desc' | translate }}</p>
+    </div>
+
+    <div class="pin-inputs">
+      @for (digit of digits(); track $index; let i = $index) {
+        <input
+          #pinInput
+          type="password"
+          maxlength="1"
+          inputmode="numeric"
+          pattern="[0-9]"
+          [value]="digit"
+          (input)="onInput(i, $event)"
+          (keydown)="onKeydown(i, $event)"
+          class="pin-digit"
+          [class.filled]="digit.length === 1"
+          [disabled]="loading()"
+        />
+      }
+    </div>
+
+    @if (message()) {
+      <div class="pin-message" [class]="'pin-message-' + messageType()">
+        {{ message() }}
+      </div>
+    }
+
+    <button class="btn btn-gold w-100" (click)="submit()" [disabled]="loading() || digits().some(d => !d)">
+      @if (loading()) {
+        <span class="spinner-border spinner-border-sm me-2"></span>
+      }
+      {{ 'PIN.access' | translate }}
+    </button>
+
+    <button class="pin-logout" (click)="logout()">{{ 'PIN.logout' | translate }}</button>
+  </div>
+</div>

@@ -1,0 +1,143 @@
+<div class="auth-page">
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-body text-center mb-4">
+      <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="auth-logo">
+      <p class="auth-subtitle">Crea il tuo account</p>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger mx-3">{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="px-3 px-sm-4">
+
+      <!-- ═══ ANAGRAFICA ═══ -->
+      <div class="auth-section-label">Anagrafica</div>
+      <div class="row g-3">
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="firstName" class="form-label fw-semibold">Nome</label>
+            <input id="firstName" type="text" [(ngModel)]="firstName" name="firstName" class="form-control" placeholder="Mario" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="lastName" class="form-label fw-semibold">Cognome</label>
+            <input id="lastName" type="text" [(ngModel)]="lastName" name="lastName" class="form-control" placeholder="Rossi" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="birthDate" class="form-label fw-semibold">Data di nascita</label>
+            <input id="birthDate" type="date" [(ngModel)]="birthDate" name="birthDate" class="form-control" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="gender" class="form-label fw-semibold">Sesso</label>
+            <select id="gender" [(ngModel)]="gender" name="gender" class="form-select">
+              <option value="">Seleziona...</option>
+              <option value="M">Maschile</option>
+              <option value="F">Femminile</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ DETTAGLI PERSONALI ═══ -->
+      <div class="auth-section-label">Dettagli personali</div>
+      <div class="mb-3">
+        <label for="birthPlace" class="form-label fw-semibold">Luogo di nascita</label>
+        <input id="birthPlace" type="text" [(ngModel)]="birthPlace" name="birthPlace" class="form-control" placeholder="Roma" />
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-sm-4">
+          <div class="mb-3">
+            <label for="birthProvince" class="form-label fw-semibold">Prov.</label>
+            <input id="birthProvince" type="text" [(ngModel)]="birthProvince" name="birthProvince" class="form-control" placeholder="RM" maxlength="2" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-8">
+          <div class="mb-3">
+            <label for="fiscalCode" class="form-label fw-semibold">Codice Fiscale</label>
+            <input id="fiscalCode" type="text" [(ngModel)]="fiscalCode" name="fiscalCode" class="form-control" placeholder="RSSMRA..." maxlength="16" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="residence" class="form-label fw-semibold">Residenza</label>
+        <input id="residence" type="text" [(ngModel)]="residence" name="residence" class="form-control" placeholder="Via Roma 1, Roma RM" />
+      </div>
+
+      <!-- ═══ CONTATTI ═══ -->
+      <div class="auth-section-label">Contatti</div>
+      <div class="row g-3">
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="phone" class="form-label fw-semibold">Telefono</label>
+            <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="form-control" placeholder="+39 333 1234567" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="profession" class="form-label fw-semibold">Professione</label>
+            <input id="profession" type="text" [(ngModel)]="profession" name="profession" class="form-control" placeholder="Ingegnere" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ACCESSO ═══ -->
+      <div class="auth-section-label">Credenziali di accesso</div>
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email</label>
+        <input id="email" type="email" [(ngModel)]="email" name="email" class="form-control" placeholder="mario.rossi@email.com" />
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold">Password</label>
+            <input id="password" type="password" [(ngModel)]="password" name="password" class="form-control" placeholder="Min. 6 caratteri" />
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label fw-semibold">Conferma</label>
+            <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" class="form-control" placeholder="Ripeti la password" />
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success btn-lg w-100 rounded-3 mt-2" [disabled]="loading()">
+        @if (loading()) { Registrazione in corso... } @else { Registrati }
+      </button>
+    </form>
+
+    <div class="text-center mt-4 mb-2">
+      <p>Hai già un account? <a routerLink="/login" class="text-decoration-none fw-semibold" style="color: var(--bi-gold);">Accedi</a></p>
+    </div>
+  </div>
+</div>
+
+@if (showSuccessModal()) {
+  <div class="modal-overlay" (click)="goToLogin()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2>Registrazione completata!</h2>
+      <p>Un dipendente dovrà validare il tuo account prima di poter accedere.</p>
+      <button class="btn btn-success rounded-3 fw-semibold px-4" (click)="goToLogin()">
+        Vai al Login
+      </button>
+    </div>
+  </div>
+}
