@@ -2,13 +2,14 @@ import { Component, signal, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewI
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
 
 @Component({
   selector: 'app-customer-account-detail',
-  imports: [CurrencyPipe, DatePipe, FormsModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe],
   templateUrl: './customer-account-detail.html',
   styleUrl: './customer-account-detail.css',
 })

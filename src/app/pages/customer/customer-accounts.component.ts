@@ -1,12 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 
 @Component({
   selector: 'app-customer-accounts',
-  imports: [CurrencyPipe, DatePipe, FormsModule],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe],
   templateUrl: './customer-accounts.html',
   styleUrl: './customer-accounts.css',
 })

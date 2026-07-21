@@ -1,6 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -8,7 +9,7 @@ import { TransactionResponseDto } from '../../core/models/transaction/transactio
 
 @Component({
   selector: 'app-customer-dashboard',
-  imports: [CurrencyPipe, DatePipe, RouterLink],
+  imports: [CurrencyPipe, DatePipe, RouterLink, TranslatePipe],
   templateUrl: './customer-dashboard.html',
   styleUrl: './customer-dashboard.css',
 })
