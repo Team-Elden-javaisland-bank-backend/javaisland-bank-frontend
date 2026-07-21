@@ -26,7 +26,7 @@
         </div>
       }
 
-      <form (ngSubmit)="onSubmit()" aria-label="Form di accesso">
+      <form (ngSubmit)="onSubmit()" [attr.aria-label]="'AUTH.login_aria' | translate">
         <div class="auth-field">
           <label for="username" class="auth-label">
             <i class="bi bi-person"></i>

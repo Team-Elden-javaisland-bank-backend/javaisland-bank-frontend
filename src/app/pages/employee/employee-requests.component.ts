@@ -1,7 +1,7 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
 
@@ -104,7 +104,7 @@ export class EmployeeRequestsComponent implements OnInit {
     };
   });
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(private employeeService: EmployeeService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.loadRequests();
@@ -216,9 +216,9 @@ export class EmployeeRequestsComponent implements OnInit {
 
   getTypeLabel(type: string): string {
     switch (type) {
-      case 'PASSWORD_CHANGE': return 'Cambio Password';
-      case 'ACCOUNT_OPENING': return 'Apertura Conto';
-      case 'ACCOUNT_CLOSURE': return 'Chiusura Conto';
+      case 'PASSWORD_CHANGE': return this.translate.instant('REQUEST_TYPE.PASSWORD_CHANGE');
+      case 'ACCOUNT_OPENING': return this.translate.instant('REQUEST_TYPE.ACCOUNT_OPENING');
+      case 'ACCOUNT_CLOSURE': return this.translate.instant('REQUEST_TYPE.ACCOUNT_CLOSURE');
       default: return type;
     }
   }

@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { NotificationService, NotificationDto } from '../../core/services/notification.service';
 
 @Component({
@@ -12,6 +12,7 @@ import { NotificationService, NotificationDto } from '../../core/services/notifi
 })
 export class CustomerNotificationsComponent implements OnInit {
   private notificationService = inject(NotificationService);
+  private translate = inject(TranslateService);
 
   notifications = signal<NotificationDto[]>([]);
   loading = signal<boolean>(true);
@@ -85,14 +86,14 @@ export class CustomerNotificationsComponent implements OnInit {
 
   getTypeLabel(type: string): string {
     const labels: Record<string, string> = {
-      'TRANSFER': 'Trasferimento',
-      'DEPOSIT': 'Deposito',
-      'WITHDRAWAL': 'Prelievo',
-      'ACCOUNT': 'Account',
-      'PASSWORD_CHANGE': 'Cambio Password',
-      'SCHEDULED_TRANSFER': 'Trasferimento Programmato'
+      'TRANSFER': 'NOTIFICATION_TYPE.TRANSFER',
+      'DEPOSIT': 'NOTIFICATION_TYPE.DEPOSIT',
+      'WITHDRAWAL': 'NOTIFICATION_TYPE.WITHDRAWAL',
+      'ACCOUNT': 'NOTIFICATION_TYPE.ACCOUNT',
+      'PASSWORD_CHANGE': 'NOTIFICATION_TYPE.PASSWORD_CHANGE',
+      'SCHEDULED_TRANSFER': 'NOTIFICATION_TYPE.SCHEDULED_TRANSFER'
     };
-    return labels[type] || type;
+    return this.translate.instant(labels[type] || type);
   }
 
   getTypeBadgeClass(type: string): string {

@@ -1,7 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -27,6 +27,7 @@ export class CustomerDashboardComponent implements OnInit {
     private customerService: CustomerService,
     public authService: AuthService,
     private router: Router,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -35,9 +36,9 @@ export class CustomerDashboardComponent implements OnInit {
 
   get greeting(): string {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Buongiorno';
-    if (hour < 18) return 'Buon pomeriggio';
-    return 'Buonasera';
+    if (hour < 12) return this.translate.instant('DASHBOARD.greeting_morning');
+    if (hour < 18) return this.translate.instant('DASHBOARD.greeting_afternoon');
+    return this.translate.instant('DASHBOARD.greeting_evening');
   }
 
   get userName(): string {
@@ -106,18 +107,25 @@ export class CustomerDashboardComponent implements OnInit {
   }
 
   getTransactionType(typeId: number): string {
-    const types: Record<number, string> = { 1: 'Deposito', 2: 'Prelievo', 3: 'Bonifico', 4: 'Bonifico Iniziale' };
-    return types[typeId] ?? 'Sconosciuto';
+    const types: Record<number, string> = { 1: 'TX_TYPE.DEPOSIT', 2: 'TX_TYPE.WITHDRAWAL', 3: 'TX_TYPE.TRANSFER', 4: 'TX_TYPE.INITIAL_TRANSFER' };
+    return this.translate.instant(types[typeId] ?? 'TX_TYPE.UNKNOWN');
   }
 
   getTypeNameLabel(typeName: string | undefined): string {
     const map: Record<string, string> = {
-      'DEPOSIT': 'Deposito',
-      'WITHDRAWAL': 'Prelievo',
-      'TRANSFER': 'Bonifico',
-      'INITIAL_TRANSFER': 'Bonifico Iniziale',
+      'DEPOSIT': 'TX_TYPE.DEPOSIT',
+      'Deposito': 'TX_TYPE.DEPOSIT',
+      'WITHDRAWAL': 'TX_TYPE.WITHDRAWAL',
+      'Prelievo': 'TX_TYPE.WITHDRAWAL',
+      'TRANSFER': 'TX_TYPE.TRANSFER',
+      'Bonifico': 'TX_TYPE.TRANSFER',
+      'Bonifico Normale': 'TX_TYPE.TRANSFER',
+      'INITIAL_TRANSFER': 'TX_TYPE.INITIAL_TRANSFER',
+      'Bonifico Iniziale': 'TX_TYPE.INITIAL_TRANSFER',
+      'INSTANT_TRANSFER': 'TX_TYPE.INSTANT_TRANSFER',
+      'Bonifico Istantaneo': 'TX_TYPE.INSTANT_TRANSFER',
     };
-    return typeName ? (map[typeName] ?? typeName) : 'Sconosciuto';
+    return typeName ? this.translate.instant(map[typeName] ?? typeName) : this.translate.instant('TX_TYPE.UNKNOWN');
   }
 
   getStatusClass(statusId: number): string {

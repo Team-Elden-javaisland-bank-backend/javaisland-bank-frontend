@@ -30,10 +30,10 @@
               </div>
             </div>
             <div class="col">
-              <h2 class="profile-name">{{ profile()!.name }}</h2>
+              <h2 class="profile-name">{{ getFullName() }}</h2>
               <p class="profile-email">{{ profile()!.email }}</p>
-              <span class="badge badge-status" [ngClass]="getStatusBadgeClass(profile()!.status)">
-                {{ getStatusLabel(profile()!.status) }}
+              <span class="badge badge-status" [ngClass]="getStatusBadgeClass(profile()!.userStatus)">
+                {{ getStatusLabel(profile()!.userStatus) }}
               </span>
             </div>
             <div class="col-auto">
@@ -59,7 +59,7 @@
           <div class="card-body">
             <div class="info-row">
               <span class="info-label">{{ 'PROFILE.full_name' | translate }}</span>
-              <span class="info-value">{{ profile()!.name }}</span>
+              <span class="info-value">{{ getFullName() }}</span>
             </div>
             <div class="info-row">
               <span class="info-label">{{ 'AUTH.fiscal_code' | translate }}</span>
@@ -75,7 +75,7 @@
             </div>
             <div class="info-row">
               <span class="info-label">{{ 'PROFILE.registration_date' | translate }}</span>
-              <span class="info-value">{{ formatDate(profile()!.registrationDate) }}</span>
+              <span class="info-value">{{ formatDate(profile()!.registeredAt) }}</span>
             </div>
           </div>
         </div>
@@ -113,19 +113,19 @@
               <p class="text-muted text-center py-3">{{ 'PROFILE.no_accounts' | translate }}</p>
             }
             <div class="row">
-              @for (account of accounts(); track account.id) {
+              @for (account of accounts(); track account.accountNumber) {
                 <div class="col-lg-6 mb-3">
                   <div class="account-card">
                     <div class="account-card-header">
-                      <span class="account-type">{{ account.type }}</span>
+                      <span class="account-type mono">{{ account.accountNumber }}</span>
                       <span class="badge badge-status" [ngClass]="getStatusBadgeClass(account.status)">
                         {{ getStatusLabel(account.status) }}
                       </span>
                     </div>
                     <div class="account-card-body">
-                      <div class="account-iban font-monospace">{{ maskIban(account.iban) }}</div>
+                      <div class="account-iban font-monospace">{{ maskIban(account.accountNumber) }}</div>
                       <div class="account-balance">{{ formatCurrency(account.balance) }}</div>
-                      <div class="account-date">{{ 'PROFILE.opened_on' | translate }} {{ formatDate(account.creationDate) }}</div>
+                      <div class="account-date">{{ 'PROFILE.opened_on' | translate }} {{ formatDate(account.createdAt) }}</div>
                     </div>
                   </div>
                 </div>
@@ -153,15 +153,15 @@
                 <div class="col-lg-4 col-md-6 mb-3">
                   <div class="bank-card" [ngClass]="getCardGradient(card.cardType)">
                     <div class="bank-card-chip"></div>
-                    <div class="bank-card-number">{{ maskCardNumber(card.cardNumber) }}</div>
+                    <div class="bank-card-number">{{ maskCardNumber(card.maskedCardNumber) }}</div>
                     <div class="bank-card-footer">
                       <div>
                         <div class="bank-card-label">{{ 'PROFILE.account_holder' | translate }}</div>
-                        <div class="bank-card-value">{{ profile()!.name }}</div>
+                        <div class="bank-card-value">{{ getFullName() }}</div>
                       </div>
                       <div>
                         <div class="bank-card-label">{{ 'PROFILE.expiry' | translate }}</div>
-                        <div class="bank-card-value">{{ card.expiryDate }}</div>
+                        <div class="bank-card-value">{{ card.expirationDate }}</div>
                       </div>
                       <div>
                         <div class="bank-card-label">{{ 'PROFILE.type' | translate }}</div>
@@ -169,8 +169,8 @@
                       </div>
                     </div>
                     <div class="bank-card-status">
-                      <span class="badge badge-status" [ngClass]="getStatusBadgeClass(card.status)">
-                        {{ getStatusLabel(card.status) }}
+                      <span class="badge badge-status" [ngClass]="getStatusBadgeClass(card.cardStatus)">
+                        {{ getStatusLabel(card.cardStatus) }}
                       </span>
                     </div>
                   </div>
@@ -201,7 +201,7 @@
                 class="form-control form-control-dark"
                 [value]="passwordRequest().currentPassword"
                 (input)="updatePasswordField('currentPassword', $any($event.target).value)"
-                placeholder="Inserisci la password attuale"
+                [placeholder]="'PROFILE.enter_current_password' | translate"
               />
             </div>
             <div class="mb-3">
@@ -244,7 +244,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closePasswordModal()">Annulla</button>
+            <button type="button" class="btn btn-secondary" (click)="closePasswordModal()">{{ 'PROFILE.cancel' | translate }}</button>
             <button
               type="button"
               class="btn btn-gold"
@@ -269,7 +269,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-dark">
           <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-file-earmark-pdf me-2"></i>Genera Estratto Conto PDF</h5>
+            <h5 class="modal-title"><i class="bi bi-file-earmark-pdf me-2"></i>{{ 'PROFILE.pdf_title' | translate }}</h5>
             <button type="button" class="btn-close btn-close-white" (click)="closePdfModal()"></button>
           </div>
           <div class="modal-body">
@@ -286,23 +286,23 @@
                   <span class="badge bg-secondary">{{ transactions().length }} {{ 'PROFILE.transactions_count' | translate }}</span>
                 </div>
               </button>
-              @for (account of accounts(); track account.id) {
+              @for (account of accounts(); track account.accountNumber) {
                 <button
                   type="button"
                   class="list-group-item list-group-item-action"
-                  [ngClass]="{ 'active-account': selectedAccountForPdf() === account.id }"
-                  (click)="selectAccountForPdf(account.id)"
+                  [ngClass]="{ 'active-account': selectedAccountForPdf() === account.accountNumber }"
+                  (click)="selectAccountForPdf(account.accountNumber)"
                 >
                   <div class="d-flex justify-content-between align-items-center">
-                    <span class="font-monospace">{{ maskIban(account.iban) }}</span>
-                    <span class="badge bg-secondary">{{ account.type }}</span>
+                    <span class="font-monospace">{{ maskIban(account.accountNumber) }}</span>
+                    <span class="badge bg-secondary">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
                   </div>
                 </button>
               }
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closePdfModal()">Annulla</button>
+            <button type="button" class="btn btn-secondary" (click)="closePdfModal()">{{ 'PROFILE.cancel' | translate }}</button>
             <button
               type="button"
               class="btn btn-gold"

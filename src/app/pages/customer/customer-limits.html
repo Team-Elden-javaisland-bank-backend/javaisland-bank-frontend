@@ -74,8 +74,8 @@
                           <i class="bi bi-pencil-square"></i>
                         </div>
                         <div>
-                          <div class="limit-type-name">{{ meta.label }}</div>
-                          <div class="limit-type-desc">{{ meta.description }}</div>
+                          <div class="limit-type-name">{{ meta.labelKey | translate }}</div>
+                          <div class="limit-type-desc">{{ meta.descriptionKey | translate }}</div>
                         </div>
                       </div>
                       <div class="limit-edit-area">
@@ -105,8 +105,8 @@
                           <i [class]="getLimitIcon(meta.type)"></i>
                         </div>
                         <div class="limit-header-text">
-                          <div class="limit-type-name">{{ meta.label }}</div>
-                          <div class="limit-type-desc">{{ meta.description }}</div>
+                          <div class="limit-type-name">{{ meta.labelKey | translate }}</div>
+                          <div class="limit-type-desc">{{ meta.descriptionKey | translate }}</div>
                         </div>
                         <span [class]="'policy-badge policy-' + (getLimitForType(meta.type)?.changePolicy ?? '')">
                           {{ getPolicyLabel(meta.type) }}

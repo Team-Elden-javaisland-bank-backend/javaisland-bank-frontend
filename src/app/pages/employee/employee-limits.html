@@ -56,14 +56,14 @@
                     <i class="bi bi-pencil-square"></i>
                   </div>
                   <div>
-                    <div class="limit-type-name">{{ meta.label }}</div>
-                    <div class="limit-type-desc">{{ meta.description }}</div>
+                    <div class="limit-type-name">{{ meta.labelKey | translate }}</div>
+                    <div class="limit-type-desc">{{ meta.descriptionKey | translate }}</div>
                   </div>
                 </div>
                 <div class="limit-edit-area">
                   <div class="limit-input-wrapper">
                     <span class="limit-input-prefix">€</span>
-                    <input class="limit-input" type="number" [(ngModel)]="editAmount" [min]="meta.minValue" step="0.01" placeholder="Importo" />
+                    <input class="limit-input" type="number" [(ngModel)]="editAmount" [min]="meta.minValue" step="0.01" [placeholder]="'EMPLOYEE.limits.amount_placeholder' | translate" />
                   </div>
                   <div class="limit-range">{{ 'EMPLOYEE.limits.range' | translate }}: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</div>
                   @if (editingError()) {
@@ -87,8 +87,8 @@
                     <i [class]="getLimitIcon(meta.type)"></i>
                   </div>
                   <div>
-                    <div class="limit-type-name">{{ meta.label }}</div>
-                    <div class="limit-type-desc">{{ meta.description }}</div>
+                    <div class="limit-type-name">{{ meta.labelKey | translate }}</div>
+                    <div class="limit-type-desc">{{ meta.descriptionKey | translate }}</div>
                   </div>
                   @if (getLimitForType(meta.type); as limit) {
                     <span [class]="'policy-badge policy-' + limit.changePolicy">

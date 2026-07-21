@@ -8,8 +8,8 @@ import { AccountLimitResponseDto } from '../../core/models/account/account-limit
 
 interface LimitMeta {
   type: string;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   defaultValue: number;
   minValue: number;
   maxValue: number;
@@ -35,12 +35,12 @@ export class CustomerLimitsComponent {
   editAmount = 0;
 
   allLimitTypes: LimitMeta[] = [
-    { type: 'ATM_WITHDRAWAL', label: 'Prelievo ATM', description: 'Massimo prelievo per transazione ATM', defaultValue: 300, minValue: 10, maxValue: 300 },
-    { type: 'POS_SPENDING', label: 'Spesa POS', description: 'Massima spesa per transazione POS', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
-    { type: 'DAILY_TRANSFER', label: 'Bonifico Giornaliero', description: 'Massimo trasferimento cumulativo al giorno', defaultValue: 15000, minValue: 1, maxValue: 15000 },
-    { type: 'SINGLE_TRANSFER', label: 'Bonifico Singolo', description: 'Massimo importo per singolo bonifico', defaultValue: 10000, minValue: 1, maxValue: 10000 },
-    { type: 'INSTANT_TRANSFER_SINGLE', label: 'Bonifico Istantaneo', description: 'Massimo importo per bonifico istantaneo', defaultValue: 5000, minValue: 1, maxValue: 5000 },
-    { type: 'MONTHLY_TRANSFER', label: 'Movimenti Mensili', description: 'Massimo totale movimentato nell\'arco di un mese', defaultValue: 50000, minValue: 1, maxValue: 50000 },
+    { type: 'ATM_WITHDRAWAL', labelKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.label', descriptionKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.description', defaultValue: 300, minValue: 10, maxValue: 300 },
+    { type: 'POS_SPENDING', labelKey: 'LIMIT_TYPE.POS_SPENDING.label', descriptionKey: 'LIMIT_TYPE.POS_SPENDING.description', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
+    { type: 'DAILY_TRANSFER', labelKey: 'LIMIT_TYPE.DAILY_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.DAILY_TRANSFER.description', defaultValue: 15000, minValue: 1, maxValue: 15000 },
+    { type: 'SINGLE_TRANSFER', labelKey: 'LIMIT_TYPE.SINGLE_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.SINGLE_TRANSFER.description', defaultValue: 10000, minValue: 1, maxValue: 10000 },
+    { type: 'INSTANT_TRANSFER_SINGLE', labelKey: 'LIMIT_TYPE.INSTANT_TRANSFER_SINGLE.label', descriptionKey: 'LIMIT_TYPE.INSTANT_TRANSFER_SINGLE.description', defaultValue: 5000, minValue: 1, maxValue: 5000 },
+    { type: 'MONTHLY_TRANSFER', labelKey: 'LIMIT_TYPE.MONTHLY_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.MONTHLY_TRANSFER.description', defaultValue: 50000, minValue: 1, maxValue: 50000 },
   ];
 
   constructor(private customerService: CustomerService) {

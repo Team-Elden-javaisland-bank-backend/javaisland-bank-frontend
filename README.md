@@ -15,6 +15,39 @@ Frontend Angular 22 per la banca digitale **EldenBank**. Mobile-first, collegato
 | RxJS | 7.8 | Gestione asincrona |
 | Angular Router | 22 | Navigazione + guard |
 | HttpClient | 22 | Chiamate REST con interceptor JWT |
+| @ngx-translate/core | 16 | Internazionalizzazione (i18n) |
+| jsPDF + jspdf-autotable | — | Generazione PDF lato client |
+
+---
+
+## Internazionalizzazione (i18n)
+
+Il supporto multi-lingua è implementato tramite `@ngx-translate/core`:
+
+- **Lingue supportate**: Italiano (`it`), Inglese (`en`)
+- **File di traduzione**: `src/assets/i18n/it.json`, `src/assets/i18n/en.json`
+- **Lingua di default**: Italiano (salvata in `localStorage`)
+- **Language switcher**: accessible dall'interfaccia utente, persiste la scelta
+- **PDF statement**: genera estratto conto nella lingua corrente (intestatario, date, header tabella, paginazione)
+- **Date/currency formatting**: locale-aware (`it-IT` / `en-GB`)
+
+### Chiavi di traduzione
+
+| Prefisso | Ambito |
+|---|---|
+| `DASHBOARD.*` | Pannello customer |
+| `ACCOUNT_DETAIL.*` | Dettaglio conto |
+| `TRANSACTIONS.*` | Transazioni |
+| `PROFILE.*` | Profilo + PDF |
+| `LIMITS.*` | Gestione limiti |
+| `NOTIFICATIONS.*` | Notifiche |
+| `REQUESTS.*` | Richieste cliente |
+| `TX_TYPE.*` | Tipi transazione |
+| `LIMIT_TYPE.*` | Tipi limite |
+| `NOTIFICATION_TYPE.*` | Tipi notifica |
+| `REQUEST_TYPE.*` | Tipi richiesta |
+| `EMPLOYEE.*` | Pagine dipendente |
+| `ADMIN.*` | Pagine admin |
 
 ---
 
@@ -31,10 +64,11 @@ src/app/
 │   └── layout.*          # Shell: sidebar + bottom nav (mobile-first)
 ├── pages/
 │   ├── auth/             # Login + Registrazione
-│   ├── customer/         # Dashboard, Conti, Transazioni, Beneficiari, Carte
-│   └── employee/         # Dashboard, Registrazioni, Conti, Carte
+│   ├── customer/         # Dashboard, Conti, Transazioni, Beneficiari, Carte, Profilo, Notifiche, Limiti
+│   ├── employee/         # Dashboard, Registrazioni, Conti, Carte, Limiti, Richieste
+│   └── admin/            # Dashboard, Dipendenti, Audit Logs
 ├── app.routes.ts         # Routing completo con guard
-├── app.config.ts         # Bootstrap providers
+├── app.config.ts         # Bootstrap providers + i18n config
 └── app.*                 # Root component
 ```
 
@@ -131,6 +165,7 @@ Documentazione API disponibile su: `http://localhost:8081/swagger-ui/index.html`
 - **Tabs** — scroll orizzontale se non entrano nello schermo
 - **Modal** — slide-up dal basso su mobile, centrata su desktop
 - **Card** — gradienti diversi per DEBIT/CREDIT, reveal CVV con toggle
+- **PDF Statement** — generazione estratto conto con jsPDF, header tradotti, tabella movimenti, paginazione
 
 ---
 
@@ -198,8 +233,9 @@ npm test
 3. Login → POST /api/v1/auth/keycloak-login
    → JWT + ruolo + dati utente
 
-4. Customer: gestisce conti, transazioni, beneficiari, carte
-5. Employee: gestisce registrazioni, conti, limiti, carte
+4. Customer: gestisce conti, transazioni, beneficiari, carte, profilo, notifiche, limiti
+5. Employee: gestisce registrazioni, conti, limiti, carte, richieste
+6. Admin: gestisce dipendenti, audit log
 ```
 
 ---

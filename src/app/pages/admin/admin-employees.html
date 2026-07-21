@@ -59,7 +59,7 @@
             <input
               type="email"
               class="form-control"
-              placeholder="email&#64;esempio.it"
+              [placeholder]="'ADMIN.employees.email' | translate"
               [value]="newEmployee().email"
               (input)="updateFormField('email', $event)"
             />
@@ -69,7 +69,7 @@
             <input
               type="password"
               class="form-control"
-              placeholder="Inserisci password"
+              [placeholder]="'ADMIN.employees.password_placeholder' | translate"
               [value]="newEmployee().password"
               (input)="updateFormField('password', $event)"
             />
@@ -154,7 +154,7 @@
   @if (loading()) {
     <div class="d-flex justify-content-center align-items-center py-5">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Caricamento...</span>
+        <span class="visually-hidden">{{ 'LAYOUT.loading' | translate }}</span>
       </div>
     </div>
   } @else if (error()) {
@@ -163,7 +163,7 @@
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
       <div>{{ error() }}</div>
       <button class="btn btn-outline-danger btn-sm ms-auto" (click)="loadEmployees()">
-        <i class="bi bi-arrow-clockwise me-1"></i>Riprova
+        <i class="bi bi-arrow-clockwise me-1"></i>{{ 'ADMIN.dashboard.retry' | translate }}
       </button>
     </div>
   } @else {
@@ -188,7 +188,7 @@
               <tr>
                 <th>{{ 'ADMIN.employees.employee' | translate }}</th>
                 <th>{{ 'ADMIN.employees.email' | translate }}</th>
-                <th>Username</th>
+                <th>{{ 'ADMIN.employees.username' | translate }}</th>
                 <th>{{ 'ADMIN.employees.status' | translate }}</th>
                 <th>{{ 'ADMIN.employees.created' | translate }}</th>
                 <th class="text-end">{{ 'ADMIN.employees.actions' | translate }}</th>
@@ -278,7 +278,7 @@
             @if (loadingDetail()) {
               <div class="d-flex justify-content-center py-4">
                 <div class="spinner-border text-primary" role="status">
-                  <span class="visually-hidden">Caricamento...</span>
+                  <span class="visually-hidden">{{ 'LAYOUT.loading' | translate }}</span>
                 </div>
               </div>
             } @else if (employeeDetail()) {

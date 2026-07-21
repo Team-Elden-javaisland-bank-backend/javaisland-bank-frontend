@@ -49,7 +49,7 @@
   @if (loading()) {
     <div class="d-flex justify-content-center align-items-center py-5">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Caricamento...</span>
+        <span class="visually-hidden">{{ 'ADMIN.audit.loading' | translate }}</span>
       </div>
     </div>
   } @else if (error()) {
@@ -57,7 +57,7 @@
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
       <div>{{ error() }}</div>
       <button class="btn btn-outline-danger btn-sm ms-auto" (click)="loadLogs()">
-        <i class="bi bi-arrow-clockwise me-1"></i>Riprova
+        <i class="bi bi-arrow-clockwise me-1"></i>{{ 'ADMIN.audit.retry' | translate }}
       </button>
     </div>
   } @else {
@@ -144,7 +144,7 @@
           @if (modalLoading()) {
             <div class="d-flex justify-content-center py-4">
               <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Caricamento...</span>
+                <span class="visually-hidden">{{ 'ADMIN.audit.loading' | translate }}</span>
               </div>
             </div>
           } @else if (modalError()) {
@@ -159,7 +159,7 @@
                 </div>
                 <h4 class="mb-1">{{ selectedEmployee()!.firstName }} {{ selectedEmployee()!.lastName }}</h4>
                 <span class="badge" [ngClass]="selectedEmployee()!.status === 'ACTIVE' ? 'bg-success' : 'bg-danger'">
-                  {{ selectedEmployee()!.status === 'ACTIVE' ? ('ROLE.employee' | translate) : 'Sospeso' }}
+                  {{ selectedEmployee()!.status === 'ACTIVE' ? ('ROLE.employee' | translate) : ('ADMIN.audit.suspended' | translate) }}
                 </span>
               </div>
               <div class="detail-rows">
@@ -177,7 +177,7 @@
                 </div>
                 <div class="detail-row">
                   <span class="detail-label text-muted">
-                    <i class="bi bi-hash me-2"></i>User ID
+                    <i class="bi bi-hash me-2"></i>{{ 'ADMIN.audit.user_id' | translate }}
                   </span>
                   <span class="detail-value">{{ selectedEmployee()!.userId }}</span>
                 </div>

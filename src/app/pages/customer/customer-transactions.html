@@ -182,11 +182,11 @@
       <div class="form-card-body">
         <div class="date-filter-row">
           <div class="form-group flex-grow-1">
-            <label class="form-label-sm">Da</label>
+            <label class="form-label-sm">{{ 'TRANSACTIONS.from' | translate }}</label>
             <input class="form-input-custom" type="date" [(ngModel)]="startDate" />
           </div>
           <div class="form-group flex-grow-1">
-            <label class="form-label-sm">A</label>
+            <label class="form-label-sm">{{ 'TRANSACTIONS.to' | translate }}</label>
             <input class="form-input-custom" type="date" [(ngModel)]="endDate" />
           </div>
           <button class="form-btn btn-search" (click)="loadHistory()">

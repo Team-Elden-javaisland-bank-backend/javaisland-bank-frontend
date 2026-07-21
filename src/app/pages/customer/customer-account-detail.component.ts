@@ -2,7 +2,7 @@ import { Component, signal, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewI
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
@@ -37,6 +37,7 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public router: Router,
     private customerService: CustomerService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -130,12 +131,12 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
           list.map(t => t.id === tx.id ? { ...t, statusId: 5, statusName: 'CANCELLED' } : t)
         );
         this.cancellingId.set(null);
-        this.txMessage.set('Bonifico annullato con successo.');
+        this.txMessage.set(this.translate.instant('ACCOUNT_DETAIL.messages.cancel_success'));
         this.txMessageType.set('success');
       },
       error: (err) => {
         this.cancellingId.set(null);
-        this.txMessage.set(err?.message || 'Impossibile annullare il bonifico.');
+        this.txMessage.set(err?.message || this.translate.instant('ACCOUNT_DETAIL.messages.cancel_error'));
         this.txMessageType.set('error');
       },
     });
@@ -143,13 +144,19 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
 
   getTypeLabel(typeName: string | undefined): string {
     const map: Record<string, string> = {
-      'DEPOSIT': 'Deposito',
-      'WITHDRAWAL': 'Prelievo',
-      'TRANSFER': 'Bonifico Normale',
-      'INSTANT_TRANSFER': 'Bonifico Istantaneo',
-      'INITIAL_TRANSFER': 'Bonifico Iniziale',
+      'DEPOSIT': 'TX_TYPE.DEPOSIT',
+      'Deposito': 'TX_TYPE.DEPOSIT',
+      'WITHDRAWAL': 'TX_TYPE.WITHDRAWAL',
+      'Prelievo': 'TX_TYPE.WITHDRAWAL',
+      'TRANSFER': 'TX_TYPE.TRANSFER',
+      'Bonifico Normale': 'TX_TYPE.TRANSFER',
+      'Bonifico': 'TX_TYPE.TRANSFER',
+      'INSTANT_TRANSFER': 'TX_TYPE.INSTANT_TRANSFER',
+      'Bonifico Istantaneo': 'TX_TYPE.INSTANT_TRANSFER',
+      'INITIAL_TRANSFER': 'TX_TYPE.INITIAL_TRANSFER',
+      'Bonifico Iniziale': 'TX_TYPE.INITIAL_TRANSFER',
     };
-    return typeName ? (map[typeName] ?? typeName) : 'Sconosciuto';
+    return typeName ? this.translate.instant(map[typeName] ?? typeName) : this.translate.instant('TX_TYPE.UNKNOWN');
   }
 
   getTxDirection(tx: TransactionResponseDto): 'in' | 'out' | 'pending-out' | 'self' {

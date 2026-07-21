@@ -59,12 +59,12 @@
               <div class="card shadow-sm rounded-3 border-0 h-100">
                 <div class="limit-header d-flex flex-column align-items-center gap-2 mb-2">
                   <div class="limit-info text-center">
-                    <span class="limit-label fw-bold">{{ meta.label }}</span>
-                    <span class="limit-desc text-muted small d-block">{{ meta.description }}</span>
+                    <span class="limit-label fw-bold">{{ meta.labelKey | translate }}</span>
+                    <span class="limit-desc text-muted small d-block">{{ meta.descriptionKey | translate }}</span>
                     <span class="limit-range text-success small fw-semibold d-block">Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — Max: {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</span>
                   </div>
                   <span class="policy-badge badge rounded-pill" [style.background]="meta.policy === 'USER_FULL' ? '#d1fae5' : meta.policy === 'USER_LOWER_ONLY' ? '#fef3c7' : '#fee2e2'" [style.color]="meta.policyColor">
-                    {{ meta.policyLabel }}
+                    {{ meta.policyLabelKey | translate }}
                   </span>
                 </div>
 

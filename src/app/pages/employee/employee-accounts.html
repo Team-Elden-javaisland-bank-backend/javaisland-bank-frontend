@@ -162,7 +162,7 @@
                   <option value="ATM_WITHDRAWAL">{{ 'EMPLOYEE.accounts.atm_withdrawal' | translate }}</option>
                   <option value="POS_SPENDING">{{ 'EMPLOYEE.accounts.pos_spending' | translate }}</option>
                 </select>
-                <input class="form-control rounded-3" type="number" [(ngModel)]="limitAmount" min="0.01" step="0.01" placeholder="Importo max (es. 5.000)" />
+                <input class="form-control rounded-3" type="number" [(ngModel)]="limitAmount" min="0.01" step="0.01" [placeholder]="'EMPLOYEE.accounts.amount_placeholder' | translate" />
                 <button class="btn btn-success rounded-3 fw-semibold" (click)="setLimit()">{{ 'EMPLOYEE.accounts.save' | translate }}</button>
               </div>
             </div>

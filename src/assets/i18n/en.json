@@ -130,7 +130,10 @@
     "today_transactions": "Today's Transactions",
     "card_prev": "Previous",
     "card_next": "Next",
-    "card_goto": "Card"
+    "card_goto": "Card",
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening"
   },
   "ACCOUNTS": {
     "page_title": "My Accounts",
@@ -195,7 +198,11 @@
       "cancel_transfer": "Cancel Transfer"
     },
     "loading": "Loading...",
-    "end_of_list": "End of transactions"
+    "end_of_list": "End of transactions",
+    "messages": {
+      "cancel_success": "Transfer cancelled successfully.",
+      "cancel_error": "Unable to cancel the transfer."
+    }
   },
   "TRANSACTIONS": {
     "page_title": "Transactions",
@@ -243,7 +250,9 @@
     "page_of": "Page {{current}} of {{total}}",
     "next": "Next",
     "no_transactions": "No transactions",
-    "no_transactions_desc": "No transactions found for the selected period."
+    "no_transactions_desc": "No transactions found for the selected period.",
+    "instant_sent": "Instant transfer sent!",
+    "scheduled_sent": "Scheduled transfer sent successfully!"
   },
   "BENEFICIARIES": {
     "page_title": "Beneficiaries",
@@ -375,7 +384,30 @@
     "download_pdf": "Download PDF",
     "enter_current_password": "Enter current password",
     "pdf_title": "Generate Account Statement PDF",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "strength_weak": "Weak",
+    "strength_medium": "Medium",
+    "strength_strong": "Strong",
+    "status_active": "Active",
+    "status_inactive": "Inactive",
+    "status_blocked": "Blocked",
+    "status_pending": "Pending",
+    "card_type_credit": "Credit Card",
+    "card_type_debit": "Debit Card",
+    "card_type_prepaid": "Prepaid Card",
+    "error_loading": "Error loading profile",
+    "error_password": "Error requesting password change",
+    "pdf_bank_name": "Elden Bank",
+    "pdf_generation_date": "Generation date",
+    "pdf_account_holder": "Account holder",
+    "pdf_tax_code": "Tax code",
+    "pdf_date": "Date",
+    "pdf_description": "Description",
+    "pdf_amount": "Amount",
+    "pdf_status": "Status",
+    "pdf_page": "Page",
+    "pdf_of": "of",
+    "pdf_filename": "account_statement"
   },
   "REQUESTS": {
     "page_title": "My Requests",
@@ -677,5 +709,52 @@
       "suspended": "Suspended",
       "user_id": "User ID"
     }
+  },
+  "TX_TYPE": {
+    "DEPOSIT": "Deposit",
+    "WITHDRAWAL": "Withdrawal",
+    "TRANSFER": "Transfer",
+    "INSTANT_TRANSFER": "Instant Transfer",
+    "INITIAL_TRANSFER": "Initial Transfer",
+    "UNKNOWN": "Unknown"
+  },
+  "LIMIT_TYPE": {
+    "DAILY_TRANSFER": {
+      "label": "Daily Transfer",
+      "description": "Maximum cumulative daily transfer"
+    },
+    "SINGLE_TRANSFER": {
+      "label": "Single Transfer",
+      "description": "Maximum amount per single transfer"
+    },
+    "INSTANT_TRANSFER_SINGLE": {
+      "label": "Instant Transfer",
+      "description": "Maximum amount per instant transfer"
+    },
+    "MONTHLY_TRANSFER": {
+      "label": "Monthly Transactions",
+      "description": "Maximum total transactions in a month"
+    },
+    "ATM_WITHDRAWAL": {
+      "label": "ATM Withdrawal",
+      "description": "Maximum withdrawal per ATM transaction"
+    },
+    "POS_SPENDING": {
+      "label": "POS Spending",
+      "description": "Maximum spending per POS transaction"
+    }
+  },
+  "NOTIFICATION_TYPE": {
+    "TRANSFER": "Transfer",
+    "DEPOSIT": "Deposit",
+    "WITHDRAWAL": "Withdrawal",
+    "ACCOUNT": "Account",
+    "PASSWORD_CHANGE": "Password Change",
+    "SCHEDULED_TRANSFER": "Scheduled Transfer"
+  },
+  "REQUEST_TYPE": {
+    "PASSWORD_CHANGE": "Password Change",
+    "ACCOUNT_OPENING": "Account Opening",
+    "ACCOUNT_CLOSURE": "Account Closure"
   }
 }

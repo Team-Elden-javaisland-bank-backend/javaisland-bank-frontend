@@ -1,7 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -45,7 +45,7 @@ export class CustomerTransactionsComponent implements OnInit {
   currentPage = signal(0);
   totalPages = 0;
 
-  constructor(private customerService: CustomerService) {
+  constructor(private customerService: CustomerService, private translate: TranslateService) {
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -221,7 +221,7 @@ export class CustomerTransactionsComponent implements OnInit {
       scheduledDate: isInstant ? null : this.txScheduledDate,
     }).subscribe({
       next: () => {
-        const msg = isInstant ? 'Bonifico istantaneo inviato!' : 'Bonifico pianificato con successo!';
+        const msg = isInstant ? this.translate.instant('TRANSACTIONS.instant_sent') : this.translate.instant('TRANSACTIONS.scheduled_sent');
         this.message.set(msg);
         this.messageType.set('success');
         this.txAmount = null;
@@ -266,19 +266,25 @@ export class CustomerTransactionsComponent implements OnInit {
   }
 
   getTransactionType(typeId: number): string {
-    const types: Record<number, string> = { 1: 'Deposito', 2: 'Prelievo', 3: 'Bonifico', 4: 'Bonifico Iniziale', 5: 'Bonifico Istantaneo' };
-    return types[typeId] ?? 'Sconosciuto';
+    const types: Record<number, string> = { 1: 'TX_TYPE.DEPOSIT', 2: 'TX_TYPE.WITHDRAWAL', 3: 'TX_TYPE.TRANSFER', 4: 'TX_TYPE.INITIAL_TRANSFER', 5: 'TX_TYPE.INSTANT_TRANSFER' };
+    return this.translate.instant(types[typeId] ?? 'TX_TYPE.UNKNOWN');
   }
 
   getTypeNameLabel(typeName: string | undefined): string {
     const map: Record<string, string> = {
-      'DEPOSIT': 'Deposito',
-      'WITHDRAWAL': 'Prelievo',
-      'TRANSFER': 'Bonifico',
-      'INSTANT_TRANSFER': 'Bonifico Istantaneo',
-      'INITIAL_TRANSFER': 'Bonifico Iniziale',
+      'DEPOSIT': 'TX_TYPE.DEPOSIT',
+      'Deposito': 'TX_TYPE.DEPOSIT',
+      'WITHDRAWAL': 'TX_TYPE.WITHDRAWAL',
+      'Prelievo': 'TX_TYPE.WITHDRAWAL',
+      'TRANSFER': 'TX_TYPE.TRANSFER',
+      'Bonifico': 'TX_TYPE.TRANSFER',
+      'Bonifico Normale': 'TX_TYPE.TRANSFER',
+      'INSTANT_TRANSFER': 'TX_TYPE.INSTANT_TRANSFER',
+      'Bonifico Istantaneo': 'TX_TYPE.INSTANT_TRANSFER',
+      'INITIAL_TRANSFER': 'TX_TYPE.INITIAL_TRANSFER',
+      'Bonifico Iniziale': 'TX_TYPE.INITIAL_TRANSFER',
     };
-    return typeName ? (map[typeName] ?? typeName) : 'Sconosciuto';
+    return typeName ? this.translate.instant(map[typeName] ?? typeName) : this.translate.instant('TX_TYPE.UNKNOWN');
   }
 
   getTxIcon(typeId: number): string {

@@ -130,7 +130,10 @@
     "today_transactions": "Transazioni Oggi",
     "card_prev": "Precedente",
     "card_next": "Successiva",
-    "card_goto": "Carta"
+    "card_goto": "Carta",
+    "greeting_morning": "Buongiorno",
+    "greeting_afternoon": "Buon pomeriggio",
+    "greeting_evening": "Buonasera"
   },
   "ACCOUNTS": {
     "page_title": "I miei Conti",
@@ -195,7 +198,11 @@
       "cancel_transfer": "Annulla Bonifico"
     },
     "loading": "Caricamento...",
-    "end_of_list": "Fine movimenti"
+    "end_of_list": "Fine movimenti",
+    "messages": {
+      "cancel_success": "Bonifico annullato con successo.",
+      "cancel_error": "Impossibile annullare il bonifico."
+    }
   },
   "TRANSACTIONS": {
     "page_title": "Transazioni",
@@ -243,7 +250,9 @@
     "page_of": "Pagina {{current}} di {{total}}",
     "next": "Successiva",
     "no_transactions": "Nessuna transazione",
-    "no_transactions_desc": "Nessuna transazione trovata per il periodo selezionato."
+    "no_transactions_desc": "Nessuna transazione trovata per il periodo selezionato.",
+    "instant_sent": "Bonifico istantaneo inviato!",
+    "scheduled_sent": "Bonifico pianificato con successo!"
   },
   "BENEFICIARIES": {
     "page_title": "Beneficiari",
@@ -375,7 +384,30 @@
     "download_pdf": "Scarica PDF",
     "enter_current_password": "Inserisci la password attuale",
     "pdf_title": "Genera Estratto Conto PDF",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "strength_weak": "Debole",
+    "strength_medium": "Media",
+    "strength_strong": "Forte",
+    "status_active": "Attivo",
+    "status_inactive": "Inattivo",
+    "status_blocked": "Bloccato",
+    "status_pending": "In attesa",
+    "card_type_credit": "Carta di Credito",
+    "card_type_debit": "Carta di Debito",
+    "card_type_prepaid": "Carta Prepagata",
+    "error_loading": "Errore nel caricamento del profilo",
+    "error_password": "Errore nella richiesta di cambio password",
+    "pdf_bank_name": "Elden Bank",
+    "pdf_generation_date": "Data generazione",
+    "pdf_account_holder": "Intestatario",
+    "pdf_tax_code": "Codice Fiscale",
+    "pdf_date": "Data",
+    "pdf_description": "Descrizione",
+    "pdf_amount": "Importo",
+    "pdf_status": "Stato",
+    "pdf_page": "Pagina",
+    "pdf_of": "di",
+    "pdf_filename": "estratto_conto"
   },
   "REQUESTS": {
     "page_title": "Le Mie Richieste",
@@ -677,5 +709,52 @@
       "suspended": "Sospeso",
       "user_id": "User ID"
     }
+  },
+  "TX_TYPE": {
+    "DEPOSIT": "Deposito",
+    "WITHDRAWAL": "Prelievo",
+    "TRANSFER": "Bonifico",
+    "INSTANT_TRANSFER": "Bonifico Istantaneo",
+    "INITIAL_TRANSFER": "Bonifico Iniziale",
+    "UNKNOWN": "Sconosciuto"
+  },
+  "LIMIT_TYPE": {
+    "DAILY_TRANSFER": {
+      "label": "Bonifico Giornaliero",
+      "description": "Massimo trasferimento cumulativo al giorno"
+    },
+    "SINGLE_TRANSFER": {
+      "label": "Bonifico Singolo",
+      "description": "Massimo importo per singolo bonifico"
+    },
+    "INSTANT_TRANSFER_SINGLE": {
+      "label": "Bonifico Istantaneo",
+      "description": "Massimo importo per bonifico istantaneo"
+    },
+    "MONTHLY_TRANSFER": {
+      "label": "Movimenti Mensili",
+      "description": "Massimo totale movimentato nell'arco di un mese"
+    },
+    "ATM_WITHDRAWAL": {
+      "label": "Prelievo ATM",
+      "description": "Massimo prelievo per transazione ATM"
+    },
+    "POS_SPENDING": {
+      "label": "Spesa POS",
+      "description": "Massima spesa per transazione POS"
+    }
+  },
+  "NOTIFICATION_TYPE": {
+    "TRANSFER": "Trasferimento",
+    "DEPOSIT": "Deposito",
+    "WITHDRAWAL": "Prelievo",
+    "ACCOUNT": "Account",
+    "PASSWORD_CHANGE": "Cambio Password",
+    "SCHEDULED_TRANSFER": "Trasferimento Programmato"
+  },
+  "REQUEST_TYPE": {
+    "PASSWORD_CHANGE": "Cambio Password",
+    "ACCOUNT_OPENING": "Apertura Conto",
+    "ACCOUNT_CLOSURE": "Chiusura Conto"
   }
 }

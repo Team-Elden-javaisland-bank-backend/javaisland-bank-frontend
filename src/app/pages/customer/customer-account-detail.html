@@ -37,33 +37,33 @@
 
   <div class="card shadow-sm rounded-3 border-0 mb-4">
     <div class="card-body p-4">
-      <h3 class="h6 fw-bold mb-3">Cerca movimenti</h3>
+      <h3 class="h6 fw-bold mb-3">{{ 'ACCOUNT_DETAIL.search_moves' | translate }}</h3>
       <div class="row g-3 align-items-end">
         <div class="col">
-          <label class="form-label fw-semibold small">Da</label>
+          <label class="form-label fw-semibold small">{{ 'ACCOUNT_DETAIL.from' | translate }}</label>
           <input class="form-control rounded-3" type="date" [(ngModel)]="startDate" />
         </div>
         <div class="col">
-          <label class="form-label fw-semibold small">A</label>
+          <label class="form-label fw-semibold small">{{ 'ACCOUNT_DETAIL.to' | translate }}</label>
           <input class="form-control rounded-3" type="date" [(ngModel)]="endDate" />
         </div>
         <div class="col-auto">
-          <button class="btn btn-success rounded-3" (click)="loadTransactions()">Cerca</button>
+          <button class="btn btn-success rounded-3" (click)="loadTransactions()">{{ 'ACCOUNT_DETAIL.search' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="transactions-section">
-    <h3 class="h5 fw-bold mb-3">Movimenti</h3>
+    <h3 class="h5 fw-bold mb-3">{{ 'ACCOUNT_DETAIL.movements' | translate }}</h3>
 
     @if (loading()) {
-      <div class="text-center py-5 text-muted">Caricamento...</div>
+      <div class="text-center py-5 text-muted">{{ 'ACCOUNT_DETAIL.loading' | translate }}</div>
     } @else if (transactions().length === 0) {
       <div class="empty-state-card">
         <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
-        <h6 class="empty-state-title">Nessun movimento</h6>
-        <p class="empty-state-text">Nessun movimento trovato per il periodo selezionato.</p>
+        <h6 class="empty-state-title">{{ 'ACCOUNT_DETAIL.no_movements' | translate }}</h6>
+        <p class="empty-state-text">{{ 'ACCOUNT_DETAIL.no_movements_desc' | translate }}</p>
       </div>
     } @else {
       <div class="d-flex flex-column gap-2">
@@ -86,10 +86,10 @@
                 <span class="tx-date">
                   {{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}
                 @if (isPending(tx) && tx.sourceAccountNumber === accountNumber) {
-                    <span class="tx-pending-badge">In attesa</span>
+                    <span class="tx-pending-badge">{{ 'ACCOUNT_DETAIL.pending' | translate }}</span>
                   }
                   @if (isCancelled(tx)) {
-                    <span class="tx-cancelled-badge">Annullato</span>
+                    <span class="tx-cancelled-badge">{{ 'ACCOUNT_DETAIL.cancelled' | translate }}</span>
                   }
                 </span>
               </div>
@@ -102,56 +102,56 @@
             @if (expandedTxId() === tx.id) {
               <div class="border-top p-3 pt-3">
                 <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="detail-label">Tipo</span>
+                  <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.type' | translate }}</span>
                   <span class="detail-value">{{ getTypeLabel(tx.typeName) }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="detail-label">Stato</span>
+                  <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.status' | translate }}</span>
                   <span class="detail-value" [class.status-pending]="isPending(tx)" [class.status-cancelled]="isCancelled(tx)">
-                    {{ tx.statusName === 'PENDING' ? 'In attesa' : tx.statusName === 'COMPLETED' ? 'Completato' : tx.statusName === 'CANCELLED' ? 'Annullato' : tx.statusName }}
+                    {{ tx.statusName === 'PENDING' ? ('ACCOUNT_DETAIL.statuses.pending' | translate) : tx.statusName === 'COMPLETED' ? ('ACCOUNT_DETAIL.statuses.completed' | translate) : tx.statusName === 'CANCELLED' ? ('ACCOUNT_DETAIL.statuses.cancelled' | translate) : tx.statusName }}
                   </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="detail-label">Importo</span>
+                  <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.amount' | translate }}</span>
                   <span class="detail-value" [class.amount-in]="getTxDirection(tx) === 'in'" [class.amount-out]="getTxDirection(tx) === 'out'" [class.amount-pending-out]="getTxDirection(tx) === 'pending-out'">
                     {{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
                   </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-1">
-                  <span class="detail-label">Data e ora</span>
+                  <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.date_time' | translate }}</span>
                   <span class="detail-value">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</span>
                 </div>
                 @if (tx.scheduledDate) {
                   <div class="d-flex justify-content-between align-items-center py-1">
-                    <span class="detail-label">Data esecuzione</span>
+                    <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.exec_date' | translate }}</span>
                     <span class="detail-value">{{ tx.scheduledDate | date:'dd/MM/yyyy' }}</span>
                   </div>
                 }
                 @if (tx.description) {
                   <div class="d-flex justify-content-between align-items-center py-1">
-                    <span class="detail-label">Descrizione</span>
+                    <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.description' | translate }}</span>
                     <span class="detail-value">{{ tx.description }}</span>
                   </div>
                 }
                 @if (tx.sourceAccountNumber) {
                   <div class="d-flex justify-content-between align-items-center py-1">
-                    <span class="detail-label">Conto origine</span>
+                    <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.source_account' | translate }}</span>
                     <span class="detail-value mono">{{ tx.sourceAccountNumber }}</span>
                   </div>
                 }
                 @if (tx.destinationAccountNumber) {
                   <div class="d-flex justify-content-between align-items-center py-1">
-                    <span class="detail-label">Conto destinazione</span>
+                    <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.dest_account' | translate }}</span>
                     <span class="detail-value mono">{{ tx.destinationAccountNumber }}</span>
                   </div>
                 }
                 @if (isPending(tx)) {
                   <button class="btn-cancel" [disabled]="cancellingId() === tx.id" (click)="cancelTx(tx, $event)">
                     @if (cancellingId() === tx.id) {
-                      Annullamento...
+                      {{ 'ACCOUNT_DETAIL.details.cancelling' | translate }}
                     } @else {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                      Annulla Bonifico
+                      {{ 'ACCOUNT_DETAIL.details.cancel_transfer' | translate }}
                     }
   </button>
 
@@ -168,11 +168,11 @@
       <div #sentinel class="scroll-sentinel"></div>
 
       @if (loadingMore()) {
-        <div class="loading-more">Caricamento...</div>
+        <div class="loading-more">{{ 'ACCOUNT_DETAIL.loading' | translate }}</div>
       }
 
       @if (!hasMore && transactions().length > 0) {
-        <div class="end-of-list">Fine movimenti</div>
+        <div class="end-of-list">{{ 'ACCOUNT_DETAIL.end_of_list' | translate }}</div>
       }
     }
   </div>

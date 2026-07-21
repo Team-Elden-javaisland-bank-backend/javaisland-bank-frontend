@@ -6,7 +6,7 @@
     </div>
     <button class="header-btn" (click)="showForm.set(!showForm())">
       @if (showForm()) {
-        <i class="bi bi-x-lg me-1"></i>Annulla
+        <i class="bi bi-x-lg me-1"></i>{{ 'BENEFICIARIES.cancel' | translate }}
       } @else {
         <i class="bi bi-plus-lg me-1"></i>{{ 'BENEFICIARIES.add' | translate }}
       }
@@ -68,7 +68,7 @@
           </div>
           <div class="beneficiary-card-footer">
             <button class="delete-btn" (click)="deleteSavedBeneficiary(b.id)">
-              <i class="bi bi-trash3"></i> Elimina
+              <i class="bi bi-trash3"></i> {{ 'BENEFICIARIES.delete' | translate }}
             </button>
           </div>
         </div>

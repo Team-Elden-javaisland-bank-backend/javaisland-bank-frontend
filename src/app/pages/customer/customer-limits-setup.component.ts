@@ -10,10 +10,10 @@ import { AccountLimitResponseDto } from '../../core/models/account/account-limit
 
 interface LimitMeta {
   type: string;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   policy: 'USER_FULL' | 'USER_LOWER_ONLY' | 'BANK_ONLY';
-  policyLabel: string;
+  policyLabelKey: string;
   policyColor: string;
   defaultValue: number;
   minValue: number;
@@ -40,12 +40,12 @@ export class CustomerLimitsSetupComponent {
   editAmount = 0;
 
   allLimitTypes: LimitMeta[] = [
-    { type: 'ATM_WITHDRAWAL', label: 'Prelievo ATM', description: 'Massimo prelievo per transazione ATM al bancomat', policy: 'USER_FULL', policyLabel: 'Modificabile', policyColor: '#065f46', defaultValue: 300, minValue: 10, maxValue: 300 },
-    { type: 'POS_SPENDING', label: 'Spesa POS', description: 'Massima spesa per transazione POS con carta', policy: 'USER_FULL', policyLabel: 'Modificabile', policyColor: '#065f46', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
-    { type: 'DAILY_TRANSFER', label: 'Bonifico Giornaliero', description: 'Massimo trasferimento cumulativo al giorno', policy: 'USER_LOWER_ONLY', policyLabel: 'Solo abbassamento', policyColor: '#92400e', defaultValue: 15000, minValue: 1, maxValue: 15000 },
-    { type: 'SINGLE_TRANSFER', label: 'Bonifico Singolo', description: 'Massimo importo per singolo bonifico', policy: 'USER_LOWER_ONLY', policyLabel: 'Solo abbassamento', policyColor: '#92400e', defaultValue: 10000, minValue: 1, maxValue: 10000 },
-    { type: 'INSTANT_TRANSFER_SINGLE', label: 'Bonifico Istantaneo', description: 'Massimo importo per bonifico istantaneo', policy: 'BANK_ONLY', policyLabel: 'Solo banca', policyColor: '#991b1b', defaultValue: 5000, minValue: 1, maxValue: 5000 },
-    { type: 'MONTHLY_TRANSFER', label: 'Movimenti Mensili', description: 'Massimo totale movimentato nell\'arco di un mese', policy: 'BANK_ONLY', policyLabel: 'Solo banca', policyColor: '#991b1b', defaultValue: 50000, minValue: 1, maxValue: 50000 },
+    { type: 'ATM_WITHDRAWAL', labelKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.label', descriptionKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.description', policy: 'USER_FULL', policyLabelKey: 'LIMITS_SETUP.editable', policyColor: '#065f46', defaultValue: 300, minValue: 10, maxValue: 300 },
+    { type: 'POS_SPENDING', labelKey: 'LIMIT_TYPE.POS_SPENDING.label', descriptionKey: 'LIMIT_TYPE.POS_SPENDING.description', policy: 'USER_FULL', policyLabelKey: 'LIMITS_SETUP.editable', policyColor: '#065f46', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
+    { type: 'DAILY_TRANSFER', labelKey: 'LIMIT_TYPE.DAILY_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.DAILY_TRANSFER.description', policy: 'USER_LOWER_ONLY', policyLabelKey: 'LIMITS_SETUP.lower_only', policyColor: '#92400e', defaultValue: 15000, minValue: 1, maxValue: 15000 },
+    { type: 'SINGLE_TRANSFER', labelKey: 'LIMIT_TYPE.SINGLE_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.SINGLE_TRANSFER.description', policy: 'USER_LOWER_ONLY', policyLabelKey: 'LIMITS_SETUP.lower_only', policyColor: '#92400e', defaultValue: 10000, minValue: 1, maxValue: 10000 },
+    { type: 'INSTANT_TRANSFER_SINGLE', labelKey: 'LIMIT_TYPE.INSTANT_TRANSFER_SINGLE.label', descriptionKey: 'LIMIT_TYPE.INSTANT_TRANSFER_SINGLE.description', policy: 'BANK_ONLY', policyLabelKey: 'LIMITS_SETUP.bank_only', policyColor: '#991b1b', defaultValue: 5000, minValue: 1, maxValue: 5000 },
+    { type: 'MONTHLY_TRANSFER', labelKey: 'LIMIT_TYPE.MONTHLY_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.MONTHLY_TRANSFER.description', policy: 'BANK_ONLY', policyLabelKey: 'LIMITS_SETUP.bank_only', policyColor: '#991b1b', defaultValue: 50000, minValue: 1, maxValue: 50000 },
   ];
 
   constructor(
