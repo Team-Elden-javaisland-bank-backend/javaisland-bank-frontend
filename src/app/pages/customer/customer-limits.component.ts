@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -34,6 +34,16 @@ export class CustomerLimitsComponent {
   editingError = signal('');
   editAmount = 0;
 
+  // Request modal
+  showRequestModal = signal(false);
+  requestLimitType = signal('');
+  requestAmount: number | null = null;
+  requestError = signal('');
+  requestLoading = signal(false);
+
+  // Success animation
+  showSuccessAnimation = signal(false);
+
   allLimitTypes: LimitMeta[] = [
     { type: 'ATM_WITHDRAWAL', labelKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.label', descriptionKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.description', defaultValue: 300, minValue: 10, maxValue: 300 },
     { type: 'POS_SPENDING', labelKey: 'LIMIT_TYPE.POS_SPENDING.label', descriptionKey: 'LIMIT_TYPE.POS_SPENDING.description', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
@@ -43,7 +53,15 @@ export class CustomerLimitsComponent {
     { type: 'MONTHLY_TRANSFER', labelKey: 'LIMIT_TYPE.MONTHLY_TRANSFER.label', descriptionKey: 'LIMIT_TYPE.MONTHLY_TRANSFER.description', defaultValue: 50000, minValue: 1, maxValue: 50000 },
   ];
 
-  constructor(private customerService: CustomerService) {
+  get requestableLimits(): LimitMeta[] {
+    return this.allLimitTypes.filter(m => {
+      const limit = this.getLimitForType(m.type);
+      if (!limit) return false;
+      return limit.changePolicy === 'USER_LOWER_ONLY' || limit.changePolicy === 'BANK_ONLY';
+    });
+  }
+
+  constructor(private customerService: CustomerService, private translate: TranslateService) {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
         this.accounts.set(data.filter(a => a.statusId === 2));
@@ -99,12 +117,21 @@ export class CustomerLimitsComponent {
   getPolicyLabel(type: string): string {
     const limit = this.getLimitForType(type);
     if (!limit) return '';
-    switch (limit.changePolicy) {
-      case 'USER_FULL': return 'Modificabile';
-      case 'USER_LOWER_ONLY': return 'Solo abbassamento';
-      case 'BANK_ONLY': return 'Solo banca';
-      default: return '';
+    const policyKeyMap: Record<string, string> = {
+      'USER_FULL': 'LIMITS.free',
+      'USER_LOWER_ONLY': 'LIMITS.lower_only',
+      'BANK_ONLY': 'LIMITS.bank_only',
+    };
+    return this.translate.instant(policyKeyMap[limit.changePolicy] ?? '');
+  }
+
+  getRequestablePolicy(type: string): string | null {
+    const limit = this.getLimitForType(type);
+    if (!limit) return null;
+    if (limit.changePolicy === 'USER_LOWER_ONLY' || limit.changePolicy === 'BANK_ONLY') {
+      return limit.changePolicy;
     }
+    return null;
   }
 
   startEdit(type: string, currentAmount: number): void {
@@ -119,18 +146,18 @@ export class CustomerLimitsComponent {
   saveLimit(type: string): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     if (this.editAmount < (meta?.minValue ?? 0)) {
-      this.editingError.set(`Minimo €${meta?.minValue ?? 0}`);
+      this.editingError.set(this.translate.instant('LIMITS.error_min', { value: meta?.minValue ?? 0 }));
       return;
     }
 
     if (meta && this.editAmount > meta.maxValue) {
-      this.editingError.set(`Massimo €${meta.maxValue.toLocaleString('it-IT')}`);
+      this.editingError.set(this.translate.instant('LIMITS.error_max', { value: meta.maxValue.toLocaleString('it-IT') }));
       return;
     }
 
     const current = this.getLimitForType(type);
     if (current && !this.canIncrease(type) && this.editAmount > current.maxAmount) {
-      this.editingError.set('Puoi solo abbassare');
+      this.editingError.set(this.translate.instant('LIMITS.error_decrease_only'));
       return;
     }
 
@@ -139,12 +166,94 @@ export class CustomerLimitsComponent {
       maxAmount: this.editAmount,
     }).subscribe({
       next: () => {
-        this.message.set('Limite aggiornato!');
+        this.message.set(this.translate.instant('LIMITS.success_updated'));
         this.messageType.set('success');
         this.editingType.set('');
         this.onAccountChange(this.selectedAccount());
       },
       error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+    });
+  }
+
+  openRequestModal(type: string): void {
+    this.requestLimitType.set(type);
+    this.requestAmount = null;
+    this.requestError.set('');
+    this.showRequestModal.set(true);
+  }
+
+  closeRequestModal(): void {
+    this.showRequestModal.set(false);
+    this.requestLimitType.set('');
+    this.requestAmount = null;
+    this.requestError.set('');
+    this.requestLoading.set(false);
+  }
+
+  getRequestCurrentAmount(): number {
+    const limit = this.getLimitForType(this.requestLimitType());
+    return limit ? Number(limit.maxAmount) : 0;
+  }
+
+  getRequestLimitPolicy(): string {
+    const limit = this.getLimitForType(this.requestLimitType());
+    return limit?.changePolicy ?? '';
+  }
+
+  getRequestMaxValue(): number {
+    const meta = this.allLimitTypes.find(m => m.type === this.requestLimitType());
+    return meta?.maxValue ?? 999999999;
+  }
+
+  submitRequest(): void {
+    const type = this.requestLimitType();
+    const amount = this.requestAmount;
+
+    if (!type || !amount || !this.selectedAccount()) {
+      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_required'));
+      return;
+    }
+
+    if (amount <= 0) {
+      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_invalid_amount'));
+      return;
+    }
+
+    const meta = this.allLimitTypes.find(m => m.type === type);
+    if (meta && amount > meta.maxValue) {
+      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_exceeds_max', { max: meta.maxValue.toLocaleString('it-IT') }));
+      return;
+    }
+
+    const policy = this.getRequestLimitPolicy();
+    if (policy === 'USER_LOWER_ONLY' && amount <= this.getRequestCurrentAmount()) {
+      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_lower_only'));
+      return;
+    }
+
+    this.requestLoading.set(true);
+    this.requestError.set('');
+
+    this.customerService.requestLimitChange(this.selectedAccount(), type, amount).subscribe({
+      next: () => {
+        this.closeRequestModal();
+        this.showSuccessAnimation.set(true);
+        setTimeout(() => {
+          this.showSuccessAnimation.set(false);
+          this.message.set(this.translate.instant('LIMITS.request_modal.success'));
+          this.messageType.set('success');
+          this.onAccountChange(this.selectedAccount());
+        }, 2500);
+      },
+      error: (err) => {
+        const msg = err.message || '';
+        if (msg.includes('PENDING_REQUEST_EXISTS') || msg.includes('richiesta in corso')) {
+          this.requestError.set(this.translate.instant('LIMITS.request_modal.error_pending_exists'));
+        } else {
+          this.requestError.set(msg || this.translate.instant('LIMITS.request_modal.error_generic'));
+        }
+        this.requestLoading.set(false);
+      },
     });
   }
 }

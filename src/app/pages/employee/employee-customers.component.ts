@@ -1,6 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { CustomerListItemDto } from '../../core/models/user/customer-list-item.dto';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -24,6 +24,7 @@ export class EmployeeCustomersComponent {
   showModal = signal(false);
   modalDetail = signal<EmployeeUserDetailDto | null>(null);
   loadingModal = signal(false);
+  modalMode = signal<'user' | 'account'>('account');
 
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
@@ -39,7 +40,7 @@ export class EmployeeCustomersComponent {
     );
   });
 
-  constructor(private employeeService: EmployeeService) {
+  constructor(private employeeService: EmployeeService, private translate: TranslateService) {
     this.loadCustomers();
   }
 
@@ -82,12 +83,28 @@ export class EmployeeCustomersComponent {
     }
   }
 
-  openUserDetail(accountNumber: string): void {
+  openAccountDetail(accountNumber: string): void {
     this.showModal.set(true);
     this.loadingModal.set(true);
     this.modalDetail.set(null);
+    this.modalMode.set('account');
 
     this.employeeService.getUserDetailByAccount(accountNumber).subscribe({
+      next: (detail) => {
+        this.modalDetail.set(detail);
+        this.loadingModal.set(false);
+      },
+      error: () => this.loadingModal.set(false),
+    });
+  }
+
+  viewUserDetail(userId: number): void {
+    this.showModal.set(true);
+    this.loadingModal.set(true);
+    this.modalDetail.set(null);
+    this.modalMode.set('user');
+
+    this.employeeService.getUserDetailByUserId(userId).subscribe({
       next: (detail) => {
         this.modalDetail.set(detail);
         this.loadingModal.set(false);
@@ -106,31 +123,23 @@ export class EmployeeCustomersComponent {
   }
 
   getStatusLabel(statusId: number): string {
-    const labels: Record<number, string> = {
-      1: 'Attivo',
-      2: 'Sospeso',
-      3: 'Chiuso',
-    };
-    return labels[statusId] || 'Sconosciuto';
+    const keys: Record<number, string> = { 1: 'STATUS.PENDING', 2: 'STATUS.ACTIVE', 3: 'STATUS.ANNULLED', 4: 'STATUS.SUSPENDED' };
+    return this.translate.instant(keys[statusId] || 'STATUS.UNKNOWN');
   }
 
   getStatusClass(statusId: number): string {
     const classes: Record<number, string> = {
-      1: 'badge-active',
-      2: 'badge-frozen',
+      1: 'badge-pending',
+      2: 'badge-active',
       3: 'badge-closed',
+      4: 'badge-frozen',
     };
     return classes[statusId] || 'badge-pending';
   }
 
   getAccountStatusLabel(statusId: number): string {
-    const labels: Record<number, string> = {
-      1: 'Inattivo',
-      2: 'Attivo',
-      3: 'Congelato',
-      4: 'Chiuso',
-    };
-    return labels[statusId] || 'Sconosciuto';
+    const keys: Record<number, string> = { 1: 'STATUS.INACTIVE', 2: 'STATUS.ACTIVE', 3: 'STATUS.FROZEN', 4: 'STATUS.CLOSED' };
+    return this.translate.instant(keys[statusId] || 'STATUS.UNKNOWN');
   }
 
   getAccountStatusClass(statusId: number): string {
@@ -144,14 +153,14 @@ export class EmployeeCustomersComponent {
   }
 
   getDetailAccountStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      ACTIVE: 'Attivo',
-      FROZEN: 'Sospeso',
-      CLOSED: 'Chiuso',
-      PENDING: 'In attesa',
-      REJECTED: 'Rifiutato',
+    const keys: Record<string, string> = {
+      ACTIVE: 'STATUS.ACTIVE',
+      FROZEN: 'STATUS.SUSPENDED',
+      CLOSED: 'STATUS.CLOSED',
+      PENDING: 'STATUS.PENDING',
+      REJECTED: 'STATUS.REJECTED',
     };
-    return labels[status] || status;
+    return this.translate.instant(keys[status] || status);
   }
 
   getDetailAccountStatusClass(status: string): string {
@@ -173,12 +182,12 @@ export class EmployeeCustomersComponent {
   }
 
   getUserStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      ACTIVE: 'Attivo',
-      INACTIVE: 'Inattivo',
-      PENDING: 'In attesa',
+    const keys: Record<string, string> = {
+      ACTIVE: 'STATUS.ACTIVE',
+      INACTIVE: 'STATUS.INACTIVE',
+      PENDING: 'STATUS.PENDING',
     };
-    return labels[status] || status;
+    return this.translate.instant(keys[status] || status);
   }
 
   getUserStatusClass(status: string): string {
@@ -200,12 +209,12 @@ export class EmployeeCustomersComponent {
   }
 
   getCardStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      ACTIVE: 'Attiva',
-      INACTIVE: 'Inattiva',
-      BLOCKED: 'Bloccata',
+    const keys: Record<string, string> = {
+      ACTIVE: 'STATUS.ACTIVE_F',
+      INACTIVE: 'STATUS.INACTIVE_F',
+      BLOCKED: 'STATUS.BLOCKED_F',
     };
-    return labels[status] || status;
+    return this.translate.instant(keys[status] || status);
   }
 
   trackByUserId(_index: number, customer: CustomerListItemDto): number {

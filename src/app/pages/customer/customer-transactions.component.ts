@@ -20,7 +20,7 @@ export class CustomerTransactionsComponent implements OnInit {
   allTransactions = signal<TransactionResponseDto[]>([]);
   accountLimits = signal<AccountLimitResponseDto[]>([]);
   loading = signal(true);
-  activeTab = signal<'deposit' | 'withdraw' | 'transfer' | 'history'>('deposit');
+  activeTab = signal<'deposit' | 'withdraw' | 'transfer' | 'history'>('history');
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
 
@@ -53,6 +53,11 @@ export class CustomerTransactionsComponent implements OnInit {
     const maxDate = new Date(tomorrow);
     maxDate.setDate(maxDate.getDate() + 29);
     this.maxScheduleDate = maxDate.toISOString().split('T')[0];
+
+    const oneMonthAgo = new Date(now);
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    this.startDate = oneMonthAgo.toISOString().split('T')[0];
+    this.endDate = now.toISOString().split('T')[0];
   }
 
   ngOnInit(): void {
@@ -65,6 +70,7 @@ export class CustomerTransactionsComponent implements OnInit {
           this.loadLimits(data[0].accountNumber);
         }
         this.loading.set(false);
+        this.loadHistory();
       },
       error: () => this.loading.set(false),
     });
@@ -99,13 +105,13 @@ export class CustomerTransactionsComponent implements OnInit {
 
   private validateAmount(value: number | null, min: number, max: number | null, fieldName: string): string | null {
     if (value === null || value === undefined) {
-      return `Inserisci l'importo`;
+      return this.translate.instant('TRANSACTIONS.insert_amount');
     }
     if (value < min) {
-      return `Importo minimo: €${min.toFixed(2)}`;
+      return this.translate.instant('TRANSACTIONS.min_amount_error', { value: min.toFixed(2) });
     }
     if (max !== null && value > max) {
-      return `Importo supera il limite di €${max.toFixed(2)}`;
+      return this.translate.instant('TRANSACTIONS.max_amount_error', { value: max.toFixed(2) });
     }
     return null;
   }
@@ -144,7 +150,7 @@ export class CustomerTransactionsComponent implements OnInit {
 
     const atmLimit = this.getLimitValue('ATM_WITHDRAWAL');
     if (atmLimit !== null && this.dwAmount! > atmLimit) {
-      this.message.set(`Importo supera il limite ATM di €${atmLimit.toFixed(2)}`);
+      this.message.set(this.translate.instant('TRANSACTIONS.atm_limit_exceeded', { value: atmLimit.toFixed(2) }));
       this.messageType.set('error');
       return;
     }
@@ -169,7 +175,7 @@ export class CustomerTransactionsComponent implements OnInit {
     }
 
     if (!this.txDestination && !this.txBeneficiaryId) {
-      this.message.set('Seleziona una destinazione');
+      this.message.set(this.translate.instant('TRANSACTIONS.select_destination'));
       this.messageType.set('error');
       return;
     }
@@ -177,7 +183,7 @@ export class CustomerTransactionsComponent implements OnInit {
     const isInstant = this.txTransferType() === 'instant';
 
     if (!isInstant && !this.txScheduledDate) {
-      this.message.set('Seleziona la data di esecuzione');
+      this.message.set(this.translate.instant('TRANSACTIONS.select_date'));
       this.messageType.set('error');
       return;
     }
@@ -191,12 +197,12 @@ export class CustomerTransactionsComponent implements OnInit {
       maxDate.setDate(maxDate.getDate() + 29);
 
       if (scheduled <= new Date()) {
-        this.message.set('La data deve essere almeno domani');
+        this.message.set(this.translate.instant('TRANSACTIONS.date_must_be_tomorrow'));
         this.messageType.set('error');
         return;
       }
       if (scheduled > maxDate) {
-        this.message.set('La data non può essere oltre 30 giorni da oggi');
+        this.message.set(this.translate.instant('TRANSACTIONS.date_max_30_days'));
         this.messageType.set('error');
         return;
       }
@@ -205,8 +211,8 @@ export class CustomerTransactionsComponent implements OnInit {
     const limitType = isInstant ? 'INSTANT_TRANSFER_SINGLE' : 'SINGLE_TRANSFER';
     const singleLimit = this.getLimitValue(limitType);
     if (singleLimit !== null && this.txAmount! > singleLimit) {
-      const label = isInstant ? 'bonifico istantaneo' : 'bonifico';
-      this.message.set(`Importo supera il limite ${label} di €${singleLimit.toFixed(2)}`);
+      const label = isInstant ? this.translate.instant('TRANSACTIONS.instant_transfer') : this.translate.instant('TRANSACTIONS.normal_transfer');
+      this.message.set(this.translate.instant('TRANSACTIONS.transfer_limit_exceeded', { label, value: singleLimit.toFixed(2) }));
       this.messageType.set('error');
       return;
     }
@@ -236,7 +242,7 @@ export class CustomerTransactionsComponent implements OnInit {
 
   loadHistory(): void {
     if (!this.startDate || !this.endDate) {
-      this.message.set('Seleziona le date');
+      this.message.set(this.translate.instant('TRANSACTIONS.select_dates'));
       this.messageType.set('error');
       return;
     }
@@ -300,12 +306,12 @@ export class CustomerTransactionsComponent implements OnInit {
 
   getStatusNameLabel(statusName: string | undefined): string {
     const map: Record<string, string> = {
-      'PENDING': 'In sospeso',
-      'COMPLETED': 'Completato',
-      'FAILED': 'Fallito',
-      'REJECTED': 'Rifiutato',
+      'PENDING': 'TX_STATUS.PENDING',
+      'COMPLETED': 'TX_STATUS.COMPLETED',
+      'FAILED': 'TX_STATUS.FAILED',
+      'REJECTED': 'TX_STATUS.REJECTED',
     };
-    return statusName ? (map[statusName] ?? statusName) : 'Sconosciuto';
+    return statusName ? this.translate.instant(map[statusName] ?? statusName) : this.translate.instant('TX_STATUS.UNKNOWN');
   }
 
   prevPage(): void {

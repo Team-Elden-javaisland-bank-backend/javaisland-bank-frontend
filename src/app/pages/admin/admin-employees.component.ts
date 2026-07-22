@@ -1,7 +1,7 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AdminService, EmployeeListItemDto, CreateEmployeeRequestDto, EmployeeDetailDto } from '../../core/services/admin.service';
 
 @Component({
@@ -69,7 +69,7 @@ export class AdminEmployeesComponent implements OnInit {
     };
   });
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -85,7 +85,7 @@ export class AdminEmployeesComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set('Errore nel caricamento dei dipendenti');
+        this.error.set(this.translate.instant('ADMIN.employees.error_load'));
         this.loading.set(false);
         console.error('Employees error:', err);
       }
@@ -119,7 +119,7 @@ export class AdminEmployeesComponent implements OnInit {
   createEmployee(): void {
     const emp = this.newEmployee();
     if (!emp.firstName || !emp.lastName || !emp.email || !emp.password) {
-      this.showMessage('Compilare tutti i campi obbligatori', 'error');
+      this.showMessage(this.translate.instant('ADMIN.employees.error_required'), 'error');
       return;
     }
 
@@ -127,13 +127,13 @@ export class AdminEmployeesComponent implements OnInit {
     this.adminService.createEmployee(emp).subscribe({
       next: (created) => {
         this.employees.update((list) => [...list, created]);
-        this.showMessage('Dipendente creato con successo', 'success');
+        this.showMessage(this.translate.instant('ADMIN.employees.success_created'), 'success');
         this.showCreateForm.set(false);
         this.resetForm();
         this.creating.set(false);
       },
       error: (err) => {
-        this.showMessage(err.message || 'Errore nella creazione del dipendente', 'error');
+        this.showMessage(err.message || this.translate.instant('ADMIN.employees.error_create'), 'error');
         this.creating.set(false);
       }
     });
@@ -146,11 +146,11 @@ export class AdminEmployeesComponent implements OnInit {
         this.employees.update((list) =>
           list.map((e) => (e.userId === userId ? { ...e, status: 'SUSPENDED' } : e))
         );
-        this.showMessage('Dipendente sospeso con successo', 'success');
+        this.showMessage(this.translate.instant('ADMIN.employees.success_suspend'), 'success');
         this.actingEmployeeId.set(null);
       },
       error: (err) => {
-        this.showMessage(err.message || 'Errore nella sospensione', 'error');
+        this.showMessage(err.message || this.translate.instant('ADMIN.employees.error_suspend'), 'error');
         this.actingEmployeeId.set(null);
       }
     });
@@ -163,11 +163,11 @@ export class AdminEmployeesComponent implements OnInit {
         this.employees.update((list) =>
           list.map((e) => (e.userId === userId ? { ...e, status: 'ACTIVE' } : e))
         );
-        this.showMessage('Dipendente attivato con successo', 'success');
+        this.showMessage(this.translate.instant('ADMIN.employees.success_activate'), 'success');
         this.actingEmployeeId.set(null);
       },
       error: (err) => {
-        this.showMessage(err.message || "Errore nell'attivazione", 'error');
+        this.showMessage(err.message || this.translate.instant('ADMIN.employees.error_activate'), 'error');
         this.actingEmployeeId.set(null);
       }
     });
@@ -193,13 +193,7 @@ export class AdminEmployeesComponent implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      ACTIVE: 'Attivo',
-      SUSPENDED: 'Sospeso',
-      PENDING: 'In Attesa',
-      ANNULLED: 'Annullato',
-    };
-    return labels[status] || status;
+    return this.translate.instant('STATUS.' + status);
   }
 
   getStatusBadgeClass(status: string): string {
@@ -214,7 +208,8 @@ export class AdminEmployeesComponent implements OnInit {
 
   formatDate(dateStr: string): string {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('it-IT', {
+    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    return new Date(dateStr).toLocaleDateString(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

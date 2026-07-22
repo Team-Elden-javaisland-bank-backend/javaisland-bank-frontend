@@ -36,6 +36,16 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+a.stat-card {
+  cursor: pointer;
+  color: inherit;
+}
+
+a.stat-card:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
 .stat-label {
   font-size: 0.8rem;
   font-weight: 500;
@@ -47,6 +57,14 @@
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--bs-body-color);
+}
+
+a.stat-card .stat-value {
+  color: var(--bs-body-color);
+}
+
+a.stat-card:hover .stat-value {
+  color: #e5a93c !important;
 }
 
 .stat-icon {

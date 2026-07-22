@@ -60,7 +60,7 @@
             </div>
             <div class="request-info">
               <div class="request-type">{{ getRequestTypeLabel(req.type) }}</div>
-              <div class="request-desc">{{ req.description }}</div>
+              <div class="request-desc">{{ getRequestDescription(req.type) }}</div>
               <div class="request-meta">
                 <span class="request-date">
                   <i class="bi bi-calendar3 me-1"></i>{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}

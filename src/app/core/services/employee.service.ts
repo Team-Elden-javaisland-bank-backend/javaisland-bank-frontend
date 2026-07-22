@@ -226,6 +226,20 @@ export class EmployeeService {
       .pipe(catchError(this.handleError));
   }
 
+  // ── Richieste cambio limite ──────────────────────────────────────
+
+  approveLimitRequest(requestId: number): Observable<string> {
+    return this.http
+      .put(`${this.API_BASE}/users/limit-requests/${requestId}/approve`, null, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
+  rejectLimitRequest(requestId: number): Observable<string> {
+    return this.http
+      .put(`${this.API_BASE}/users/limit-requests/${requestId}/reject`, null, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
   // ── Error handler ────────────────────────────────────────────────
 
   private handleError(error: HttpErrorResponse): Observable<never> {

@@ -252,7 +252,17 @@
     "no_transactions": "No transactions",
     "no_transactions_desc": "No transactions found for the selected period.",
     "instant_sent": "Instant transfer sent!",
-    "scheduled_sent": "Scheduled transfer sent successfully!"
+    "scheduled_sent": "Scheduled transfer sent successfully!",
+    "insert_amount": "Enter the amount",
+    "min_amount_error": "Minimum amount: €{{value}}",
+    "max_amount_error": "Amount exceeds limit of €{{value}}",
+    "atm_limit_exceeded": "Amount exceeds ATM limit of €{{value}}",
+    "select_destination": "Select a destination",
+    "select_date": "Select the execution date",
+    "date_must_be_tomorrow": "Date must be at least tomorrow",
+    "date_max_30_days": "Date cannot be more than 30 days from today",
+    "transfer_limit_exceeded": "Amount exceeds {{label}} limit of €{{value}}",
+    "select_dates": "Select dates"
   },
   "BENEFICIARIES": {
     "page_title": "Beneficiaries",
@@ -330,7 +340,30 @@
     "help_desc": "If you need to increase a limit beyond the maximum allowed, contact us.",
     "select_account_title": "Select an account",
     "select_account_text": "Select an account to view transaction limits.",
-    "importo": "Amount"
+    "importo": "Amount",
+    "error_min": "Minimum €{{value}}",
+    "error_max": "Maximum €{{value}}",
+    "error_decrease_only": "You can only decrease this limit",
+    "success_updated": "Limit updated!",
+    "request_change": "Request Change",
+    "request_modal": {
+      "title": "Request Limit Change",
+      "limit_type": "Limit to change",
+      "select_limit": "Select a limit...",
+      "current_value": "Current value",
+      "requested_amount": "Requested new value",
+      "lower_only_hint": "For this limit you can only request an increase. To decrease, use the direct edit.",
+      "submit": "Send Request",
+      "error_required": "Select a limit and enter an amount",
+      "error_invalid_amount": "The amount must be greater than zero.",
+      "error_exceeds_max": "The requested value exceeds the maximum allowed ({{max}}).",
+      "error_pending_exists": "You already have a pending request for this limit. Please wait for it to be processed before submitting a new one.",
+      "error_lower_only": "For this limit you can only request an increase. The new value must be higher than the current one.",
+      "error_generic": "Error sending request. Please try again.",
+      "success": "Limit change request sent. Awaiting employee approval.",
+      "success_title": "Request Sent!",
+      "success_text": "Your limit change request has been submitted successfully. You will be notified once it is reviewed."
+    }
   },
   "LIMITS_SETUP": {
     "welcome": "Welcome to Elden Bank",
@@ -538,6 +571,7 @@
       "status": "Status",
       "creation_date": "Creation Date",
       "detail": "Details",
+      "view_user_detail": "View user detail",
       "user_detail": "User Details",
       "personal_info": "Personal Information",
       "username": "Username",
@@ -579,7 +613,14 @@
       "not_set": "Not set",
       "modify": "Modify",
       "set": "Set",
-      "amount_placeholder": "Amount"
+      "amount_placeholder": "Amount",
+      "search_placeholder": "Search by name or account number...",
+      "no_results": "No accounts found",
+      "balance": "Balance",
+      "change_account": "Change",
+      "error_min": "Minimum €{{min}}",
+      "error_max": "Maximum €{{max}}",
+      "success_updated": "Limit updated!"
     },
     "registrations": {
       "page_title": "Pending Registrations",
@@ -590,7 +631,22 @@
       "birth_date": "Date of birth",
       "registered_on": "Registered on",
       "validate": "Validate",
-      "reject": "Reject"
+      "reject": "Reject",
+      "search_placeholder": "Search by name or email...",
+      "no_results": "No registrations found",
+      "try_another": "Try a different search term.",
+      "view_detail": "View user detail",
+      "user_detail": "User Detail",
+      "personal_info": "Personal Information",
+      "username": "Username",
+      "tax_code": "Tax Code",
+      "birth_place": "Place of birth",
+      "gender": "Gender",
+      "profession": "Profession",
+      "phone": "Phone",
+      "residence": "Residence",
+      "cannot_load": "Unable to load user details.",
+      "close": "Close"
     },
     "requests": {
       "page_title": "Request Management",
@@ -600,6 +656,7 @@
       "password": "Password",
       "opening": "Opening",
       "closure": "Closure",
+      "limit_change": "Limit Change",
       "in_attesa_tab": "Pending",
       "approved": "Approved",
       "rejected": "Rejected",
@@ -653,7 +710,11 @@
       "transactions_desc": "Monitor all system transactions",
       "go_to_transactions": "Go to Transactions",
       "loading": "Loading...",
-      "retry": "Retry"
+      "retry": "Retry",
+      "error_load": "Error loading dashboard",
+      "audit_log": "Audit Log",
+      "audit_log_desc": "View administrative operations history",
+      "go_to_audit": "Go to Audit Log"
     },
     "employees": {
       "title": "Employee Management",
@@ -688,7 +749,15 @@
       "suspend": "Suspend",
       "activate": "Activate",
       "password_placeholder": "Enter password",
-      "username": "Username"
+      "username": "Username",
+      "error_load": "Error loading employees",
+      "error_required": "All fields are required",
+      "success_created": "Employee created successfully",
+      "error_create": "Error creating employee",
+      "success_suspend": "Employee suspended successfully",
+      "error_suspend": "Error suspending employee",
+      "success_activate": "Employee activated successfully",
+      "error_activate": "Error activating employee"
     },
     "audit": {
       "title": "Audit Log",
@@ -707,7 +776,24 @@
       "loading": "Loading...",
       "retry": "Retry",
       "suspended": "Suspended",
-      "user_id": "User ID"
+      "user_id": "User ID",
+      "filter_all": "All",
+      "filter_validate": "Validate",
+      "filter_reject": "Reject",
+      "filter_freeze": "Freeze",
+      "filter_unfreeze": "Unfreeze",
+      "filter_activate": "Activate",
+      "period_1d": "1 day",
+      "period_7d": "7 days",
+      "period_30d": "30 days",
+      "period_90d": "90 days",
+      "action_validate": "Validate",
+      "action_reject": "Reject",
+      "action_freeze": "Freeze",
+      "action_unfreeze": "Unfreeze",
+      "action_activate": "Activate",
+      "error_load": "Error loading audit logs",
+      "error_employee_load": "Error loading employee details"
     }
   },
   "TX_TYPE": {
@@ -716,6 +802,13 @@
     "TRANSFER": "Transfer",
     "INSTANT_TRANSFER": "Instant Transfer",
     "INITIAL_TRANSFER": "Initial Transfer",
+    "UNKNOWN": "Unknown"
+  },
+  "TX_STATUS": {
+    "PENDING": "Pending",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed",
+    "REJECTED": "Rejected",
     "UNKNOWN": "Unknown"
   },
   "LIMIT_TYPE": {
@@ -755,6 +848,30 @@
   "REQUEST_TYPE": {
     "PASSWORD_CHANGE": "Password Change",
     "ACCOUNT_OPENING": "Account Opening",
-    "ACCOUNT_CLOSURE": "Account Closure"
+    "ACCOUNT_CLOSURE": "Account Closure",
+    "ACCOUNT_FROZEN": "Account Frozen",
+    "CARD_BLOCKED": "Card Blocked",
+    "LIMIT_CHANGE": "Limit Change",
+    "PASSWORD_CHANGE_DESC": "Password change requested",
+    "ACCOUNT_OPENING_DESC": "Account opening requested",
+    "ACCOUNT_CLOSURE_DESC": "Account closure requested",
+    "ACCOUNT_FROZEN_DESC": "Account freeze requested",
+    "CARD_BLOCKED_DESC": "Card block requested",
+    "LIMIT_CHANGE_DESC": "Limit change requested"
+  },
+  "STATUS": {
+    "ACTIVE": "Active",
+    "SUSPENDED": "Suspended",
+    "FROZEN": "Frozen",
+    "CLOSED": "Closed",
+    "INACTIVE": "Inactive",
+    "PENDING": "Pending",
+    "ANNULLED": "Annulled",
+    "REJECTED": "Rejected",
+    "BLOCKED": "Blocked",
+    "ACTIVE_F": "Active",
+    "INACTIVE_F": "Inactive",
+    "BLOCKED_F": "Blocked",
+    "UNKNOWN": "Unknown"
   }
 }

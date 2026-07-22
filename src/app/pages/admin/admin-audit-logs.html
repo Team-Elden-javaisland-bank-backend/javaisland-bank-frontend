@@ -12,7 +12,7 @@
         <div class="col-12">
           <label class="filter-label text-muted mb-2 d-block">{{ 'ADMIN.audit.action_type' | translate }}</label>
           <ul class="nav nav-pills flex-wrap gap-2">
-            @for (at of actionTypes; track at.value) {
+            @for (at of actionTypes(); track at.value) {
               <li class="nav-item">
                 <button
                   class="nav-link action-pill"
@@ -30,7 +30,7 @@
         <div class="col-12">
           <label class="filter-label text-muted mb-2 d-block">{{ 'ADMIN.audit.period' | translate }}</label>
           <ul class="nav nav-pills flex-wrap gap-2">
-            @for (tp of timePeriods; track tp.value) {
+            @for (tp of timePeriods(); track tp.value) {
               <li class="nav-item">
                 <button
                   class="nav-link time-pill"

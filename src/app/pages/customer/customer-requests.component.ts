@@ -1,6 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { CustomerRequestDto } from '../../core/models/customer/customer-request.dto';
 
@@ -23,11 +23,21 @@ export class CustomerRequestsComponent {
   ];
 
   readonly requestTypeLabels: Record<string, string> = {
-    PASSWORD_CHANGE: 'Cambio Password',
-    ACCOUNT_OPENING: 'Apertura Conto',
-    ACCOUNT_FROZEN: 'Congelamento Conto',
-    ACCOUNT_CLOSURE: 'Chiusura Conto',
-    CARD_BLOCKED: 'Blocco Carta',
+    PASSWORD_CHANGE: 'REQUEST_TYPE.PASSWORD_CHANGE',
+    ACCOUNT_OPENING: 'REQUEST_TYPE.ACCOUNT_OPENING',
+    ACCOUNT_FROZEN: 'REQUEST_TYPE.ACCOUNT_FROZEN',
+    ACCOUNT_CLOSURE: 'REQUEST_TYPE.ACCOUNT_CLOSURE',
+    CARD_BLOCKED: 'REQUEST_TYPE.CARD_BLOCKED',
+    LIMIT_CHANGE: 'REQUEST_TYPE.LIMIT_CHANGE',
+  };
+
+  readonly requestDescKeys: Record<string, string> = {
+    PASSWORD_CHANGE: 'REQUEST_TYPE.PASSWORD_CHANGE_DESC',
+    ACCOUNT_OPENING: 'REQUEST_TYPE.ACCOUNT_OPENING_DESC',
+    ACCOUNT_FROZEN: 'REQUEST_TYPE.ACCOUNT_FROZEN_DESC',
+    ACCOUNT_CLOSURE: 'REQUEST_TYPE.ACCOUNT_CLOSURE_DESC',
+    CARD_BLOCKED: 'REQUEST_TYPE.CARD_BLOCKED_DESC',
+    LIMIT_CHANGE: 'REQUEST_TYPE.LIMIT_CHANGE_DESC',
   };
 
   readonly requestTypeIcons: Record<string, string> = {
@@ -36,6 +46,7 @@ export class CustomerRequestsComponent {
     ACCOUNT_FROZEN: 'bi-snow',
     ACCOUNT_CLOSURE: 'bi-door-closed',
     CARD_BLOCKED: 'bi-credit-card-2-front',
+    LIMIT_CHANGE: 'bi-speedometer',
   };
 
   readonly filteredRequests = computed(() =>
@@ -62,7 +73,7 @@ export class CustomerRequestsComponent {
     }
   }
 
-  constructor(private customerService: CustomerService) {
+  constructor(private customerService: CustomerService, private translate: TranslateService) {
     this.loadRequests();
   }
 
@@ -75,7 +86,7 @@ export class CustomerRequestsComponent {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err.message || 'Errore nel caricamento delle richieste');
+        this.error.set(err.message || this.translate.instant('REQUESTS.loading'));
         this.loading.set(false);
       },
     });
@@ -86,7 +97,13 @@ export class CustomerRequestsComponent {
   }
 
   getRequestTypeLabel(type: string): string {
-    return this.requestTypeLabels[type] || type;
+    const key = this.requestTypeLabels[type];
+    return key ? this.translate.instant(key) : type;
+  }
+
+  getRequestDescription(type: string): string {
+    const key = this.requestDescKeys[type];
+    return key ? this.translate.instant(key) : type;
   }
 
   getRequestTypeIcon(type: string): string {

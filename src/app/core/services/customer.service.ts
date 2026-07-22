@@ -111,6 +111,12 @@ export class CustomerService {
       .pipe(catchError(this.handleError));
   }
 
+  requestLimitChange(accountNumber: string, limitType: string, requestedAmount: number): Observable<string> {
+    return this.http
+      .post(`${this.API_BASE}/limit-change`, { accountNumber, limitType, requestedAmount }, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
   getMyRequests(): Observable<any[]> {
     return this.http
       .get<any[]>(`${this.API_BASE}/requests`)

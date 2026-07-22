@@ -106,7 +106,7 @@ export class AdminService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Errore sconosciuto. Riprova più tardi.';
+    let errorMessage = 'Unknown error. Please try again later.';
     let body = error.error;
     if (typeof body === 'string') {
       try { body = JSON.parse(body); } catch { /* not JSON */ }

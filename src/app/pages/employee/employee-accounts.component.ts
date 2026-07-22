@@ -1,7 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -35,7 +35,7 @@ export class EmployeeAccountsComponent implements OnInit {
     MONTHLY_TRANSFER: { min: 1, max: 50000 },
   };
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(private employeeService: EmployeeService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.loadAccounts();
@@ -145,8 +145,8 @@ export class EmployeeAccountsComponent implements OnInit {
   }
 
   getStatusName(statusId: number): string {
-    const names: Record<number, string> = { 1: 'Inattivo', 2: 'Attivo', 3: 'Congelato', 4: 'Chiuso' };
-    return names[statusId] ?? 'Sconosciuto';
+    const keys: Record<number, string> = { 1: 'STATUS.INACTIVE', 2: 'STATUS.ACTIVE', 3: 'STATUS.FROZEN', 4: 'STATUS.CLOSED' };
+    return this.translate.instant(keys[statusId] || 'STATUS.UNKNOWN');
   }
 
   getActiveCount(): number {

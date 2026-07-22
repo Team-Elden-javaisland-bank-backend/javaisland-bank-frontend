@@ -273,6 +273,11 @@
   color: #dc2626;
 }
 
+.type-limit_change {
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+}
+
 .type-label {
   font-size: 0.8125rem;
   font-weight: 600;

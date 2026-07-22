@@ -10,36 +10,76 @@
     <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
   }
 
-  <!-- Account selector card -->
-  <div class="account-selector-card mb-4">
-    <div class="selector-content">
-      <div class="selector-icon">
-        <i class="bi bi-wallet2"></i>
-      </div>
-      <div class="selector-info">
-        <span class="selector-label">{{ 'EMPLOYEE.limits.select_active_account' | translate }}</span>
-        @if (selectedAccount()) {
-          <span class="selector-value mono">{{ selectedAccount() }}</span>
+  <!-- Account selection: show grid when no account selected -->
+  @if (!selectedAccount()) {
+    <div class="account-select-section mb-4">
+      <div class="search-bar">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [placeholder]="'EMPLOYEE.limits.search_placeholder' | translate"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+        />
+        @if (searchQuery()) {
+          <button class="search-clear" (click)="searchQuery.set('')">
+            <i class="bi bi-x-lg"></i>
+          </button>
         }
       </div>
-      <div class="selector-action">
-        @if (loading()) {
-          <span class="text-muted small">{{ 'EMPLOYEE.limits.loading' | translate }}</span>
-        } @else {
-          <select class="styled-select" [ngModel]="selectedAccount()" (ngModelChange)="onAccountChange($event)">
-            <option value="">{{ 'EMPLOYEE.limits.select_account_placeholder' | translate }}</option>
-            @for (account of accounts(); track account.accountNumber) {
-              <option [value]="account.accountNumber">
-                {{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
-              </option>
-            }
-          </select>
-        }
-      </div>
-    </div>
-  </div>
 
-  @if (selectedAccount()) {
+      @if (loading()) {
+        <div class="d-flex justify-content-center py-4">
+          <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+        </div>
+      } @else {
+        <div class="account-cards-grid">
+          @for (account of filteredAccounts(); track account.accountNumber) {
+            <div
+              class="account-card"
+              (click)="onAccountChange(account.accountNumber)"
+            >
+              <div class="account-card-avatar">
+                {{ getInitials(account) }}
+              </div>
+              <div class="account-card-info">
+                <div class="account-card-name">{{ getFullName(account) }}</div>
+                <div class="account-card-number mono">{{ account.accountNumber }}</div>
+              </div>
+              <div class="account-card-balance">
+                {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
+              </div>
+            </div>
+          } @empty {
+            <div class="account-cards-empty">
+              <i class="bi bi-person-x"></i>
+              <span>{{ 'EMPLOYEE.limits.no_results' | translate }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Selected account: bar + limits (no scrolling needed) -->
+  @if (selectedAccount(); as accNum) {
+    @if (getSelectedAccountData(); as acc) {
+      <div class="selected-account-bar mb-4">
+        <div class="selected-bar-avatar">{{ getInitials(acc) }}</div>
+        <div class="selected-bar-info">
+          <span class="selected-bar-name">{{ getFullName(acc) }}</span>
+          <span class="selected-bar-number mono">{{ accNum }}</span>
+        </div>
+        <div class="selected-bar-balance">
+          <span class="selected-bar-label">{{ 'EMPLOYEE.limits.balance' | translate }}</span>
+          <span class="selected-bar-amount">{{ acc.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <button class="selected-bar-change" (click)="selectedAccount.set(''); limits.set([]); message.set('')">
+          <i class="bi bi-arrow-left"></i> {{ 'EMPLOYEE.limits.change_account' | translate }}
+        </button>
+      </div>
+    }
+
     @if (limitsLoading()) {
       <div class="d-flex justify-content-center py-5">
         <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
@@ -124,11 +164,5 @@
         }
       </div>
     }
-  } @else {
-    <div class="empty-state-card">
-      <div class="empty-state-icon"><i class="bi bi-speedometer2"></i></div>
-      <h6 class="empty-state-title">{{ 'EMPLOYEE.limits.select_account' | translate }}</h6>
-      <p class="empty-state-text">{{ 'EMPLOYEE.limits.select_account_desc' | translate }}</p>
-    </div>
   }
 </div>

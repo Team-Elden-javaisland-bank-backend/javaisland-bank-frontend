@@ -40,7 +40,7 @@
       </div>
 
       <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card stat-card stat-card-employees h-100">
+        <a routerLink="/admin/employees" class="card stat-card stat-card-employees h-100 text-decoration-none">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
               <div>
@@ -52,7 +52,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </a>
       </div>
 
       <div class="col-12 col-sm-6 col-lg-3">
@@ -106,7 +106,7 @@
       </div>
 
       <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card stat-card stat-card-pending h-100">
+        <a routerLink="/admin/audit-logs" class="card stat-card stat-card-pending h-100 text-decoration-none">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
               <div>
@@ -118,7 +118,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </a>
       </div>
 
       <div class="col-12 col-sm-6 col-lg-3">
@@ -159,22 +159,6 @@
         <div class="card h-100">
           <div class="card-header bg-transparent">
             <h5 class="mb-0">
-              <i class="bi bi-people me-2"></i>{{ 'ADMIN.dashboard.manage_clients' | translate }}
-            </h5>
-          </div>
-          <div class="card-body">
-            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.manage_clients_desc' | translate }}</p>
-            <a routerLink="/admin/customers" class="btn btn-primary">
-              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_clients' | translate }}
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-md-6">
-        <div class="card h-100">
-          <div class="card-header bg-transparent">
-            <h5 class="mb-0">
               <i class="bi bi-person-badge me-2"></i>{{ 'ADMIN.dashboard.manage_employees' | translate }}
             </h5>
           </div>
@@ -191,29 +175,13 @@
         <div class="card h-100">
           <div class="card-header bg-transparent">
             <h5 class="mb-0">
-              <i class="bi bi-wallet2 me-2"></i>{{ 'ADMIN.dashboard.manage_accounts' | translate }}
+              <i class="bi bi-journal-text me-2"></i>{{ 'ADMIN.dashboard.audit_log' | translate }}
             </h5>
           </div>
           <div class="card-body">
-            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.manage_accounts_desc' | translate }}</p>
-            <a routerLink="/admin/accounts" class="btn btn-success">
-              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_accounts' | translate }}
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-md-6">
-        <div class="card h-100">
-          <div class="card-header bg-transparent">
-            <h5 class="mb-0">
-              <i class="bi bi-arrow-left-right me-2"></i>{{ 'ADMIN.dashboard.transactions' | translate }}
-            </h5>
-          </div>
-          <div class="card-body">
-            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.transactions_desc' | translate }}</p>
-            <a routerLink="/admin/transactions" class="btn btn-outline-primary">
-              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_transactions' | translate }}
+            <p class="text-muted mb-3">{{ 'ADMIN.dashboard.audit_log_desc' | translate }}</p>
+            <a routerLink="/admin/audit-logs" class="btn btn-outline-primary">
+              <i class="bi bi-arrow-right me-1"></i>{{ 'ADMIN.dashboard.go_to_audit' | translate }}
             </a>
           </div>
         </div>

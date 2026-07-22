@@ -15,11 +15,13 @@ interface EmployeeRequestDto {
   userLastName: string;
   userEmail: string;
   accountNumber: string;
+  limitTypeName: string;
+  requestedAmount: number;
   createdAt: string;
   processedAt: string | null;
 }
 
-type RequestType = 'ALL' | 'PASSWORD_CHANGE' | 'ACCOUNT_OPENING' | 'ACCOUNT_CLOSURE';
+type RequestType = 'ALL' | 'PASSWORD_CHANGE' | 'ACCOUNT_OPENING' | 'ACCOUNT_CLOSURE' | 'LIMIT_CHANGE';
 type StatusTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 @Component({
@@ -89,6 +91,7 @@ export class EmployeeRequestsComponent implements OnInit {
       PASSWORD_CHANGE: pending.filter(r => r.type === 'PASSWORD_CHANGE').length,
       ACCOUNT_OPENING: pending.filter(r => r.type === 'ACCOUNT_OPENING').length,
       ACCOUNT_CLOSURE: pending.filter(r => r.type === 'ACCOUNT_CLOSURE').length,
+      LIMIT_CHANGE: pending.filter(r => r.type === 'LIMIT_CHANGE').length,
     };
   });
 
@@ -177,6 +180,12 @@ export class EmployeeRequestsComponent implements OnInit {
           error: (err) => this.toast(err.message, 'error'),
         });
         break;
+      case 'LIMIT_CHANGE':
+        this.employeeService.approveLimitRequest(req.id).subscribe({
+          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
+          error: (err) => this.toast(err.message, 'error'),
+        });
+        break;
     }
   }
 
@@ -202,6 +211,12 @@ export class EmployeeRequestsComponent implements OnInit {
           error: (err) => this.toast(err.message, 'error'),
         });
         break;
+      case 'LIMIT_CHANGE':
+        this.employeeService.rejectLimitRequest(req.id).subscribe({
+          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
+          error: (err) => this.toast(err.message, 'error'),
+        });
+        break;
     }
   }
 
@@ -210,6 +225,7 @@ export class EmployeeRequestsComponent implements OnInit {
       case 'PASSWORD_CHANGE': return 'bi-key';
       case 'ACCOUNT_OPENING': return 'bi-bank';
       case 'ACCOUNT_CLOSURE': return 'bi-lock';
+      case 'LIMIT_CHANGE': return 'bi-sliders';
       default: return 'bi-question-circle';
     }
   }
@@ -219,8 +235,24 @@ export class EmployeeRequestsComponent implements OnInit {
       case 'PASSWORD_CHANGE': return this.translate.instant('REQUEST_TYPE.PASSWORD_CHANGE');
       case 'ACCOUNT_OPENING': return this.translate.instant('REQUEST_TYPE.ACCOUNT_OPENING');
       case 'ACCOUNT_CLOSURE': return this.translate.instant('REQUEST_TYPE.ACCOUNT_CLOSURE');
+      case 'LIMIT_CHANGE': return this.translate.instant('REQUEST_TYPE.LIMIT_CHANGE');
       default: return type;
     }
+  }
+
+  getLimitTypeLabel(typeName: string): string {
+    const key = 'LIMIT_TYPE.' + typeName + '.label';
+    const translated = this.translate.instant(key);
+    return translated !== key ? translated : typeName;
+  }
+
+  getRequestDescription(req: EmployeeRequestDto): string {
+    if (req.type === 'LIMIT_CHANGE' && req.limitTypeName) {
+      const label = this.getLimitTypeLabel(req.limitTypeName);
+      const amount = req.requestedAmount != null ? req.requestedAmount.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0';
+      return label + ' — €' + amount;
+    }
+    return req.description;
   }
 
   private toast(msg: string, type: 'success' | 'error'): void {

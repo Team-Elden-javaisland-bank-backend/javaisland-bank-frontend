@@ -35,6 +35,10 @@
         <i class="bi bi-lock me-1"></i>{{ 'EMPLOYEE.requests.closure' | translate }}
         <span class="filter-count">{{ typeCounts().ACCOUNT_CLOSURE }}</span>
       </button>
+      <button class="filter-pill" [class.active]="activeType() === 'LIMIT_CHANGE'" (click)="setType('LIMIT_CHANGE')">
+        <i class="bi bi-sliders me-1"></i>{{ 'EMPLOYEE.requests.limit_change' | translate }}
+        <span class="filter-count">{{ typeCounts().LIMIT_CHANGE }}</span>
+      </button>
     </div>
   </nav>
 
@@ -137,7 +141,7 @@
                     </div>
                   </div>
                 </td>
-                <td class="d-none d-md-table-cell text-muted small">{{ req.description }}</td>
+                <td class="d-none d-md-table-cell text-muted small">{{ getRequestDescription(req) }}</td>
                 <td class="text-nowrap">
                   <span class="text-muted small">{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                 </td>

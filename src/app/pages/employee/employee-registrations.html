@@ -27,38 +27,142 @@
       <p class="empty-state-text">{{ 'EMPLOYEE.registrations.no_pending' | translate }}</p>
     </div>
   } @else {
-    <div class="row g-3">
-      @for (reg of registrations(); track reg.userId) {
-        <div class="col-12 col-md-6 col-xl-4">
-          <div class="reg-card">
-            <div class="reg-card-header">
-              <div class="reg-avatar">{{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}</div>
-              <div class="reg-user-info">
-                <div class="reg-name">{{ reg.firstName }} {{ reg.lastName }}</div>
-                <div class="reg-email">{{ reg.email }}</div>
+    <!-- Search Bar -->
+    <div class="search-bar mb-3">
+      <div class="search-input-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="form-control search-input"
+          [placeholder]="'EMPLOYEE.registrations.search_placeholder' | translate"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
+        @if (searchQuery()) {
+          <button class="btn-clear-search" (click)="searchQuery.set('')">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (filteredRegistrations().length === 0) {
+      <div class="empty-state-card">
+        <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+        <h6 class="empty-state-title">{{ 'EMPLOYEE.registrations.no_results' | translate }}</h6>
+        <p class="empty-state-text">{{ 'EMPLOYEE.registrations.try_another' | translate }}</p>
+      </div>
+    } @else {
+      <div class="row g-3">
+        @for (reg of filteredRegistrations(); track reg.userId) {
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="reg-card">
+              <div class="reg-card-header">
+                <div class="reg-avatar reg-avatar-clickable" (click)="openUserDetail(reg.userId)" title="{{ 'EMPLOYEE.registrations.view_detail' | translate }}">
+                  {{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}
+                </div>
+                <div class="reg-user-info">
+                  <div class="reg-name">{{ reg.firstName }} {{ reg.lastName }}</div>
+                  <div class="reg-email">{{ reg.email }}</div>
+                </div>
               </div>
-            </div>
-            <div class="reg-card-details">
-              <div class="reg-detail">
-                <span class="reg-detail-label">{{ 'EMPLOYEE.registrations.birth_date' | translate }}</span>
-                <span class="reg-detail-value">{{ reg.birthDate | date:'dd/MM/yyyy' }}</span>
+              <div class="reg-card-details">
+                <div class="reg-detail">
+                  <span class="reg-detail-label">{{ 'EMPLOYEE.registrations.birth_date' | translate }}</span>
+                  <span class="reg-detail-value">{{ reg.birthDate | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="reg-detail">
+                  <span class="reg-detail-label">{{ 'EMPLOYEE.registrations.registered_on' | translate }}</span>
+                  <span class="reg-detail-value">{{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
               </div>
-              <div class="reg-detail">
-                <span class="reg-detail-label">{{ 'EMPLOYEE.registrations.registered_on' | translate }}</span>
-                <span class="reg-detail-value">{{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              <div class="reg-card-actions">
+                <button class="reg-btn reg-btn-approve" (click)="validate(reg.userId)">
+                  <i class="bi bi-check-lg me-1"></i>{{ 'EMPLOYEE.registrations.validate' | translate }}
+                </button>
+                <button class="reg-btn reg-btn-reject" (click)="reject(reg.userId)">
+                  <i class="bi bi-x-lg me-1"></i>{{ 'EMPLOYEE.registrations.reject' | translate }}
+                </button>
               </div>
-            </div>
-            <div class="reg-card-actions">
-              <button class="reg-btn reg-btn-approve" (click)="validate(reg.userId)">
-                <i class="bi bi-check-lg me-1"></i>{{ 'EMPLOYEE.registrations.validate' | translate }}
-              </button>
-              <button class="reg-btn reg-btn-reject" (click)="reject(reg.userId)">
-                <i class="bi bi-x-lg me-1"></i>{{ 'EMPLOYEE.registrations.reject' | translate }}
-              </button>
             </div>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
   }
 </div>
+
+<!-- User Detail Modal -->
+@if (showModal()) {
+  <div class="modal-backdrop-custom" (click)="closeModal()"></div>
+  <div class="modal-custom" role="dialog">
+    <div class="modal-content-custom">
+      <div class="modal-header-custom">
+        <h5 class="modal-title-custom">
+          <i class="bi bi-person-badge me-2"></i>
+          {{ 'EMPLOYEE.registrations.user_detail' | translate }}
+        </h5>
+        <button class="btn-close-custom" (click)="closeModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body-custom">
+        @if (loadingUserDetail()) {
+          <div class="d-flex justify-content-center py-5">
+            <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+          </div>
+        } @else if (userDetail()) {
+          @let d = userDetail()!;
+          <div class="detail-section">
+            <h6 class="detail-section-title">
+              <i class="bi bi-person me-2"></i>
+              {{ 'EMPLOYEE.registrations.personal_info' | translate }}
+            </h6>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.username' | translate }}</span>
+                <span class="detail-value mono">{{ d.username }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.tax_code' | translate }}</span>
+                <span class="detail-value mono">{{ d.fiscalCode }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.birth_date' | translate }}</span>
+                <span class="detail-value">{{ d.birthDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.birth_place' | translate }}</span>
+                <span class="detail-value">{{ d.birthPlace }} ({{ d.birthProvince }})</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.gender' | translate }}</span>
+                <span class="detail-value">{{ d.gender }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.profession' | translate }}</span>
+                <span class="detail-value">{{ d.profession }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.phone' | translate }}</span>
+                <span class="detail-value">{{ d.phone }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">{{ 'EMPLOYEE.registrations.residence' | translate }}</span>
+                <span class="detail-value">{{ d.residence }}</span>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="empty-detail">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span>{{ 'EMPLOYEE.registrations.cannot_load' | translate }}</span>
+          </div>
+        }
+      </div>
+      <div class="modal-footer-custom">
+        <button class="btn btn-secondary" (click)="closeModal()">{{ 'EMPLOYEE.registrations.close' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}

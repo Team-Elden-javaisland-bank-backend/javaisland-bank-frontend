@@ -159,6 +159,16 @@
   letter-spacing: 0.5px;
 }
 
+.customer-avatar-clickable {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.customer-avatar-clickable:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(10, 25, 47, 0.3);
+}
+
 .customer-details {
   min-width: 0;
 }

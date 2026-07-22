@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AdminService } from '../../core/services/admin.service';
 
 interface DashboardStats {
@@ -27,7 +27,7 @@ export class AdminDashboardComponent implements OnInit {
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -43,7 +43,7 @@ export class AdminDashboardComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set('Errore nel caricamento della dashboard');
+        this.error.set(this.translate.instant('ADMIN.dashboard.error_load'));
         this.loading.set(false);
         console.error('Dashboard error:', err);
       }
@@ -51,13 +51,15 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('it-IT', {
+    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
     }).format(value);
   }
 
   formatNumber(value: number): string {
-    return new Intl.NumberFormat('it-IT').format(value);
+    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    return new Intl.NumberFormat(locale).format(value);
   }
 }

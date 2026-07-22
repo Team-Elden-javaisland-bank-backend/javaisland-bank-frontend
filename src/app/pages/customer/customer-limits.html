@@ -135,15 +135,18 @@
                         <span class="limit-range-label">
                           <i class="bi bi-info-circle me-1"></i>Min: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }}
                         </span>
-                        @if (canEdit(meta.type)) {
-                          <button class="limit-btn limit-btn-edit" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
-                            <i class="bi bi-pencil me-1"></i>{{ (getLimitForType(meta.type) ? 'LIMITS.modify' : 'LIMITS.set') | translate }}
-                          </button>
-                        } @else {
-                          <span class="limit-locked">
-                            <i class="bi bi-lock me-1"></i>{{ 'LIMITS.contact_bank' | translate }}
-                          </span>
-                        }
+                        <div class="limit-footer-actions">
+                          @if (canEdit(meta.type)) {
+                            <button class="limit-btn limit-btn-edit" (click)="startEdit(meta.type, getLimitForType(meta.type)?.maxAmount ?? 0)">
+                              <i class="bi bi-pencil me-1"></i>{{ (getLimitForType(meta.type) ? 'LIMITS.modify' : 'LIMITS.set') | translate }}
+                            </button>
+                          }
+                          @if (getRequestablePolicy(meta.type)) {
+                            <button class="limit-btn limit-btn-request" (click)="openRequestModal(meta.type)">
+                              <i class="bi bi-send me-1"></i>{{ 'LIMITS.request_change' | translate }}
+                            </button>
+                          }
+                        </div>
                       </div>
                     </div>
                   }
@@ -219,6 +222,76 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  }
+
+  <!-- Request Change Modal -->
+  @if (showRequestModal()) {
+    <div class="modal-backdrop" (click)="closeRequestModal()"></div>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ 'LIMITS.request_modal.title' | translate }}</h5>
+          <button class="btn-close" (click)="closeRequestModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'LIMITS.request_modal.limit_type' | translate }}</label>
+            <select class="form-select" [ngModel]="requestLimitType()" (ngModelChange)="requestLimitType.set($event)">
+              <option value="">{{ 'LIMITS.request_modal.select_limit' | translate }}</option>
+              @for (meta of requestableLimits; track meta.type) {
+                <option [value]="meta.type">{{ meta.labelKey | translate }}</option>
+              }
+            </select>
+          </div>
+          @if (requestLimitType()) {
+            <div class="mb-3">
+              <label class="form-label fw-semibold">{{ 'LIMITS.request_modal.current_value' | translate }}</label>
+              <div class="form-control-plaintext">{{ getRequestCurrentAmount() | currency:'EUR':'symbol':'1.2-2' }}</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">{{ 'LIMITS.request_modal.requested_amount' | translate }}</label>
+              <div class="input-group">
+                <span class="input-group-text">€</span>
+                <input class="form-control" type="number" [(ngModel)]="requestAmount" [min]="0.01" [max]="getRequestMaxValue()" step="0.01" />
+              </div>
+              @if (getRequestLimitPolicy() === 'USER_LOWER_ONLY') {
+                <div class="form-text text-info">
+                  <i class="bi bi-info-circle me-1"></i>{{ 'LIMITS.request_modal.lower_only_hint' | translate }}
+                </div>
+              }
+            </div>
+          }
+          @if (requestError()) {
+            <div class="alert alert-danger">{{ requestError() }}</div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeRequestModal()">{{ 'LIMITS.cancel' | translate }}</button>
+          <button class="btn btn-success" (click)="submitRequest()" [disabled]="!requestLimitType() || !requestAmount || requestLoading()">
+            @if (requestLoading()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            {{ 'LIMITS.request_modal.submit' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Success animation overlay -->
+  @if (showSuccessAnimation()) {
+    <div class="success-overlay">
+      <div class="success-card">
+        <div class="success-checkmark">
+          <svg class="checkmark" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="24" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+        <div class="success-title">{{ 'LIMITS.request_modal.success_title' | translate }}</div>
+        <div class="success-text">{{ 'LIMITS.request_modal.success_text' | translate }}</div>
       </div>
     </div>
   }

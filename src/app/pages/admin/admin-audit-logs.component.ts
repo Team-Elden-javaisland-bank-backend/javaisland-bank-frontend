@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AdminService, AuditLogDto, EmployeeDetailDto } from '../../core/services/admin.service';
 
 @Component({
@@ -23,21 +23,21 @@ export class AdminAuditLogsComponent implements OnInit {
   modalError = signal<string | null>(null);
   selectedEmployee = signal<EmployeeDetailDto | null>(null);
 
-  readonly actionTypes = [
-    { value: '', label: 'Tutti' },
-    { value: 'VALIDATE', label: 'Valida' },
-    { value: 'REJECT', label: 'Rifiuta' },
-    { value: 'FREEZE', label: 'Blocca' },
-    { value: 'UNFREEZE', label: 'Sblocca' },
-    { value: 'ACTIVATE', label: 'Attiva' }
-  ];
+  actionTypes = computed(() => [
+    { value: '', label: this.translate.instant('ADMIN.audit.filter_all') },
+    { value: 'VALIDATE', label: this.translate.instant('ADMIN.audit.filter_validate') },
+    { value: 'REJECT', label: this.translate.instant('ADMIN.audit.filter_reject') },
+    { value: 'FREEZE', label: this.translate.instant('ADMIN.audit.filter_freeze') },
+    { value: 'UNFREEZE', label: this.translate.instant('ADMIN.audit.filter_unfreeze') },
+    { value: 'ACTIVATE', label: this.translate.instant('ADMIN.audit.filter_activate') }
+  ]);
 
-  readonly timePeriods = [
-    { value: 1, label: '1 giorno' },
-    { value: 7, label: '7 giorni' },
-    { value: 30, label: '30 giorni' },
-    { value: 90, label: '90 giorni' }
-  ];
+  timePeriods = computed(() => [
+    { value: 1, label: this.translate.instant('ADMIN.audit.period_1d') },
+    { value: 7, label: this.translate.instant('ADMIN.audit.period_7d') },
+    { value: 30, label: this.translate.instant('ADMIN.audit.period_30d') },
+    { value: 90, label: this.translate.instant('ADMIN.audit.period_90d') }
+  ]);
 
   filteredLogs = computed(() => {
     const action = this.selectedAction();
@@ -48,7 +48,7 @@ export class AdminAuditLogsComponent implements OnInit {
 
   logCount = computed(() => this.filteredLogs().length);
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.loadLogs();
@@ -64,7 +64,7 @@ export class AdminAuditLogsComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set('Errore nel caricamento dei log di audit');
+        this.error.set(this.translate.instant('ADMIN.audit.error_load'));
         this.loading.set(false);
         console.error('Audit logs error:', err);
       }
@@ -94,7 +94,7 @@ export class AdminAuditLogsComponent implements OnInit {
         this.modalLoading.set(false);
       },
       error: (err) => {
-        this.modalError.set('Errore nel caricamento del dettaglio dipendente');
+        this.modalError.set(this.translate.instant('ADMIN.audit.error_employee_load'));
         this.modalLoading.set(false);
         console.error('Employee detail error:', err);
       }
@@ -130,19 +130,13 @@ export class AdminAuditLogsComponent implements OnInit {
   }
 
   getActionLabel(action: string): string {
-    switch (action) {
-      case 'VALIDATE': return 'Valida';
-      case 'REJECT': return 'Rifiuta';
-      case 'FREEZE': return 'Blocca';
-      case 'UNFREEZE': return 'Sblocca';
-      case 'ACTIVATE': return 'Attiva';
-      default: return action;
-    }
+    return this.translate.instant('ADMIN.audit.action_' + action.toLowerCase());
   }
 
   formatDateTime(dateStr: string): string {
     const d = new Date(dateStr);
-    return d.toLocaleDateString('it-IT', {
+    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    return d.toLocaleDateString(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

@@ -1,7 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -24,11 +24,35 @@ interface LimitMeta {
 export class EmployeeLimitsComponent {
   accounts = signal<AccountResponseDto[]>([]);
   selectedAccount = signal('');
+  searchQuery = signal('');
   limits = signal<AccountLimitResponseDto[]>([]);
   loading = signal(true);
   limitsLoading = signal(false);
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
+
+  filteredAccounts = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    const list = this.accounts();
+    if (!q) return list;
+    return list.filter(a =>
+      a.accountNumber.toLowerCase().includes(q) ||
+      a.profileFirstName.toLowerCase().includes(q) ||
+      a.profileLastName.toLowerCase().includes(q)
+    );
+  });
+
+  getFullName(a: AccountResponseDto): string {
+    return `${a.profileFirstName} ${a.profileLastName}`;
+  }
+
+  getInitials(a: AccountResponseDto): string {
+    return (a.profileFirstName?.charAt(0) ?? '') + (a.profileLastName?.charAt(0) ?? '');
+  }
+
+  getSelectedAccountData(): AccountResponseDto | undefined {
+    return this.accounts().find(a => a.accountNumber === this.selectedAccount());
+  }
 
   editingType = signal('');
   editingError = signal('');
@@ -43,7 +67,7 @@ export class EmployeeLimitsComponent {
     { type: 'POS_SPENDING', labelKey: 'LIMIT_TYPE.POS_SPENDING.label', descriptionKey: 'LIMIT_TYPE.POS_SPENDING.description', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
   ];
 
-  constructor(private employeeService: EmployeeService) {
+  constructor(private employeeService: EmployeeService, private translate: TranslateService) {
     this.employeeService.getAccounts().subscribe({
       next: (data) => {
         this.accounts.set(data.filter(a => a.statusId === 2));
@@ -99,12 +123,12 @@ export class EmployeeLimitsComponent {
   saveLimit(type: string): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     if (this.editAmount < (meta?.minValue ?? 0)) {
-      this.editingError.set(`Minimo €${meta?.minValue ?? 0}`);
+      this.editingError.set(this.translate.instant('EMPLOYEE.limits.error_min', { min: meta?.minValue ?? 0 }));
       return;
     }
 
     if (meta && this.editAmount > meta.maxValue) {
-      this.editingError.set(`Massimo €${meta.maxValue.toLocaleString('it-IT')}`);
+      this.editingError.set(this.translate.instant('EMPLOYEE.limits.error_max', { max: meta.maxValue.toLocaleString('it-IT') }));
       return;
     }
 
@@ -113,7 +137,7 @@ export class EmployeeLimitsComponent {
       maxAmount: this.editAmount,
     }).subscribe({
       next: () => {
-        this.message.set('Limite aggiornato!');
+        this.message.set(this.translate.instant('EMPLOYEE.limits.success_updated'));
         this.messageType.set('success');
         this.editingType.set('');
         this.onAccountChange(this.selectedAccount());

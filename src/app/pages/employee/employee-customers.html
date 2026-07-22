@@ -70,7 +70,7 @@
           <!-- Customer Header -->
           <div class="customer-header" (click)="toggleExpand(customer.userId)">
             <div class="customer-main-info">
-              <div class="customer-avatar">{{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}</div>
+              <div class="customer-avatar customer-avatar-clickable" (click)="viewUserDetail(customer.userId); $event.stopPropagation()" title="{{ 'EMPLOYEE.customers.view_user_detail' | translate }}">{{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}</div>
               <div class="customer-details">
                 <h6 class="customer-name">{{ customer.firstName }} {{ customer.lastName }}</h6>
                 <span class="customer-email">{{ customer.email }}</span>
@@ -130,7 +130,7 @@
                               <span class="text-muted">{{ account.createdAt | date:'dd/MM/yyyy' }}</span>
                             </td>
                             <td>
-                              <button class="btn btn-sm btn-outline-primary" (click)="openUserDetail(account.accountNumber); $event.stopPropagation()">
+                              <button class="btn btn-sm btn-outline-primary" (click)="openAccountDetail(account.accountNumber); $event.stopPropagation()">
                                 <i class="bi bi-person-lines-fill me-1"></i>
                                 {{ 'EMPLOYEE.customers.detail' | translate }}
                               </button>
@@ -158,8 +158,8 @@
       <!-- Modal Header -->
       <div class="modal-header-custom">
         <h5 class="modal-title-custom">
-          <i class="bi bi-person-badge me-2"></i>
-          {{ 'EMPLOYEE.customers.user_detail' | translate }}
+          <i class="bi me-2" [class.bi-person-badge]="modalMode() === 'user'" [class.bi-wallet2]="modalMode() === 'account'"></i>
+          {{ (modalMode() === 'user' ? 'EMPLOYEE.customers.personal_info' : 'EMPLOYEE.customers.account_details') | translate }}
         </h5>
         <button class="btn-close-custom" (click)="closeModal()">
           <i class="bi bi-x-lg"></i>
@@ -175,83 +175,86 @@
         } @else if (modalDetail()) {
           @let detail = modalDetail()!;
 
-          <!-- Personal Info Section -->
-          <div class="detail-section">
-            <h6 class="detail-section-title">
-              <i class="bi bi-person me-2"></i>
-              {{ 'EMPLOYEE.customers.personal_info' | translate }}
-            </h6>
-            <div class="detail-grid">
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.username' | translate }}</span>
-                <span class="detail-value mono">{{ detail.username }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.tax_code' | translate }}</span>
-                <span class="detail-value mono">{{ detail.fiscalCode }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.birth_date' | translate }}</span>
-                <span class="detail-value">{{ detail.birthDate | date:'dd/MM/yyyy' }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.birth_place' | translate }}</span>
-                <span class="detail-value">{{ detail.birthPlace }} ({{ detail.birthProvince }})</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.gender' | translate }}</span>
-                <span class="detail-value">{{ detail.gender }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.profession' | translate }}</span>
-                <span class="detail-value">{{ detail.profession }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.user_status' | translate }}</span>
-                <span [class]="'status-pill ' + getUserStatusClass(detail.userStatus)">
-                  {{ getUserStatusLabel(detail.userStatus) }}
-                </span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.registered_on' | translate }}</span>
-                <span class="detail-value">{{ detail.userCreatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Account Info Section -->
-          <div class="detail-section">
-            <h6 class="detail-section-title">
-              <i class="bi bi-wallet2 me-2"></i>
-              {{ 'EMPLOYEE.customers.account_details' | translate }}
-            </h6>
-            <div class="detail-grid">
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.account_number_label' | translate }}</span>
-                <span class="detail-value mono">{{ detail.accountNumber }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.balance' | translate }}</span>
-                <span class="detail-value account-balance-value">{{ formatCurrency(detail.balance) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.account_status' | translate }}</span>
-                <span [class]="'status-pill ' + getDetailAccountStatusClass(detail.accountStatus)">
-                  {{ getDetailAccountStatusLabel(detail.accountStatus) }}
-                </span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">{{ 'EMPLOYEE.customers.account_created' | translate }}</span>
-                <span class="detail-value">{{ detail.accountCreatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
-              </div>
-              @if (detail.closedAt) {
+          <!-- Personal Info Section (user avatar click only) -->
+          @if (modalMode() === 'user') {
+            <div class="detail-section">
+              <h6 class="detail-section-title">
+                <i class="bi bi-person me-2"></i>
+                {{ 'EMPLOYEE.customers.personal_info' | translate }}
+              </h6>
+              <div class="detail-grid">
                 <div class="detail-item">
-                  <span class="detail-label">{{ 'EMPLOYEE.customers.account_closed' | translate }}</span>
-                  <span class="detail-value">{{ detail.closedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.username' | translate }}</span>
+                  <span class="detail-value mono">{{ detail.username }}</span>
                 </div>
-              }
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.tax_code' | translate }}</span>
+                  <span class="detail-value mono">{{ detail.fiscalCode }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.birth_date' | translate }}</span>
+                  <span class="detail-value">{{ detail.birthDate | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.birth_place' | translate }}</span>
+                  <span class="detail-value">{{ detail.birthPlace }} ({{ detail.birthProvince }})</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.gender' | translate }}</span>
+                  <span class="detail-value">{{ detail.gender }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.profession' | translate }}</span>
+                  <span class="detail-value">{{ detail.profession }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.user_status' | translate }}</span>
+                  <span [class]="'status-pill ' + getUserStatusClass(detail.userStatus)">
+                    {{ getUserStatusLabel(detail.userStatus) }}
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.registered_on' | translate }}</span>
+                  <span class="detail-value">{{ detail.userCreatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              </div>
             </div>
-          </div>
+          }
+
+          <!-- Account Info Section (account detail button only) -->
+          @if (modalMode() === 'account') {
+            <div class="detail-section">
+              <h6 class="detail-section-title">
+                <i class="bi bi-wallet2 me-2"></i>
+                {{ 'EMPLOYEE.customers.account_details' | translate }}
+              </h6>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.account_number_label' | translate }}</span>
+                  <span class="detail-value mono">{{ detail.accountNumber }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.balance' | translate }}</span>
+                  <span class="detail-value account-balance-value">{{ formatCurrency(detail.balance) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.account_status' | translate }}</span>
+                  <span [class]="'status-pill ' + getDetailAccountStatusClass(detail.accountStatus)">
+                    {{ getDetailAccountStatusLabel(detail.accountStatus) }}
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'EMPLOYEE.customers.account_created' | translate }}</span>
+                  <span class="detail-value">{{ detail.accountCreatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                @if (detail.closedAt) {
+                  <div class="detail-item">
+                    <span class="detail-label">{{ 'EMPLOYEE.customers.account_closed' | translate }}</span>
+                    <span class="detail-value">{{ detail.closedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                }
+              </div>
+            </div>
 
           <!-- Cards Section -->
           @if (detail.cards && detail.cards.length > 0) {
@@ -305,6 +308,7 @@
                 <span>{{ 'EMPLOYEE.customers.no_cards_linked' | translate }}</span>
               </div>
             </div>
+          }
           }
         } @else {
           <div class="empty-detail">
