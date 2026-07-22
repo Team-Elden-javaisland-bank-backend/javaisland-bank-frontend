@@ -1,0 +1,67 @@
+<div class="admin-transactions">
+  <div class="page-header mb-4">
+    <h1 class="page-title"><i class="bi bi-arrow-left-right me-2"></i>{{ 'ADMIN.transactions.title' | translate }}</h1>
+    <p class="page-subtitle text-muted">{{ 'ADMIN.transactions.subtitle' | translate }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  } @else {
+    <!-- Filters -->
+    <div class="card mb-4">
+      <div class="card-body py-3 d-flex flex-wrap gap-2 align-items-center">
+        <span class="text-muted small me-2">{{ 'ADMIN.transactions.period' | translate }}</span>
+        <button class="btn btn-sm" [class]="filterDays() === 7 ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(7)">{{ 'ADMIN.transactions.last_7' | translate }}</button>
+        <button class="btn btn-sm" [class]="filterDays() === 30 ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(30)">{{ 'ADMIN.transactions.last_30' | translate }}</button>
+        <button class="btn btn-sm" [class]="filterDays() === 90 ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(90)">{{ 'ADMIN.transactions.last_90' | translate }}</button>
+        <div class="ms-auto">
+          <input type="text" class="form-control form-control-sm" [placeholder]="'ADMIN.transactions.search_placeholder' | translate" [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" style="min-width:220px" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      @if (filteredTransactions().length === 0) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-4 text-muted"></i>
+          <p class="text-muted mt-3 mb-0">{{ 'ADMIN.transactions.no_transactions' | translate }}</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{{ 'ADMIN.transactions.date' | translate }}</th>
+                <th>{{ 'ADMIN.transactions.type' | translate }}</th>
+                <th>{{ 'ADMIN.transactions.from' | translate }}</th>
+                <th>{{ 'ADMIN.transactions.to' | translate }}</th>
+                <th>{{ 'ADMIN.transactions.description' | translate }}</th>
+                <th class="text-end">{{ 'ADMIN.transactions.amount' | translate }}</th>
+                <th>{{ 'ADMIN.transactions.status' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of filteredTransactions(); track t.id) {
+                <tr>
+                  <td class="text-muted mono">{{ t.id }}</td>
+                  <td class="text-muted">{{ formatDate(t.createdAt) }}</td>
+                  <td>{{ getTypeLabel(t.typeId) }}</td>
+                  <td><span class="mono">{{ t.sourceAccountNumber || '-' }}</span></td>
+                  <td><span class="mono">{{ t.destinationAccountNumber || '-' }}</span></td>
+                  <td class="text-muted">{{ t.description }}</td>
+                  <td class="text-end fw-bold">{{ formatCurrency(t.amount) }}</td>
+                  <td><span class="badge" [ngClass]="getStatusClass(t.statusId)">{{ getStatusLabel(t.statusId) }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

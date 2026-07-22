@@ -1,5 +1,10 @@
 /* ═══ EMPLOYEE CARDS ═══ */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 /* ── Page header ── */
 .page-header {
   display: flex;

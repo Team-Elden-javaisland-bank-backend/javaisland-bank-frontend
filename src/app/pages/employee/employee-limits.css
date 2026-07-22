@@ -1,5 +1,14 @@
 /* ═══ EMPLOYEE LIMITS ═══ */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
+.limits-page-wrapper {
+  width: 100%;
+}
+
 /* ── Page header ── */
 .page-header {
   display: flex;
@@ -75,8 +84,8 @@
 /* ── Account cards grid ── */
 .account-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.875rem;
 }
 
 .account-card {
@@ -241,8 +250,8 @@
 /* ── Limits grid ── */
 .limits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.125rem;
 }
 
 /* ── Limit card ── */
@@ -261,7 +270,7 @@
 }
 
 .limit-card-body {
-  padding: 1.25rem;
+  padding: 1.5rem;
 }
 
 .limit-card-header {
@@ -324,7 +333,7 @@
 }
 
 .limit-amount {
-  font-size: 1.375rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--bi-navy);
 }
@@ -451,7 +460,31 @@
 }
 
 /* ── Responsive ── */
+@media (min-width: 1200px) {
+  .account-card {
+    padding: 1rem 1.25rem;
+  }
+
+  .limit-type-desc {
+    max-width: 280px;
+  }
+}
+
+@media (min-width: 992px) {
+  .account-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .limits-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 767.98px) {
+  .limits-page-wrapper {
+    padding: 1rem;
+  }
+
   .limits-grid {
     grid-template-columns: 1fr;
   }

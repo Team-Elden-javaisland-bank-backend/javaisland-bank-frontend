@@ -1,0 +1,65 @@
+<div class="admin-accounts">
+  <div class="page-header mb-4">
+    <h1 class="page-title"><i class="bi bi-wallet2 me-2"></i>{{ 'ADMIN.accounts.title' | translate }}</h1>
+    <p class="page-subtitle text-muted">{{ 'ADMIN.accounts.subtitle' | translate }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  } @else {
+    <!-- Filters -->
+    <div class="card mb-4">
+      <div class="card-body py-3 d-flex flex-wrap gap-2 align-items-center">
+        <span class="text-muted small me-2">{{ 'ADMIN.accounts.filter' | translate }}</span>
+        <button class="btn btn-sm" [class]="filterStatus() === null ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(null)">{{ 'ADMIN.accounts.all' | translate }}</button>
+        <button class="btn btn-sm" [class]="filterStatus() === 2 ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(2)">{{ 'ADMIN.accounts.status_active' | translate }}</button>
+        <button class="btn btn-sm" [class]="filterStatus() === 3 ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(3)">{{ 'ADMIN.accounts.status_frozen' | translate }}</button>
+        <button class="btn btn-sm" [class]="filterStatus() === 4 ? 'btn-bi-gold' : 'btn-outline-secondary'" (click)="applyFilter(4)">{{ 'ADMIN.accounts.status_closed' | translate }}</button>
+        <div class="ms-auto">
+          <input type="text" class="form-control form-control-sm" [placeholder]="'ADMIN.accounts.search_placeholder' | translate" [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" style="min-width:220px" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      @if (filteredAccounts().length === 0) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-4 text-muted"></i>
+          <p class="text-muted mt-3 mb-0">{{ 'ADMIN.accounts.no_accounts' | translate }}</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>{{ 'ADMIN.accounts.account_number' | translate }}</th>
+                <th>{{ 'ADMIN.accounts.customer' | translate }}</th>
+                <th>{{ 'ADMIN.accounts.status' | translate }}</th>
+                <th class="text-end">{{ 'ADMIN.accounts.balance' | translate }}</th>
+                <th>{{ 'ADMIN.accounts.created' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of filteredAccounts(); track a.accountNumber) {
+                <tr>
+                  <td><span class="mono">{{ a.accountNumber }}</span></td>
+                  <td>
+                    <div class="fw-semibold">{{ a.userFullName }}</div>
+                    <small class="text-muted">{{ a.userEmail }}</small>
+                  </td>
+                  <td><span class="badge" [ngClass]="getStatusClass(a.statusId)">{{ getStatusLabel(a.statusId) }}</span></td>
+                  <td class="text-end fw-bold">{{ formatCurrency(a.balance) }}</td>
+                  <td class="text-muted">{{ formatDate(a.createdAt) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

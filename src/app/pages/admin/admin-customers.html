@@ -1,0 +1,165 @@
+<div class="admin-customers">
+  <div class="page-header mb-4">
+    <h1 class="page-title"><i class="bi bi-people me-2"></i>{{ 'ADMIN.customers.title' | translate }}</h1>
+    <p class="page-subtitle text-muted">{{ 'ADMIN.customers.subtitle' | translate }}</p>
+  </div>
+
+  @if (message()) {
+    <div class="alert alert-success">{{ message() }}</div>
+  }
+
+  <!-- Search -->
+  <div class="card mb-4">
+    <div class="card-body py-3">
+      <div class="input-group">
+        <span class="input-group-text bg-transparent"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" [placeholder]="'ADMIN.customers.search_placeholder' | translate" [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  } @else {
+    <div class="card">
+      <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>{{ 'ADMIN.customers.list' | translate }}</h5>
+        <span class="text-muted small">{{ filteredCustomers().length }} {{ 'ADMIN.customers.results' | translate }}</span>
+      </div>
+      @if (filteredCustomers().length === 0) {
+        <div class="card-body text-center py-5">
+          <i class="bi bi-inbox display-4 text-muted"></i>
+          <p class="text-muted mt-3 mb-0">{{ 'ADMIN.customers.no_customers' | translate }}</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>{{ 'ADMIN.customers.customer' | translate }}</th>
+                <th>{{ 'ADMIN.customers.email' | translate }}</th>
+                <th>{{ 'ADMIN.customers.status' | translate }}</th>
+                <th>{{ 'ADMIN.customers.accounts' | translate }}</th>
+                <th>{{ 'ADMIN.customers.total_balance' | translate }}</th>
+                <th class="text-end">{{ 'ADMIN.customers.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of filteredCustomers(); track c.userId) {
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="customer-avatar me-3">{{ getInitials(c) }}</div>
+                      <div>
+                        <div class="fw-semibold">{{ getFullName(c) }}</div>
+                        <small class="text-muted">{{ c.username }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-muted">{{ c.email }}</td>
+                  <td><span class="badge" [ngClass]="getStatusClass(c.status)">{{ c.status }}</span></td>
+                  <td>{{ c.accountCount }}</td>
+                  <td>{{ formatCurrency(c.totalBalance) }}</td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-outline-info" (click)="openDetail(c.userId)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Detail Modal -->
+  @if (showModal()) {
+    <div class="modal-backdrop fade show" (click)="closeModal()"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-person me-2"></i>{{ 'ADMIN.customers.detail' | translate }}</h5>
+            <button class="btn-close" (click)="closeModal()"></button>
+          </div>
+          <div class="modal-body">
+            @if (modalLoading()) {
+              <div class="d-flex justify-content-center py-4">
+                <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
+              </div>
+            } @else if (customerDetail(); as cust) {
+              <div class="text-center mb-4">
+                <div class="detail-avatar mx-auto">{{ getInitials(cust) }}</div>
+                <h5 class="mt-3 mb-1">{{ cust.firstName }} {{ cust.lastName }}</h5>
+                <span class="badge" [ngClass]="getStatusClass(cust.status)">{{ cust.status }}</span>
+              </div>
+              <div class="detail-fields">
+                <div class="detail-row">
+                  <span class="detail-label"><i class="bi bi-envelope me-2"></i>Email</span>
+                  <span class="detail-value">{{ cust.email }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label"><i class="bi bi-person me-2"></i>{{ 'ADMIN.customers.username' | translate }}</span>
+                  <span class="detail-value">{{ cust.username }}</span>
+                </div>
+                @if (cust.fiscalCode) {
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="bi bi-hash me-2"></i>{{ 'ADMIN.customers.tax_code' | translate }}</span>
+                    <span class="detail-value">{{ cust.fiscalCode }}</span>
+                  </div>
+                }
+                @if (cust.birthDate) {
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="bi bi-calendar me-2"></i>{{ 'ADMIN.customers.birth_date' | translate }}</span>
+                    <span class="detail-value">{{ formatDate(cust.birthDate) }}</span>
+                  </div>
+                }
+                @if (cust.phone) {
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="bi bi-telephone me-2"></i>{{ 'ADMIN.customers.phone' | translate }}</span>
+                    <span class="detail-value">{{ cust.phone }}</span>
+                  </div>
+                }
+                @if (cust.profession) {
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="bi bi-briefcase me-2"></i>{{ 'ADMIN.customers.profession' | translate }}</span>
+                    <span class="detail-value">{{ cust.profession }}</span>
+                  </div>
+                }
+                @if (cust.residence) {
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="bi bi-geo-alt me-2"></i>{{ 'ADMIN.customers.residence' | translate }}</span>
+                    <span class="detail-value">{{ cust.residence }}</span>
+                  </div>
+                }
+              </div>
+              @if (cust.accounts && cust.accounts.length > 0) {
+                <h6 class="mt-4 mb-3"><i class="bi bi-wallet2 me-2"></i>{{ 'ADMIN.customers.account_details' | translate }}</h6>
+                @for (acc of cust.accounts; track acc.accountNumber) {
+                  <div class="account-item">
+                    <div>
+                      <span class="mono">{{ acc.accountNumber }}</span>
+                      <span class="badge ms-2" [ngClass]="acc.statusId === 2 ? 'bg-success' : acc.statusId === 3 ? 'bg-danger' : 'bg-secondary'">
+                        {{ acc.statusId === 2 ? 'Active' : acc.statusId === 3 ? 'Frozen' : acc.statusId === 4 ? 'Closed' : 'Inactive' }}
+                      </span>
+                    </div>
+                    <div class="fw-bold">{{ formatCurrency(acc.balance) }}</div>
+                  </div>
+                }
+              }
+            }
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeModal()">{{ 'ADMIN.customers.close' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

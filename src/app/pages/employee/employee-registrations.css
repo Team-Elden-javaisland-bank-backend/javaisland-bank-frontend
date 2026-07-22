@@ -1,5 +1,10 @@
 /* ═══ EMPLOYEE REGISTRATIONS ═══ */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 /* ── Page header ── */
 .page-header {
   display: flex;
@@ -235,7 +240,7 @@
   background: #fff;
   border-radius: 16px;
   width: 100%;
-  max-width: 640px;
+  max-width: 900px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -314,7 +319,7 @@
 
 .detail-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.875rem;
 }
 
@@ -409,6 +414,7 @@
   .modal-content-custom {
     max-height: 90vh;
     border-radius: 12px;
+    max-width: 100%;
   }
 
   .detail-grid {

@@ -1,5 +1,5 @@
 <div class="auth-page">
-  <div class="card shadow-lg border-0 rounded-3">
+  <div class="card shadow-lg border-0 rounded-3" [class.card-frozen]="showSuccessModal()">
     <div class="card-body text-center mb-4">
       <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="auth-logo">
       <p class="auth-subtitle">{{ 'AUTH.create_account' | translate }}</p>
@@ -49,46 +49,78 @@
 
       <!-- ═══ DETTAGLI PERSONALI ═══ -->
       <div class="auth-section-label">{{ 'AUTH.personal_details' | translate }}</div>
-      <div class="mb-3">
-        <label for="birthPlace" class="form-label fw-semibold">{{ 'AUTH.birth_place' | translate }}</label>
-        <input id="birthPlace" type="text" [(ngModel)]="birthPlace" name="birthPlace" class="form-control" placeholder="Roma" />
+
+      <div class="mb-3 autocomplete-wrapper">
+        <label class="form-label fw-semibold">{{ 'AUTH.birth_place' | translate }}</label>
+        <div class="autocomplete-input-wrapper">
+          <input
+            id="birthPlaceSearch"
+            type="text"
+            [(ngModel)]="birthPlaceSearch"
+            name="birthPlaceSearch"
+            class="form-control"
+            [placeholder]="'AUTH.birth_place_placeholder' | translate"
+            autocomplete="off"
+            (input)="onCitySearchInput()"
+            (focus)="onCitySearchFocus()"
+          />
+          @if (birthPlaceSearch) {
+            <button type="button" class="autocomplete-clear" (mousedown)="clearCitySearch(); $event.preventDefault()">✕</button>
+          }
+        </div>
+        @if (showCitySuggestions && filteredCities.length > 0) {
+          <div class="autocomplete-dropdown">
+            @for (city of filteredCities; track city.nome + city.provincia) {
+              <div class="autocomplete-item" (mousedown)="selectCity(city)">
+                {{ city.nome }} <span class="autocomplete-province">({{ city.provincia }})</span>
+              </div>
+            }
+          </div>
+        }
+        @if (birthPlace) {
+          <input type="hidden" name="birthPlace" [value]="birthPlace" />
+        }
       </div>
 
       <div class="row g-3">
         <div class="col-12 col-sm-4">
           <div class="mb-3">
             <label for="birthProvince" class="form-label fw-semibold">{{ 'AUTH.birth_province' | translate }}</label>
-            <input id="birthProvince" type="text" [(ngModel)]="birthProvince" name="birthProvince" class="form-control" placeholder="RM" maxlength="2" />
+            <input id="birthProvince" type="text" [ngModel]="birthProvince" name="birthProvince"
+              class="form-control" placeholder="RM" maxlength="2" readonly />
           </div>
         </div>
         <div class="col-12 col-sm-8">
           <div class="mb-3">
             <label for="fiscalCode" class="form-label fw-semibold">{{ 'AUTH.fiscal_code' | translate }}</label>
-            <input id="fiscalCode" type="text" [(ngModel)]="fiscalCode" name="fiscalCode" class="form-control" placeholder="RSSMRA..." maxlength="16" />
+            <div class="fiscal-code-row">
+              <input id="fiscalCode" type="text" [(ngModel)]="fiscalCode" name="fiscalCode"
+                class="form-control" placeholder="RSSMRA85M15H501Z" maxlength="16" />
+              <button type="button" class="btn-generate" (click)="generateFiscalCode()" title="{{ 'AUTH.generate_fiscal' | translate }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                {{ 'AUTH.generate_short' | translate }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="mb-3">
-        <label for="residence" class="form-label fw-semibold">{{ 'AUTH.residence' | translate }}</label>
-        <input id="residence" type="text" [(ngModel)]="residence" name="residence" class="form-control" placeholder="Via Roma 1, Roma RM" />
+        <label for="phone" class="form-label fw-semibold">{{ 'AUTH.phone' | translate }}</label>
+        <div class="phone-row">
+          <span class="phone-prefix">+39</span>
+          <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="form-control" placeholder="333 1234567" maxlength="12" />
+        </div>
       </div>
 
-      <!-- ═══ CONTATTI ═══ -->
-      <div class="auth-section-label">{{ 'AUTH.contacts' | translate }}</div>
-      <div class="row g-3">
-        <div class="col-12 col-sm-6">
-          <div class="mb-3">
-            <label for="phone" class="form-label fw-semibold">{{ 'AUTH.phone' | translate }}</label>
-            <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="form-control" placeholder="+39 333 1234567" />
-          </div>
-        </div>
-        <div class="col-12 col-sm-6">
-          <div class="mb-3">
-            <label for="profession" class="form-label fw-semibold">{{ 'AUTH.profession' | translate }}</label>
-            <input id="profession" type="text" [(ngModel)]="profession" name="profession" class="form-control" placeholder="Ingegnere" />
-          </div>
-        </div>
+      <div class="mb-3">
+        <label for="profession" class="form-label fw-semibold">{{ 'AUTH.profession' | translate }}</label>
+        <select id="profession" [(ngModel)]="profession" name="profession" class="form-select">
+          <option value="">{{ 'AUTH.select_profession' | translate }}</option>
+          @for (p of professions; track p) {
+            <option [value]="p">{{ p }}</option>
+          }
+        </select>
       </div>
 
       <!-- ═══ ACCESSO ═══ -->
@@ -98,17 +130,72 @@
         <input id="email" type="email" [(ngModel)]="email" name="email" class="form-control" placeholder="mario.rossi@email.com" />
       </div>
 
+      <div class="mb-3">
+        <label for="password" class="form-label fw-semibold">{{ 'AUTH.password' | translate }}</label>
+        <input id="password" type="password" [(ngModel)]="password" name="password" class="form-control" [placeholder]="'AUTH.min_6_chars' | translate" (input)="onPasswordInput()" />
+        @if (password) {
+          <div class="password-strength" [class]="'strength-' + passwordStrength()">
+            <div class="strength-bar"><div class="strength-fill"></div></div>
+            <div class="strength-criteria">
+              <span [class.met]="hasMinLength">{{ 'AUTH.min_8_chars' | translate }}</span>
+              <span [class.met]="hasUppercase">{{ 'AUTH.uppercase' | translate }}</span>
+              <span [class.met]="hasLowercase">{{ 'AUTH.lowercase' | translate }}</span>
+              <span [class.met]="hasNumber">{{ 'AUTH.number' | translate }}</span>
+              <span [class.met]="hasSpecialChar">{{ 'AUTH.special_char' | translate }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label fw-semibold">{{ 'AUTH.confirm' | translate }}</label>
+        <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" class="form-control" [placeholder]="'AUTH.repeat_password' | translate" />
+      </div>
+
+      <!-- ═══ RESIDENZA ═══ -->
+      <div class="auth-section-label">{{ 'AUTH.residence' | translate }}</div>
+
+      <div class="mb-3 autocomplete-wrapper">
+        <label class="form-label fw-semibold">{{ 'AUTH.residence_address' | translate }}</label>
+        <div class="autocomplete-input-wrapper">
+          <input
+            id="residenceSearch"
+            type="text"
+            [(ngModel)]="residenceSearch"
+            name="residenceSearch"
+            class="form-control"
+            [placeholder]="'AUTH.residence_placeholder' | translate"
+            autocomplete="off"
+            (input)="onResidenceSearchInput()"
+            (focus)="onResidenceSearchFocus()"
+          />
+          @if (residenceSearch) {
+            <button type="button" class="autocomplete-clear" (mousedown)="clearResidenceSearch(); $event.preventDefault()">✕</button>
+          }
+        </div>
+        @if (showResidenceSuggestions && filteredAddresses.length > 0) {
+          <div class="autocomplete-dropdown">
+            @for (addr of filteredAddresses; track addr.street + addr.housenumber + addr.city) {
+              <div class="autocomplete-item" (mousedown)="selectAddress(addr)">
+                <span class="autocomplete-address-main">{{ addr.street }} {{ addr.housenumber }}</span>
+                <span class="autocomplete-address-detail">{{ addr.postcode }} {{ addr.city }}, {{ addr.country }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       <div class="row g-3">
         <div class="col-12 col-sm-6">
           <div class="mb-3">
-            <label for="password" class="form-label fw-semibold">{{ 'AUTH.password' | translate }}</label>
-            <input id="password" type="password" [(ngModel)]="password" name="password" class="form-control" [placeholder]="'AUTH.min_6_chars' | translate" />
+            <label for="houseNumber" class="form-label fw-semibold">{{ 'AUTH.house_number' | translate }}</label>
+            <input id="houseNumber" type="text" [(ngModel)]="houseNumber" name="houseNumber" class="form-control" placeholder="12" />
           </div>
         </div>
         <div class="col-12 col-sm-6">
           <div class="mb-3">
-            <label for="confirmPassword" class="form-label fw-semibold">{{ 'AUTH.confirm' | translate }}</label>
-            <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" class="form-control" [placeholder]="'AUTH.repeat_password' | translate" />
+            <label for="postcode" class="form-label fw-semibold">{{ 'AUTH.postcode' | translate }}</label>
+            <input id="postcode" type="text" [(ngModel)]="postcode" name="postcode" class="form-control" placeholder="20121" maxlength="5" />
           </div>
         </div>
       </div>

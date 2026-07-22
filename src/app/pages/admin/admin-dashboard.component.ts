@@ -51,7 +51,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    const locale = this.translate.currentLang() === 'it' ? 'it-IT' : 'en-GB';
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: 'EUR'
@@ -59,7 +59,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   formatNumber(value: number): string {
-    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    const locale = this.translate.currentLang() === 'it' ? 'it-IT' : 'en-GB';
     return new Intl.NumberFormat(locale).format(value);
   }
 }

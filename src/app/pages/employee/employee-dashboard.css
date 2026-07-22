@@ -1,5 +1,10 @@
 /* ═══ EMPLOYEE DASHBOARD ═══ */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 /* ── Hero ── */
 .emp-hero {
   background: linear-gradient(135deg, var(--bi-navy) 0%, #112240 60%, #1a3358 100%);

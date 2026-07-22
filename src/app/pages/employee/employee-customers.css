@@ -1,5 +1,10 @@
 /* ═══ EMPLOYEE CUSTOMERS ═══ */
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 /* ── Page header ── */
 .page-header {
   display: flex;
@@ -558,6 +563,16 @@
 }
 
 /* ── Responsive ── */
+@media (min-width: 992px) {
+  .detail-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 767.98px) {
   .page-stats { display: none; }
 

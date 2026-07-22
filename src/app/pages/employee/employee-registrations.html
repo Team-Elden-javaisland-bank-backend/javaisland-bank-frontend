@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid px-4">
   <!-- Page header -->
   <div class="page-header mb-4">
     <div>
@@ -55,7 +55,7 @@
     } @else {
       <div class="row g-3">
         @for (reg of filteredRegistrations(); track reg.userId) {
-          <div class="col-12 col-md-6 col-xl-4">
+          <div [class]="filteredRegistrations().length === 1 ? 'col-12' : 'col-12 col-md-6 col-xl-4'">
             <div class="reg-card">
               <div class="reg-card-header">
                 <div class="reg-avatar reg-avatar-clickable" (click)="openUserDetail(reg.userId)" title="{{ 'EMPLOYEE.registrations.view_detail' | translate }}">

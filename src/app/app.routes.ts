@@ -26,6 +26,9 @@ import { EmployeeCustomersComponent } from './pages/employee/employee-customers.
 import { EmployeeRequestsComponent } from './pages/employee/employee-requests.component';
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard.component';
 import { AdminEmployeesComponent } from './pages/admin/admin-employees.component';
+import { AdminCustomersComponent } from './pages/admin/admin-customers.component';
+import { AdminAccountsComponent } from './pages/admin/admin-accounts.component';
+import { AdminTransactionsComponent } from './pages/admin/admin-transactions.component';
 import { AdminAuditLogsComponent } from './pages/admin/admin-audit-logs.component';
 
 export const routes: Routes = [
@@ -89,6 +92,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'employees', component: AdminEmployeesComponent },
+      { path: 'customers', component: AdminCustomersComponent },
+      { path: 'accounts', component: AdminAccountsComponent },
+      { path: 'transactions', component: AdminTransactionsComponent },
       { path: 'audit-logs', component: AdminAuditLogsComponent },
     ],
   },

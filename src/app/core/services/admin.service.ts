@@ -53,6 +53,59 @@ export interface EmployeeDetailDto {
   createdAt: string;
 }
 
+export interface AdminCustomerListItemDto {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  status: string;
+  accountCount: number;
+  totalBalance: number;
+  createdAt: string;
+}
+
+export interface AdminCustomerDetailDto {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  birthDate: string;
+  gender: string;
+  fiscalCode: string;
+  phone: string;
+  residence: string;
+  birthPlace: string;
+  birthProvince: string;
+  profession: string;
+  status: string;
+  createdAt: string;
+  accounts: any[];
+}
+
+export interface AdminAccountListItemDto {
+  accountNumber: string;
+  balance: number;
+  statusId: number;
+  userId: number;
+  userFullName: string;
+  userEmail: string;
+  createdAt: string;
+  closedAt: string | null;
+}
+
+export interface AdminTransactionListItemDto {
+  id: number;
+  amount: number;
+  typeId: number;
+  statusId: number;
+  description: string;
+  sourceAccountNumber: string;
+  destinationAccountNumber: string;
+  createdAt: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private readonly API_BASE = 'http://localhost:8081/api/v1/admin';
@@ -102,6 +155,35 @@ export class AdminService {
   getEmployeeDetail(userId: number): Observable<EmployeeDetailDto> {
     return this.http
       .get<EmployeeDetailDto>(`${this.API_BASE}/employees/${userId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getCustomers(): Observable<AdminCustomerListItemDto[]> {
+    return this.http
+      .get<AdminCustomerListItemDto[]>(`${this.API_BASE}/customers`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getCustomerDetail(userId: number): Observable<AdminCustomerDetailDto> {
+    return this.http
+      .get<AdminCustomerDetailDto>(`${this.API_BASE}/customers/${userId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getAdminAccounts(statusId?: number): Observable<AdminAccountListItemDto[]> {
+    const params: Record<string, string> = {};
+    if (statusId != null) params['statusId'] = statusId.toString();
+    return this.http
+      .get<AdminAccountListItemDto[]>(`${this.API_BASE}/accounts`, { params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getAdminTransactions(recentDays?: number, typeId?: number): Observable<AdminTransactionListItemDto[]> {
+    const params: Record<string, string> = {};
+    if (recentDays) params['recentDays'] = recentDays.toString();
+    if (typeId != null) params['typeId'] = typeId.toString();
+    return this.http
+      .get<AdminTransactionListItemDto[]>(`${this.API_BASE}/transactions`, { params })
       .pipe(catchError(this.handleError));
   }
 

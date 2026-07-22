@@ -135,7 +135,7 @@ export class AdminAuditLogsComponent implements OnInit {
 
   formatDateTime(dateStr: string): string {
     const d = new Date(dateStr);
-    const locale = this.translate.currentLang === 'it' ? 'it-IT' : 'en-GB';
+    const locale = this.translate.currentLang() === 'it' ? 'it-IT' : 'en-GB';
     return d.toLocaleDateString(locale, {
       day: '2-digit',
       month: '2-digit',

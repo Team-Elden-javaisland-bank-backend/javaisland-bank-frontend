@@ -1,0 +1,24 @@
+.admin-accounts .card, .admin-transactions .card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+.admin-accounts .page-title, .admin-transactions .page-title { font-weight: 700; }
+.admin-accounts .table, .admin-transactions .table { color: var(--text-primary); }
+.admin-accounts .table th, .admin-transactions .table th {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.admin-accounts .table td, .admin-transactions .table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+.admin-accounts .table tbody tr:hover, .admin-transactions .table tbody tr:hover {
+  background: rgba(212, 175, 55, 0.05);
+}
+.mono { font-family: monospace; font-size: 0.88rem; }
+.btn-bi-gold { background: var(--bi-gold); color: #fff; border-color: var(--bi-gold); }
+.btn-bi-gold:hover { background: var(--bi-gold-dark); border-color: var(--bi-gold-dark); }
