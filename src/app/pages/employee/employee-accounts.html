@@ -22,7 +22,11 @@
   </div>
 
   @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
+    <div class="toast-notification" [class.toast-error]="messageType() === 'error'" [class.toast-success]="messageType() === 'success'" (click)="message.set('')">
+      <i class="bi" [class]="messageType() === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'"></i>
+      <span>{{ message() }}</span>
+      <i class="bi bi-x-lg toast-close"></i>
+    </div>
   }
 
   <!-- Filter pills -->

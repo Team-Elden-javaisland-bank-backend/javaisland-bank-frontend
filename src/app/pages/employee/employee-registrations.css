@@ -215,6 +215,100 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+.reg-btn-reopen {
+  background: transparent;
+  color: var(--bi-gold-dark);
+  border: 1px solid rgba(229, 169, 60, 0.3);
+}
+.reg-btn-reopen:hover {
+  background: rgba(229, 169, 60, 0.1);
+}
+
+.reg-btn-delete {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.reg-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── Tabs ── */
+.tabs-row {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--bi-border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.625rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--bi-navy);
+}
+
+.tab-btn.active {
+  color: var(--bi-navy);
+  border-bottom-color: var(--bi-gold);
+}
+
+.tab-btn-refused.active {
+  border-bottom-color: #dc2626;
+}
+
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.35rem;
+  border-radius: 10px;
+  background: rgba(229, 169, 60, 0.15);
+  color: var(--bi-gold-dark);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.tab-count-refused {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.refused-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+
+.reg-card-refused {
+  border-left: 3px solid #dc2626;
+}
+
+.reg-avatar-refused {
+  background: linear-gradient(135deg, #991b1b, #b91c1c);
+  color: #fee2e2;
+}
+
 /* ── Modal ── */
 .modal-backdrop-custom {
   position: fixed;

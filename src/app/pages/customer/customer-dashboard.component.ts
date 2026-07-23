@@ -78,10 +78,6 @@ export class CustomerDashboardComponent implements OnInit {
     this.currentCardIndex.set(index);
   }
 
-  getCardOffset(account: AccountResponseDto): number {
-    return this.currentCardIndex() - this.accounts().indexOf(account);
-  }
-
   selectAccount(accountNumber: string): void {
     this.selectedAccount.set(accountNumber);
     this.transactionsLoading.set(true);

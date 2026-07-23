@@ -1,7 +1,8 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { NotificationService, NotificationDto } from '../../core/services/notification.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-customer-notifications',
@@ -10,9 +11,10 @@ import { NotificationService, NotificationDto } from '../../core/services/notifi
   templateUrl: './customer-notifications.html',
   styleUrls: ['./customer-notifications.css']
 })
-export class CustomerNotificationsComponent implements OnInit {
+export class CustomerNotificationsComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
   private translate = inject(TranslateService);
+  private langSub?: Subscription;
 
   notifications = signal<NotificationDto[]>([]);
   loading = signal<boolean>(true);
@@ -25,6 +27,11 @@ export class CustomerNotificationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadNotifications();
+    this.langSub = this.translate.onLangChange.subscribe(() => this.loadNotifications());
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
   }
 
   loadNotifications(): void {
@@ -79,7 +86,8 @@ export class CustomerNotificationsComponent implements OnInit {
       'WITHDRAWAL': 'bi-arrow-up-circle',
       'ACCOUNT': 'bi-person-badge',
       'PASSWORD_CHANGE': 'bi-key',
-      'SCHEDULED_TRANSFER': 'bi-clock-history'
+      'SCHEDULED_TRANSFER': 'bi-clock-history',
+      'LIMIT_CHANGE': 'bi-speedometer2'
     };
     return icons[type] || 'bi-bell';
   }
@@ -91,7 +99,8 @@ export class CustomerNotificationsComponent implements OnInit {
       'WITHDRAWAL': 'NOTIFICATION_TYPE.WITHDRAWAL',
       'ACCOUNT': 'NOTIFICATION_TYPE.ACCOUNT',
       'PASSWORD_CHANGE': 'NOTIFICATION_TYPE.PASSWORD_CHANGE',
-      'SCHEDULED_TRANSFER': 'NOTIFICATION_TYPE.SCHEDULED_TRANSFER'
+      'SCHEDULED_TRANSFER': 'NOTIFICATION_TYPE.SCHEDULED_TRANSFER',
+      'LIMIT_CHANGE': 'NOTIFICATION_TYPE.LIMIT_CHANGE'
     };
     return this.translate.instant(labels[type] || type);
   }
@@ -103,14 +112,17 @@ export class CustomerNotificationsComponent implements OnInit {
       'WITHDRAWAL': 'bg-warning text-dark',
       'ACCOUNT': 'bg-secondary',
       'PASSWORD_CHANGE': 'bg-danger',
-      'SCHEDULED_TRANSFER': 'bg-primary'
+      'SCHEDULED_TRANSFER': 'bg-primary',
+      'LIMIT_CHANGE': 'bg-warning text-dark'
     };
     return classes[type] || 'bg-secondary';
   }
 
   formatDateTime(dateStr: string): string {
     const date = new Date(dateStr);
-    return date.toLocaleString('it-IT', {
+    const lang = localStorage.getItem('lang') || 'it';
+    const locale = lang === 'en' ? 'en-GB' : 'it-IT';
+    return date.toLocaleString(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

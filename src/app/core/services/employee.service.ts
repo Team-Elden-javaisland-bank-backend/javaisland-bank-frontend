@@ -44,6 +44,30 @@ export class EmployeeService {
       .pipe(catchError(this.handleError));
   }
 
+  getRefusedRegistrations(): Observable<PendingRegistrationDto[]> {
+    return this.http
+      .get<PendingRegistrationDto[]>(
+        `${this.API_BASE}/users/registrations/refused`,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  reopenRegistration(userId: number): Observable<string> {
+    return this.http
+      .put(`${this.API_BASE}/users/registrations/${userId}/reopen`, null, {
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteUser(userId: number): Observable<string> {
+    return this.http
+      .delete(`${this.API_BASE}/users/${userId}`, {
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   // ── Clienti ──────────────────────────────────────────────────────
 
   getCustomers(): Observable<CustomerListItemDto[]> {

@@ -5,11 +5,32 @@
       <h2 class="page-title">{{ 'EMPLOYEE.registrations.page_title' | translate }}</h2>
       <p class="page-subtitle">{{ 'EMPLOYEE.registrations.page_subtitle' | translate }}</p>
     </div>
-    @if (registrations().length > 0) {
+    @if (activeTab() === 'pending' && registrations().length > 0) {
       <div class="pending-badge">
         <i class="bi bi-clock-history me-1"></i>{{ registrations().length }} {{ 'EMPLOYEE.registrations.in_attesa' | translate }}
       </div>
     }
+    @if (activeTab() === 'refused' && refusedRegistrations().length > 0) {
+      <div class="refused-badge">
+        <i class="bi bi-x-circle me-1"></i>{{ refusedRegistrations().length }} {{ 'EMPLOYEE.registrations.rifiutate' | translate }}
+      </div>
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-row mb-4">
+    <button class="tab-btn" [class.active]="activeTab() === 'pending'" (click)="switchTab('pending')">
+      <i class="bi bi-clock-history me-1"></i>{{ 'EMPLOYEE.registrations.tab_pending' | translate }}
+      @if (registrations().length > 0) {
+        <span class="tab-count">{{ registrations().length }}</span>
+      }
+    </button>
+    <button class="tab-btn tab-btn-refused" [class.active]="activeTab() === 'refused'" (click)="switchTab('refused')">
+      <i class="bi bi-x-circle me-1"></i>{{ 'EMPLOYEE.registrations.tab_refused' | translate }}
+      @if (refusedRegistrations().length > 0) {
+        <span class="tab-count tab-count-refused">{{ refusedRegistrations().length }}</span>
+      }
+    </button>
   </div>
 
   @if (message()) {
@@ -20,12 +41,6 @@
     <div class="d-flex justify-content-center py-5">
       <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
     </div>
-  } @else if (registrations().length === 0) {
-    <div class="empty-state-card">
-      <div class="empty-state-icon"><i class="bi bi-person-check"></i></div>
-      <h6 class="empty-state-title">{{ 'EMPLOYEE.registrations.all_processed' | translate }}</h6>
-      <p class="empty-state-text">{{ 'EMPLOYEE.registrations.no_pending' | translate }}</p>
-    </div>
   } @else {
     <!-- Search Bar -->
     <div class="search-bar mb-3">
@@ -34,7 +49,7 @@
         <input
           type="text"
           class="form-control search-input"
-          [placeholder]="'EMPLOYEE.registrations.search_placeholder' | translate"
+          [placeholder]="activeTab() === 'pending' ? ('EMPLOYEE.registrations.search_placeholder' | translate) : ('EMPLOYEE.registrations.search_refused_placeholder' | translate)"
           [value]="searchQuery()"
           (input)="searchQuery.set($any($event.target).value)"
         />
@@ -48,17 +63,23 @@
 
     @if (filteredRegistrations().length === 0) {
       <div class="empty-state-card">
-        <div class="empty-state-icon"><i class="bi bi-search"></i></div>
-        <h6 class="empty-state-title">{{ 'EMPLOYEE.registrations.no_results' | translate }}</h6>
-        <p class="empty-state-text">{{ 'EMPLOYEE.registrations.try_another' | translate }}</p>
+        <div class="empty-state-icon">
+          <i [class]="activeTab() === 'pending' ? 'bi bi-person-check' : 'bi bi-inbox'"></i>
+        </div>
+        <h6 class="empty-state-title">
+          {{ (activeTab() === 'pending' ? 'EMPLOYEE.registrations.all_processed' : 'EMPLOYEE.registrations.no_refused') | translate }}
+        </h6>
+        <p class="empty-state-text">
+          {{ (activeTab() === 'pending' ? 'EMPLOYEE.registrations.no_pending' : 'EMPLOYEE.registrations.no_refused_text') | translate }}
+        </p>
       </div>
     } @else {
       <div class="row g-3">
         @for (reg of filteredRegistrations(); track reg.userId) {
           <div [class]="filteredRegistrations().length === 1 ? 'col-12' : 'col-12 col-md-6 col-xl-4'">
-            <div class="reg-card">
+            <div class="reg-card" [class.reg-card-refused]="activeTab() === 'refused'">
               <div class="reg-card-header">
-                <div class="reg-avatar reg-avatar-clickable" (click)="openUserDetail(reg.userId)" title="{{ 'EMPLOYEE.registrations.view_detail' | translate }}">
+                <div class="reg-avatar reg-avatar-clickable" [class.reg-avatar-refused]="activeTab() === 'refused'" (click)="openUserDetail(reg.userId)" title="{{ 'EMPLOYEE.registrations.view_detail' | translate }}">
                   {{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}
                 </div>
                 <div class="reg-user-info">
@@ -77,12 +98,21 @@
                 </div>
               </div>
               <div class="reg-card-actions">
-                <button class="reg-btn reg-btn-approve" (click)="validate(reg.userId)">
-                  <i class="bi bi-check-lg me-1"></i>{{ 'EMPLOYEE.registrations.validate' | translate }}
-                </button>
-                <button class="reg-btn reg-btn-reject" (click)="reject(reg.userId)">
-                  <i class="bi bi-x-lg me-1"></i>{{ 'EMPLOYEE.registrations.reject' | translate }}
-                </button>
+                @if (activeTab() === 'pending') {
+                  <button class="reg-btn reg-btn-approve" (click)="validate(reg.userId)">
+                    <i class="bi bi-check-lg me-1"></i>{{ 'EMPLOYEE.registrations.validate' | translate }}
+                  </button>
+                  <button class="reg-btn reg-btn-reject" (click)="reject(reg.userId)">
+                    <i class="bi bi-x-lg me-1"></i>{{ 'EMPLOYEE.registrations.reject' | translate }}
+                  </button>
+                } @else {
+                  <button class="reg-btn reg-btn-reopen" (click)="reopen(reg.userId)">
+                    <i class="bi bi-arrow-repeat me-1"></i>{{ 'EMPLOYEE.registrations.reopen' | translate }}
+                  </button>
+                  <button class="reg-btn reg-btn-delete" (click)="deleteUser(reg.userId)">
+                    <i class="bi bi-trash me-1"></i>{{ 'EMPLOYEE.registrations.delete' | translate }}
+                  </button>
+                }
               </div>
             </div>
           </div>

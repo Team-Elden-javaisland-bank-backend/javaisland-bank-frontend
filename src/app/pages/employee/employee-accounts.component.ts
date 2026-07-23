@@ -26,6 +26,8 @@ export class EmployeeAccountsComponent implements OnInit {
   limitType = '';
   limitAmount = 0;
 
+  private messageTimeout: ReturnType<typeof setTimeout> | null = null;
+
   private readonly LIMITS: Record<string, { min: number; max: number }> = {
     ATM_WITHDRAWAL: { min: 10, max: 300 },
     POS_SPENDING: { min: 0.10, max: 2500 },
@@ -39,6 +41,13 @@ export class EmployeeAccountsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAccounts();
+  }
+
+  private showMessage(text: string, type: 'success' | 'error'): void {
+    if (this.messageTimeout) clearTimeout(this.messageTimeout);
+    this.message.set(text);
+    this.messageType.set(type);
+    this.messageTimeout = setTimeout(() => this.message.set(''), 5000);
   }
 
   loadAccounts(): void {
@@ -59,44 +68,44 @@ export class EmployeeAccountsComponent implements OnInit {
 
   activate(accountNumber: string): void {
     this.employeeService.activateAccount(accountNumber).subscribe({
-      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 
   reject(accountNumber: string): void {
     if (!confirm('Rifiutare questo conto?')) return;
     this.employeeService.rejectAccount(accountNumber).subscribe({
-      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 
   freeze(accountNumber: string): void {
     this.employeeService.freezeAccount(accountNumber).subscribe({
-      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 
   unfreeze(accountNumber: string): void {
     this.employeeService.unfreezeAccount(accountNumber).subscribe({
-      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 
   validateClosure(accountNumber: string): void {
     this.employeeService.validateClosure(accountNumber).subscribe({
-      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 
   rejectClosure(accountNumber: string): void {
     this.employeeService.rejectClosure(accountNumber).subscribe({
-      next: (res) => { this.message.set(res); this.messageType.set('success'); this.loadAccounts(); },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 
@@ -112,21 +121,18 @@ export class EmployeeAccountsComponent implements OnInit {
 
   setLimit(): void {
     if (!this.limitType || this.limitAmount < 0.01) {
-      this.message.set('Compila tipo e importo');
-      this.messageType.set('error');
+      this.showMessage('Compila tipo e importo', 'error');
       return;
     }
 
     const limits = this.LIMITS[this.limitType];
     if (limits) {
       if (this.limitAmount < limits.min) {
-        this.message.set(`L'importo minimo è €${limits.min}`);
-        this.messageType.set('error');
+        this.showMessage(`L'importo minimo è €${limits.min}`, 'error');
         return;
       }
       if (this.limitAmount > limits.max) {
-        this.message.set(`L'importo massimo è €${limits.max.toLocaleString('it-IT')}`);
-        this.messageType.set('error');
+        this.showMessage(`L'importo massimo è €${limits.max.toLocaleString('it-IT')}`, 'error');
         return;
       }
     }
@@ -135,12 +141,11 @@ export class EmployeeAccountsComponent implements OnInit {
       maxAmount: this.limitAmount,
     }).subscribe({
       next: () => {
-        this.message.set('Limite aggiornato!');
-        this.messageType.set('success');
+        this.showMessage('Limite aggiornato!', 'success');
         this.limitAmount = 0;
         this.viewLimits(this.selectedAccount());
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => { this.showMessage(err.message, 'error'); },
     });
   }
 

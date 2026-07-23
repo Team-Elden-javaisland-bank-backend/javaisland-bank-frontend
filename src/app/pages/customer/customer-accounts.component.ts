@@ -57,10 +57,6 @@ export class CustomerAccountsComponent {
     this.currentCardIndex.set(index);
   }
 
-  getCardOffset(account: AccountResponseDto): number {
-    return this.currentCardIndex() - this.accounts().indexOf(account);
-  }
-
   openAccount(): void {
     this.message.set('');
     if (!this.sourceAccountNumber || this.initialAmount < 0.01) {

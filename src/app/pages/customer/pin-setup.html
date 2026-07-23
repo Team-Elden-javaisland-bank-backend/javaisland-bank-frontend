@@ -1,4 +1,11 @@
 <div class="pin-page">
+  <!-- Language switcher -->
+  <div class="auth-lang-switcher">
+    <button class="lang-btn" [class.active]="currentLang === 'it'" (click)="switchLang('it')">IT</button>
+    <span class="text-white-50">|</span>
+    <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="switchLang('en')">EN</button>
+  </div>
+
   <div class="pin-card">
     <div class="pin-header">
       <div class="pin-icon">

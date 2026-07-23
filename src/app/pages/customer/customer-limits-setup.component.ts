@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { NgClass } from '@angular/common';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -22,11 +23,14 @@ interface LimitMeta {
 
 @Component({
   selector: 'app-customer-limits-setup',
-  imports: [CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [NgClass, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-limits-setup.html',
   styleUrl: './customer-limits-setup.css',
 })
 export class CustomerLimitsSetupComponent {
+  private translate = inject(TranslateService);
+  currentLang = localStorage.getItem('lang') || 'it';
+
   accounts = signal<AccountResponseDto[]>([]);
   selectedAccount = signal('');
   limits = signal<AccountLimitResponseDto[]>([]);
@@ -38,6 +42,14 @@ export class CustomerLimitsSetupComponent {
   editingType = signal('');
   editingError = signal('');
   editAmount = 0;
+
+  allLimitsSet = computed(() => {
+    return this.allLimitTypes.every(meta => this.limits().some(l => l.limitType === meta.type));
+  });
+
+  missingLimitsCount = computed(() => {
+    return this.allLimitTypes.filter(meta => !this.limits().some(l => l.limitType === meta.type)).length;
+  });
 
   allLimitTypes: LimitMeta[] = [
     { type: 'ATM_WITHDRAWAL', labelKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.label', descriptionKey: 'LIMIT_TYPE.ATM_WITHDRAWAL.description', policy: 'USER_FULL', policyLabelKey: 'LIMITS_SETUP.editable', policyColor: '#065f46', defaultValue: 300, minValue: 10, maxValue: 300 },
@@ -63,6 +75,12 @@ export class CustomerLimitsSetupComponent {
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  switchLang(lang: string): void {
+    localStorage.setItem('lang', lang);
+    this.currentLang = lang;
+    this.translate.use(lang);
   }
 
   onAccountChange(accountNumber: string): void {
@@ -115,11 +133,18 @@ export class CustomerLimitsSetupComponent {
     this.customerService.setAccountLimit(this.selectedAccount(), type, {
       maxAmount: this.editAmount,
     }).subscribe({
-      next: () => {
+      next: (saved) => {
         this.message.set('Limite salvato!');
         this.messageType.set('success');
         this.editingType.set('');
-        this.onAccountChange(this.selectedAccount());
+        this.limits.update(list => {
+          const idx = list.findIndex(l => l.limitType === type);
+          if (idx >= 0) {
+            return list.map(l => l.limitType === type ? { ...l, maxAmount: this.editAmount } : l);
+          } else {
+            return [...list, { limitType: type, maxAmount: this.editAmount } as AccountLimitResponseDto];
+          }
+        });
       },
       error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
     });

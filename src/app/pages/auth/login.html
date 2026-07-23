@@ -1,4 +1,11 @@
 <div class="auth-page">
+  <!-- Language switcher -->
+  <div class="auth-lang-switcher">
+    <button class="lang-btn" [class.active]="currentLang === 'it'" (click)="switchLang('it')">IT</button>
+    <span class="text-white-50">|</span>
+    <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="switchLang('en')">EN</button>
+  </div>
+
   <!-- Decorative background elements -->
   <div class="auth-bg-decor">
     <div class="decor-circle decor-1"></div>

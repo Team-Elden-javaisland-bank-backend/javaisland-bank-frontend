@@ -1,6 +1,6 @@
-import { Component, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, inject, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -11,6 +11,9 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './pin-setup.css',
 })
 export class PinSetupComponent {
+  private translate = inject(TranslateService);
+  currentLang = localStorage.getItem('lang') || 'it';
+
   digits = signal<string[]>(['', '', '', '']);
   loading = signal(false);
   message = signal('');
@@ -21,6 +24,12 @@ export class PinSetupComponent {
     private authService: AuthService,
     private router: Router,
   ) {}
+
+  switchLang(lang: string): void {
+    localStorage.setItem('lang', lang);
+    this.currentLang = lang;
+    this.translate.use(lang);
+  }
 
   onInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;

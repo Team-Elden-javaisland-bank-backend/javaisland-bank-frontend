@@ -13,7 +13,11 @@ import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-deta
   styleUrl: './employee-registrations.css',
 })
 export class EmployeeRegistrationsComponent implements OnInit {
+  activeTab = signal<'pending' | 'refused'>('pending');
+
   registrations = signal<PendingRegistrationDto[]>([]);
+  refusedRegistrations = signal<PendingRegistrationDto[]>([]);
+
   loading = signal(true);
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
@@ -25,8 +29,9 @@ export class EmployeeRegistrationsComponent implements OnInit {
 
   filteredRegistrations = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    if (!query) return this.registrations();
-    return this.registrations().filter(
+    const list = this.activeTab() === 'pending' ? this.registrations() : this.refusedRegistrations();
+    if (!query) return list;
+    return list.filter(
       (r) =>
         r.firstName.toLowerCase().includes(query) ||
         r.lastName.toLowerCase().includes(query) ||
@@ -38,6 +43,12 @@ export class EmployeeRegistrationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRegistrations();
+    this.loadRefusedRegistrations();
+  }
+
+  switchTab(tab: 'pending' | 'refused'): void {
+    this.activeTab.set(tab);
+    this.searchQuery.set('');
   }
 
   loadRegistrations(): void {
@@ -47,6 +58,13 @@ export class EmployeeRegistrationsComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
+    });
+  }
+
+  loadRefusedRegistrations(): void {
+    this.employeeService.getRefusedRegistrations().subscribe({
+      next: (data) => this.refusedRegistrations.set(data),
+      error: () => {},
     });
   }
 
@@ -69,6 +87,34 @@ export class EmployeeRegistrationsComponent implements OnInit {
         this.message.set(res);
         this.messageType.set('success');
         this.loadRegistrations();
+        this.loadRefusedRegistrations();
+      },
+      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+    });
+  }
+
+  reopen(userId: number): void {
+    if (!confirm('Vuoi riaprire questa registrazione?')) return;
+
+    this.employeeService.reopenRegistration(userId).subscribe({
+      next: (res) => {
+        this.message.set(res);
+        this.messageType.set('success');
+        this.loadRegistrations();
+        this.loadRefusedRegistrations();
+      },
+      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+    });
+  }
+
+  deleteUser(userId: number): void {
+    if (!confirm('Vuoi eliminare questo utente e il conto associato? Questa azione è irreversibile.')) return;
+
+    this.employeeService.deleteUser(userId).subscribe({
+      next: (res) => {
+        this.message.set(res);
+        this.messageType.set('success');
+        this.loadRefusedRegistrations();
       },
       error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
     });

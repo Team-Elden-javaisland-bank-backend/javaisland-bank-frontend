@@ -27,6 +27,8 @@ export class AdminAuditLogsComponent implements OnInit {
     { value: '', label: this.translate.instant('ADMIN.audit.filter_all') },
     { value: 'VALIDATE', label: this.translate.instant('ADMIN.audit.filter_validate') },
     { value: 'REJECT', label: this.translate.instant('ADMIN.audit.filter_reject') },
+    { value: 'REOPEN', label: this.translate.instant('ADMIN.audit.filter_reopen') },
+    { value: 'DELETE', label: this.translate.instant('ADMIN.audit.filter_delete') },
     { value: 'FREEZE', label: this.translate.instant('ADMIN.audit.filter_freeze') },
     { value: 'UNFREEZE', label: this.translate.instant('ADMIN.audit.filter_unfreeze') },
     { value: 'ACTIVATE', label: this.translate.instant('ADMIN.audit.filter_activate') }
@@ -111,6 +113,8 @@ export class AdminAuditLogsComponent implements OnInit {
     switch (action) {
       case 'VALIDATE': return 'badge-validate';
       case 'REJECT': return 'badge-reject';
+      case 'REOPEN': return 'badge-reopen';
+      case 'DELETE': return 'badge-delete';
       case 'FREEZE': return 'badge-freeze';
       case 'UNFREEZE': return 'badge-unfreeze';
       case 'ACTIVATE': return 'badge-activate';
@@ -122,6 +126,8 @@ export class AdminAuditLogsComponent implements OnInit {
     switch (action) {
       case 'VALIDATE': return 'bi-check-circle-fill';
       case 'REJECT': return 'bi-x-circle-fill';
+      case 'REOPEN': return 'bi-arrow-repeat';
+      case 'DELETE': return 'bi-trash-fill';
       case 'FREEZE': return 'bi-shield-lock-fill';
       case 'UNFREEZE': return 'bi-shield-check-fill';
       case 'ACTIVATE': return 'bi-lightning-fill';

@@ -1,4 +1,11 @@
 <div class="auth-page">
+  <!-- Language switcher -->
+  <div class="auth-lang-switcher">
+    <button class="lang-btn" [class.active]="currentLang === 'it'" (click)="switchLang('it')">IT</button>
+    <span class="text-white-50">|</span>
+    <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="switchLang('en')">EN</button>
+  </div>
+
   <div class="card shadow-lg border-0 rounded-3" [class.card-frozen]="showSuccessModal()">
     <div class="card-body text-center mb-4">
       <img src="assets/Logo-trasparente.svg" alt="Elden Bank" class="auth-logo">

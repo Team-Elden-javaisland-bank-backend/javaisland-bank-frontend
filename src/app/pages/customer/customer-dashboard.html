@@ -64,7 +64,6 @@
         <!-- Accounts section -->
         <div class="section-header mb-3">
           <h5 class="section-title"><i class="bi bi-bank me-2"></i>{{ 'DASHBOARD.your_accounts' | translate }}</h5>
-          <a routerLink="/customer/accounts" class="section-link">{{ 'DASHBOARD.see_all' | translate }} <i class="bi bi-arrow-right"></i></a>
         </div>
 
         @if (accounts().length > 0) {
@@ -75,9 +74,9 @@
                   <div
                     class="dash-carousel-slide"
                     [class.active]="i === currentCardIndex()"
-                    [class.before]="i < currentCardIndex()"
-                    [class.after]="i > currentCardIndex()"
-                    [style.--offset]="getCardOffset(account)"
+                    [class.before]="i < currentCardIndex() && i >= currentCardIndex() - 1"
+                    [class.after]="i > currentCardIndex() && i <= currentCardIndex() + 1"
+                    [class.hidden-slide]="i < currentCardIndex() - 1 || i > currentCardIndex() + 1"
                     (click)="goToCard(i)"
                   >
                     <div

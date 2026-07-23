@@ -1,8 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -11,12 +11,20 @@ import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
   styleUrl: './login.css',
 })
 export class LoginComponent {
+  private translate = inject(TranslateService);
+  currentLang = localStorage.getItem('lang') || 'it';
   username = '';
   password = '';
   error = signal('');
   loading = signal(false);
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  switchLang(lang: string): void {
+    localStorage.setItem('lang', lang);
+    this.currentLang = lang;
+    this.translate.use(lang);
+  }
 
   onSubmit(): void {
     if (!this.username || !this.password) {

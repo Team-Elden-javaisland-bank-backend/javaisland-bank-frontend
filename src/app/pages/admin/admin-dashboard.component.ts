@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
@@ -26,6 +26,25 @@ export class AdminDashboardComponent implements OnInit {
   stats = signal<DashboardStats | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+  today = new Date();
+
+  activeRate = computed(() => {
+    const s = this.stats();
+    if (!s || s.totalAccounts === 0) return '0';
+    return ((s.activeAccounts / s.totalAccounts) * 100).toFixed(1);
+  });
+
+  avgBalance = computed(() => {
+    const s = this.stats();
+    if (!s || s.totalAccounts === 0) return this.formatCurrency(0);
+    return this.formatCurrency(s.totalBalance / s.totalAccounts);
+  });
+
+  txPerAccount = computed(() => {
+    const s = this.stats();
+    if (!s || s.totalAccounts === 0) return '0';
+    return (s.totalTransactions / s.totalAccounts).toFixed(1);
+  });
 
   constructor(private adminService: AdminService, private translate: TranslateService) {}
 

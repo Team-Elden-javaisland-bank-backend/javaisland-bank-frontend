@@ -146,9 +146,9 @@
             <div
               class="carousel-slide"
               [class.active]="i === currentCardIndex()"
-              [class.before]="i < currentCardIndex()"
-              [class.after]="i > currentCardIndex()"
-              [style.--offset]="getCardOffset(account)"
+              [class.before]="i < currentCardIndex() && i >= currentCardIndex() - 1"
+              [class.after]="i > currentCardIndex() && i <= currentCardIndex() + 1"
+              [class.hidden-slide]="i < currentCardIndex() - 1 || i > currentCardIndex() + 1"
               (click)="goToCard(i)"
             >
               <div class="account-card card-theme-{{ account.statusId }}">

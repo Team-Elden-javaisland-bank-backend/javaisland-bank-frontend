@@ -40,6 +40,7 @@ interface AddressSuggestion {
 })
 export class RegisterComponent implements OnDestroy {
   private translate = inject(TranslateService);
+  currentLang = localStorage.getItem('lang') || 'it';
   firstName = '';
   lastName = '';
   birthDate = '';
@@ -90,6 +91,12 @@ export class RegisterComponent implements OnDestroy {
     private http: HttpClient,
     private elRef: ElementRef,
   ) {}
+
+  switchLang(lang: string): void {
+    localStorage.setItem('lang', lang);
+    this.currentLang = lang;
+    this.translate.use(lang);
+  }
 
   get hasMinLength(): boolean { return this.password.length >= 8; }
   get hasUppercase(): boolean { return /[A-Z]/.test(this.password); }

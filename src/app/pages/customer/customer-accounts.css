@@ -219,9 +219,17 @@
   pointer-events: auto;
 }
 
-.carousel-slide:hover:not(.active) {
+.carousel-slide:hover:not(.active):not(.hidden-slide) {
   opacity: 0.75;
   filter: blur(0);
+}
+
+/* Hidden slides */
+.carousel-slide.hidden-slide {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) scale(0.7);
+  z-index: 1;
 }
 
 /* ── Account card (premium) ── */

@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
@@ -35,6 +35,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private router: Router,
     private notificationService: NotificationService,
     public translate: TranslateService,
+    private elRef: ElementRef,
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +47,15 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.pollSub?.unsubscribe();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showNotifications()) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.notification-bell-wrapper')) {
+      this.showNotifications.set(false);
+    }
   }
 
   loadUnreadCount(): void {
@@ -92,9 +102,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   switchLang(lang: string): void {
-    this.translate.use(lang);
-    this.currentLang.set(lang);
     localStorage.setItem('lang', lang);
+    this.currentLang.set(lang);
+    this.translate.use(lang);
+    if (this.showNotifications()) {
+      this.loadNotifications();
+    }
   }
 
   get isCustomer(): boolean {
