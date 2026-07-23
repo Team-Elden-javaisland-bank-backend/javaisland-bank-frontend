@@ -51,6 +51,30 @@
   color: #94a3b8;
 }
 
+/* ── PDF button ── */
+.btn-pdf {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-pdf:hover:not(:disabled) {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-pdf:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ── Search bar ── */
 .search-bar {
   max-width: 480px;

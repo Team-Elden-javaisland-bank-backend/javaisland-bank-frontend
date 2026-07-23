@@ -5,6 +5,8 @@ import { EmployeeService } from '../../core/services/employee.service';
 import { CustomerListItemDto } from '../../core/models/user/customer-list-item.dto';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-employee-customers',
@@ -28,6 +30,7 @@ export class EmployeeCustomersComponent {
 
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
+  isGeneratingPdf = signal<boolean>(false);
 
   filteredCustomers = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -215,6 +218,67 @@ export class EmployeeCustomersComponent {
       BLOCKED: 'STATUS.BLOCKED_F',
     };
     return this.translate.instant(keys[status] || status);
+  }
+
+  generatePdf(): void {
+    this.isGeneratingPdf.set(true);
+    const doc = new jsPDF();
+    const list = this.filteredCustomers();
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(10, 25, 47);
+    doc.text(this.translate.instant('EMPLOYEE.customers.pdf_bank_name'), 14, 22);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(this.translate.instant('EMPLOYEE.customers.pdf_title'), 14, 30);
+    doc.text(`${this.translate.instant('EMPLOYEE.customers.pdf_date')}: ${new Date().toLocaleDateString('it-IT')}`, 14, 36);
+
+    doc.setFontSize(10);
+    doc.setTextColor(10, 25, 47);
+    doc.text(`${this.translate.instant('EMPLOYEE.customers.total')}: ${list.length}`, 14, 42);
+
+    const rows = list.map((c, i) => [
+      i + 1,
+      c.firstName,
+      c.lastName,
+      c.email,
+      this.getStatusLabel(c.statusId)
+    ]);
+
+    autoTable(doc, {
+      startY: 48,
+      head: [[
+        '#',
+        this.translate.instant('EMPLOYEE.customers.pdf_col_name'),
+        this.translate.instant('EMPLOYEE.customers.pdf_col_surname'),
+        this.translate.instant('EMPLOYEE.customers.pdf_col_email'),
+        this.translate.instant('EMPLOYEE.customers.pdf_col_status')
+      ]],
+      body: rows,
+      theme: 'grid',
+      headStyles: { fillColor: [10, 25, 47], textColor: [229, 169, 60], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+      styles: { fontSize: 9, cellPadding: 4 },
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(
+        `${this.translate.instant('PROFILE.pdf_page')} ${i} ${this.translate.instant('PROFILE.pdf_of')} ${pageCount}`,
+        doc.internal.pageSize.getWidth() / 2,
+        doc.internal.pageSize.getHeight() - 10,
+        { align: 'center' }
+      );
+    }
+
+    doc.save(`elenco_correntisti_${new Date().toISOString().slice(0, 10)}.pdf`);
+    this.isGeneratingPdf.set(false);
   }
 
   trackByUserId(_index: number, customer: CustomerListItemDto): number {

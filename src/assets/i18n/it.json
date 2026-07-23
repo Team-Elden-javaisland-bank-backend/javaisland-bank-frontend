@@ -614,6 +614,14 @@
       "card_cvv": "CVV",
       "full_number": "Numero Completo",
       "cannot_load": "Impossibile caricare i dettagli dell'utente.",
+      "pdf_button": "Stampa PDF",
+      "pdf_bank_name": "EldenBank",
+      "pdf_title": "Elenco Correntisti",
+      "pdf_date": "Data di generazione",
+      "pdf_col_name": "Nome",
+      "pdf_col_surname": "Cognome",
+      "pdf_col_email": "Email",
+      "pdf_col_status": "Stato",
       "close": "Chiudi"
     },
     "limits": {

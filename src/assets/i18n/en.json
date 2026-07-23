@@ -614,6 +614,14 @@
       "card_cvv": "CVV",
       "full_number": "Full Number",
       "cannot_load": "Unable to load user details.",
+      "pdf_button": "Print PDF",
+      "pdf_bank_name": "EldenBank",
+      "pdf_title": "Account Holders List",
+      "pdf_date": "Generation date",
+      "pdf_col_name": "First Name",
+      "pdf_col_surname": "Last Name",
+      "pdf_col_email": "Email",
+      "pdf_col_status": "Status",
       "close": "Close"
     },
     "limits": {
