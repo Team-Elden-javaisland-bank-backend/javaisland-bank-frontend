@@ -119,6 +119,7 @@
   font-weight: 700;
   flex-shrink: 0;
   letter-spacing: 0.5px;
+  overflow: hidden;
 }
 
 .account-card-info {
@@ -187,6 +188,7 @@
   font-size: 0.8125rem;
   font-weight: 700;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .selected-bar-info {
@@ -500,4 +502,11 @@
   .selected-bar-balance {
     text-align: left;
   }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
 }

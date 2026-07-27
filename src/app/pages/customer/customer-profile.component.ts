@@ -6,6 +6,8 @@ import { CustomerService } from '../../core/services/customer.service';
 import { CustomerProfileDto } from '../../core/models/user/customer-profile.dto';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { PinConfirmModalComponent } from '../../shared/pin-confirm-modal/pin-confirm-modal.component';
+import { ToastService } from '../../core/services/toast.service';
 
 interface PasswordChangeRequest {
   currentPassword: string;
@@ -16,7 +18,7 @@ interface PasswordChangeRequest {
 @Component({
   selector: 'app-customer-profile',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CommonModule, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective, PinConfirmModalComponent],
   templateUrl: './customer-profile.html',
   styleUrls: ['./customer-profile.css']
 })
@@ -63,13 +65,14 @@ export class CustomerProfileComponent implements OnInit {
 
   showPasswordModal = signal<boolean>(false);
   showPdfModal = signal<boolean>(false);
+  showPinModal = signal<boolean>(false);
 
   transactions = signal<any[]>([]);
 
   accounts = computed(() => this.profile()?.accounts ?? []);
   cards = computed(() => this.profile()?.cards ?? []);
 
-  constructor(private customerService: CustomerService, private translate: TranslateService) {}
+  constructor(private customerService: CustomerService, private translate: TranslateService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadProfile();
@@ -194,7 +197,11 @@ export class CustomerProfileComponent implements OnInit {
 
   submitPasswordChange(): void {
     if (!this.isPasswordValid()) return;
+    this.showPinModal.set(true);
+  }
 
+  onPinConfirmed(): void {
+    this.showPinModal.set(false);
     this.isSubmittingPassword.set(true);
     const req = this.passwordRequest();
 
@@ -202,15 +209,17 @@ export class CustomerProfileComponent implements OnInit {
       next: () => {
         this.isSubmittingPassword.set(false);
         this.closePasswordModal();
-        this.errorMessage.set(null);
+        this.toastService.success(this.translate.instant('PROFILE.password_changed'));
       },
       error: (err: any) => {
         this.isSubmittingPassword.set(false);
-        this.errorMessage.set(
-          err.error?.message || this.translate.instant('PROFILE.error_password')
-        );
+        this.toastService.error(err.error?.message || this.translate.instant('PROFILE.error_password'));
       }
     });
+  }
+
+  onPinCancelled(): void {
+    this.showPinModal.set(false);
   }
 
   openPdfModal(): void {

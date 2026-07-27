@@ -133,7 +133,13 @@
                 <td>
                   <div class="cursor-pointer" (click)="viewUser(req.userId)">
                     <div class="d-flex align-items-center gap-2">
-                      <div class="avatar-sm">{{ req.userFirstName?.charAt(0) }}{{ req.userLastName?.charAt(0) }}</div>
+                      <div class="avatar-sm">
+                        @if (req.profilePictureUrl) {
+                          <img [src]="'http://localhost:8081' + req.profilePictureUrl" alt="" class="avatar-img">
+                        } @else {
+                          {{ req.userFirstName?.charAt(0) }}{{ req.userLastName?.charAt(0) }}
+                        }
+                      </div>
                       <div>
                         <div class="fw-semibold">{{ req.userFirstName }} {{ req.userLastName }}</div>
                         <div class="text-muted small">{{ req.userEmail }}</div>
@@ -192,7 +198,11 @@
           } @else if (userDetail()) {
             <div class="user-detail-header">
               <div class="user-detail-avatar">
-                {{ userDetail()!.firstName?.charAt(0) }}{{ userDetail()!.lastName?.charAt(0) }}
+                @if (userDetail()!.profilePictureUrl) {
+                  <img [src]="'http://localhost:8081' + userDetail()!.profilePictureUrl" alt="" class="avatar-img">
+                } @else {
+                  {{ userDetail()!.firstName?.charAt(0) }}{{ userDetail()!.lastName?.charAt(0) }}
+                }
               </div>
               <div>
                 <h5 class="user-detail-name">{{ userDetail()!.firstName }} {{ userDetail()!.lastName }}</h5>

@@ -5,6 +5,7 @@ export interface AccountResponseDto {
   profileId: number;
   profileFirstName: string;
   profileLastName: string;
+  profilePictureUrl?: string;
   userStatusId: number;
   initialAmount: number | null;
   createdAt: string;

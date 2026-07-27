@@ -249,6 +249,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 /* ── Type icons ── */
@@ -409,6 +410,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .user-detail-name {
@@ -527,4 +529,11 @@
   .detail-full {
     grid-column: span 1;
   }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
 }

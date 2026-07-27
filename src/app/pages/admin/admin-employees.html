@@ -200,7 +200,11 @@
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="employee-avatar me-3">
-                        {{ emp.firstName.charAt(0) }}{{ emp.lastName.charAt(0) }}
+                        @if (emp.profilePictureUrl) {
+                          <img [src]="'http://localhost:8081' + emp.profilePictureUrl" alt="" class="avatar-img">
+                        } @else {
+                          {{ emp.firstName.charAt(0) }}{{ emp.lastName.charAt(0) }}
+                        }
                       </div>
                       <div>
                         <div class="fw-semibold">{{ emp.firstName }} {{ emp.lastName }}</div>
@@ -285,7 +289,11 @@
               <div class="detail-content">
                 <div class="text-center mb-4">
                   <div class="detail-avatar mx-auto">
-                    {{ employeeDetail()!.firstName.charAt(0) }}{{ employeeDetail()!.lastName.charAt(0) }}
+                    @if (employeeDetail()!.profilePictureUrl) {
+                      <img [src]="'http://localhost:8081' + employeeDetail()!.profilePictureUrl" alt="" class="avatar-img">
+                    } @else {
+                      {{ employeeDetail()!.firstName.charAt(0) }}{{ employeeDetail()!.lastName.charAt(0) }}
+                    }
                   </div>
                   <h5 class="mt-3 mb-1">{{ employeeDetail()!.firstName }} {{ employeeDetail()!.lastName }}</h5>
                   <span class="badge" [ngClass]="getStatusBadgeClass(employeeDetail()!.status)">

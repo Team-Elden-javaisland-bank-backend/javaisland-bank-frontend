@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { CardResponseDto } from '../../core/models/card/card-response.dto';
@@ -14,6 +14,17 @@ export class EmployeeCardsComponent {
   loading = signal(true);
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
+  searchQuery = signal('');
+
+  filteredCards = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    const list = this.cards();
+    if (!q) return list;
+    return list.filter(c =>
+      c.holderName?.toLowerCase().includes(q) ||
+      c.maskedCardNumber?.includes(q)
+    );
+  });
 
   constructor(private employeeService: EmployeeService) {
     this.loadCards();
@@ -35,5 +46,9 @@ export class EmployeeCardsComponent {
 
   getActiveCount(): number {
     return this.cards().filter(c => c.status === 'ACTIVE').length;
+  }
+
+  onSearchInput(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 }

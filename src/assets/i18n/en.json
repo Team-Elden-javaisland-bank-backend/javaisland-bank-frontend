@@ -224,8 +224,8 @@
     }
   },
   "TRANSACTIONS": {
-    "page_title": "Transactions",
-    "page_subtitle": "Deposit, withdraw, transfer and view history",
+    "page_title": "Transaction History",
+    "page_subtitle": "View all your past transactions",
     "deposit": "Deposit",
     "from": "From",
     "to": "To",
@@ -265,6 +265,8 @@
     "table_sender": "Sender",
     "table_recipient": "Recipient",
     "table_date": "Date",
+    "table_description": "Description",
+    "table_status": "Status",
     "prev": "Previous",
     "page_of": "Page {{current}} of {{total}}",
     "next": "Next",
@@ -282,6 +284,10 @@
     "date_max_30_days": "Date cannot be more than 30 days from today",
     "transfer_limit_exceeded": "Amount exceeds {{label}} limit of €{{value}}",
     "select_dates": "Select dates"
+  },
+  "OPERATIONS": {
+    "page_title": "Operations",
+    "page_subtitle": "Deposit, withdraw or send transfers"
   },
   "BENEFICIARIES": {
     "page_title": "Beneficiaries",
@@ -450,6 +456,7 @@
     "card_type_prepaid": "Prepaid Card",
     "error_loading": "Error loading profile",
     "error_password": "Error requesting password change",
+    "password_changed": "Password changed successfully",
     "pdf_bank_name": "Elden Bank",
     "pdf_generation_date": "Generation date",
     "pdf_account_holder": "Account holder",
@@ -486,7 +493,11 @@
     "confirm_pin": "Confirm PIN",
     "pin_hint": "The PIN must be 4 digits",
     "access": "Sign in",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "confirm_title": "Confirm with PIN",
+    "confirm_desc": "Enter your 4-digit PIN to proceed",
+    "confirm_button": "Confirm",
+    "cancel": "Cancel"
   },
   "EMPLOYEE": {
     "dashboard": {
@@ -535,8 +546,11 @@
       "inactive": "Inactive",
       "frozen": "Frozen",
       "closed": "Closed",
+      "search_placeholder": "Search by name or account number...",
       "no_accounts": "No accounts found",
       "no_accounts_desc": "There are no accounts matching the selected filters.",
+      "no_results_for": "No results for",
+      "try_another": "Try a different search term.",
       "holder": "Cardholder",
       "iban": "IBAN",
       "balance": "Balance",
@@ -566,8 +580,11 @@
       "page_subtitle": "View and manage cards linked to accounts",
       "total": "Total",
       "active": "Active",
+      "search_placeholder": "Search by name or card number...",
       "no_cards": "No cards found",
       "no_cards_desc": "There are no cards linked to user accounts.",
+      "no_results_for": "No results for",
+      "try_another": "Try a different search term.",
       "card": "Card",
       "holder": "Cardholder",
       "type": "Type",
@@ -732,7 +749,8 @@
       "active_accounts": "Active Accounts",
       "frozen_accounts": "Frozen Accounts",
       "pending_registrations": "Pending Registrations",
-      "transactions": "Transactions",
+    "transactions": "History",
+    "operations": "Operations",
       "total_balance": "Total Balance",
       "manage_clients": "Client Management",
       "manage_clients_desc": "Manage clients registered in the system",

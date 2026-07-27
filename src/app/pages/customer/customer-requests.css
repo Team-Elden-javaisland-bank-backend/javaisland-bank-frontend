@@ -284,55 +284,53 @@
 }
 
 /* ═══ DARK MODE ═══ */
-@media (prefers-color-scheme: dark) {
-  .page-title { color: #f1f5f9; }
-  .page-subtitle { color: #64748b; }
+.dark-mode .page-title { color: #f1f5f9; }
+.dark-mode .page-subtitle { color: #64748b; }
 
-  .header-btn-outline {
-    border-color: #334155;
-    color: #94a3b8;
-  }
-  .header-btn-outline:hover {
-    background: #334155;
-    color: #e2e8f0;
-    border-color: #475569;
-  }
-
-  .tabs-bar {
-    background: #1e293b;
-    border-color: #334155;
-  }
-
-  .tab-item {
-    color: #94a3b8;
-  }
-  .tab-item:hover {
-    background: #334155;
-    color: #e2e8f0;
-  }
-  .tab-item.active {
-    background: var(--bi-navy);
-    color: #fff;
-  }
-  .tab-count {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .request-card {
-    background: #1e293b;
-    border-color: #334155;
-  }
-  .request-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .request-type { color: #f1f5f9; }
-  .request-desc { color: #94a3b8; }
-  .request-date { color: #64748b; }
-
-  .empty-state-card {
-    background: #1e293b;
-    border-color: #334155;
-  }
-  .empty-state-title { color: #f1f5f9; }
+.dark-mode .header-btn-outline {
+  border-color: #334155;
+  color: #94a3b8;
 }
+.dark-mode .header-btn-outline:hover {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.dark-mode .tabs-bar {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark-mode .tab-item {
+  color: #94a3b8;
+}
+.dark-mode .tab-item:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+.dark-mode .tab-item.active {
+  background: var(--bi-navy);
+  color: #fff;
+}
+.dark-mode .tab-count {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .request-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+.dark-mode .request-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .request-type { color: #f1f5f9; }
+.dark-mode .request-desc { color: #94a3b8; }
+.dark-mode .request-date { color: #64748b; }
+
+.dark-mode .empty-state-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+.dark-mode .empty-state-title { color: #f1f5f9; }

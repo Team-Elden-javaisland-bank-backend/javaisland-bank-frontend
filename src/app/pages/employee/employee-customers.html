@@ -76,7 +76,13 @@
           <!-- Customer Header -->
           <div class="customer-header" (click)="toggleExpand(customer.userId)">
             <div class="customer-main-info">
-              <div class="customer-avatar customer-avatar-clickable" (click)="viewUserDetail(customer.userId); $event.stopPropagation()" title="{{ 'EMPLOYEE.customers.view_user_detail' | translate }}">{{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}</div>
+              <div class="customer-avatar customer-avatar-clickable" (click)="viewUserDetail(customer.userId); $event.stopPropagation()" title="{{ 'EMPLOYEE.customers.view_user_detail' | translate }}">
+                @if (customer.profilePictureUrl) {
+                  <img [src]="'http://localhost:8081' + customer.profilePictureUrl" alt="" class="avatar-img">
+                } @else {
+                  {{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}
+                }
+              </div>
               <div class="customer-details">
                 <h6 class="customer-name">{{ customer.firstName }} {{ customer.lastName }}</h6>
                 <span class="customer-email">{{ customer.email }}</span>
@@ -188,6 +194,13 @@
                 <i class="bi bi-person me-2"></i>
                 {{ 'EMPLOYEE.customers.personal_info' | translate }}
               </h6>
+              <div class="text-center mb-3">
+                @if (detail.profilePictureUrl) {
+                  <img [src]="'http://localhost:8081' + detail.profilePictureUrl" alt="" class="detail-avatar-img">
+                } @else {
+                  <div class="detail-avatar-placeholder">{{ detail.firstName?.charAt(0) }}{{ detail.lastName?.charAt(0) }}</div>
+                }
+              </div>
               <div class="detail-grid">
                 <div class="detail-item">
                   <span class="detail-label">{{ 'EMPLOYEE.customers.username' | translate }}</span>

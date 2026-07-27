@@ -4,5 +4,6 @@ export interface PendingRegistrationDto {
   lastName: string;
   birthDate: string;
   email: string;
+  profilePictureUrl?: string;
   registeredAt: string;
 }

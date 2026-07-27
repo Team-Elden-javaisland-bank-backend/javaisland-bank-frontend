@@ -32,7 +32,10 @@
             <i class="bi bi-wallet2 me-1"></i>{{ 'NAV.accounts' | translate }}
           </a>
           <a routerLink="/customer/transactions" routerLinkActive="active" class="nav-link-desktop">
-            <i class="bi bi-arrow-left-right me-1"></i>{{ 'NAV.transactions' | translate }}
+            <i class="bi bi-clock-history me-1"></i>{{ 'NAV.transactions' | translate }}
+          </a>
+          <a routerLink="/customer/operations" routerLinkActive="active" class="nav-link-desktop">
+            <i class="bi bi-arrow-left-right me-1"></i>{{ 'NAV.operations' | translate }}
           </a>
           <a routerLink="/customer/beneficiaries" routerLinkActive="active" class="nav-link-desktop">
             <i class="bi bi-people me-1"></i>{{ 'NAV.beneficiaries' | translate }}
@@ -42,9 +45,6 @@
           </a>
           <a routerLink="/customer/cards" routerLinkActive="active" class="nav-link-desktop">
             <i class="bi bi-credit-card me-1"></i>{{ 'NAV.cards' | translate }}
-          </a>
-          <a routerLink="/customer/saved-beneficiaries" routerLinkActive="active" class="nav-link-desktop">
-            <i class="bi bi-bookmark-heart me-1"></i>{{ 'NAV.saved_beneficiaries' | translate }}
           </a>
           <a routerLink="/customer/profile" routerLinkActive="active" class="nav-link-desktop">
             <i class="bi bi-person me-1"></i>{{ 'NAV.profile' | translate }}
@@ -96,6 +96,9 @@
         <span class="text-white-50">|</span>
         <button class="lang-btn" [class.active]="currentLang() === 'en'" (click)="switchLang('en')" title="English">EN</button>
       </div>
+      <button class="theme-toggle-btn" (click)="toggleDarkMode()" [attr.aria-label]="darkMode() ? 'Tema chiaro' : 'Tema scuro'" [title]="darkMode() ? 'Tema chiaro' : 'Tema scuro'">
+        <i class="bi" [ngClass]="darkMode() ? 'bi-sun-fill' : 'bi-moon-fill'"></i>
+      </button>
       @if (isCustomer) {
         <div class="notification-bell-wrapper">
           <button class="notification-bell-btn" (click)="toggleNotifications()" [attr.aria-label]="'LAYOUT.notifications' | translate">
@@ -179,7 +182,10 @@
           <i class="bi bi-wallet2 me-2"></i>{{ 'NAV.accounts' | translate }}
         </a>
         <a routerLink="/customer/transactions" routerLinkActive="active" (click)="closeMobileMenu()">
-          <i class="bi bi-arrow-left-right me-2"></i>{{ 'NAV.transactions' | translate }}
+          <i class="bi bi-clock-history me-2"></i>{{ 'NAV.transactions' | translate }}
+        </a>
+        <a routerLink="/customer/operations" routerLinkActive="active" (click)="closeMobileMenu()">
+          <i class="bi bi-arrow-left-right me-2"></i>{{ 'NAV.operations' | translate }}
         </a>
         <a routerLink="/customer/beneficiaries" routerLinkActive="active" (click)="closeMobileMenu()">
           <i class="bi bi-people me-2"></i>{{ 'NAV.beneficiaries' | translate }}
@@ -189,9 +195,6 @@
         </a>
         <a routerLink="/customer/cards" routerLinkActive="active" (click)="closeMobileMenu()">
           <i class="bi bi-credit-card me-2"></i>{{ 'NAV.cards' | translate }}
-        </a>
-        <a routerLink="/customer/saved-beneficiaries" routerLinkActive="active" (click)="closeMobileMenu()">
-          <i class="bi bi-bookmark-heart me-2"></i>{{ 'NAV.saved_beneficiaries' | translate }}
         </a>
         <a routerLink="/customer/profile" routerLinkActive="active" (click)="closeMobileMenu()">
           <i class="bi bi-person me-2"></i>{{ 'NAV.profile' | translate }}
@@ -266,6 +269,10 @@
       <a routerLink="/customer/transactions" routerLinkActive="active" class="d-flex flex-column align-items-center gap-1 text-decoration-none py-1 px-2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M7 17l9.2-9.2M17 17V7.8H7.8"/></svg>
         <span>{{ 'NAV.transactions' | translate }}</span>
+      </a>
+      <a routerLink="/customer/operations" routerLinkActive="active" class="d-flex flex-column align-items-center gap-1 text-decoration-none py-1 px-2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M7 17l9.2-9.2M17 17V7.8H7.8"/><path d="M17 7H7.8v9.2"/></svg>
+        <span>{{ 'NAV.operations' | translate }}</span>
       </a>
       <a routerLink="/customer/cards" routerLinkActive="active" class="d-flex flex-column align-items-center gap-1 text-decoration-none py-1 px-2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>

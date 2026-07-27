@@ -12,6 +12,7 @@ export interface CustomerProfileDto {
   residence: string;
   birthPlace: string;
   birthProvince: string;
+  profilePictureUrl?: string;
   userStatus: string;
   registeredAt: string;
   totalAccounts: number;

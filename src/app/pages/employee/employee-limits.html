@@ -40,7 +40,11 @@
               (click)="onAccountChange(account.accountNumber)"
             >
               <div class="account-card-avatar">
-                {{ getInitials(account) }}
+                @if (account.profilePictureUrl) {
+                  <img [src]="'http://localhost:8081' + account.profilePictureUrl" alt="" class="avatar-img">
+                } @else {
+                  {{ getInitials(account) }}
+                }
               </div>
               <div class="account-card-info">
                 <div class="account-card-name">{{ getFullName(account) }}</div>
@@ -65,7 +69,13 @@
   @if (selectedAccount(); as accNum) {
     @if (getSelectedAccountData(); as acc) {
       <div class="selected-account-bar mb-4">
-        <div class="selected-bar-avatar">{{ getInitials(acc) }}</div>
+        <div class="selected-bar-avatar">
+          @if (acc.profilePictureUrl) {
+            <img [src]="'http://localhost:8081' + acc.profilePictureUrl" alt="" class="avatar-img">
+          } @else {
+            {{ getInitials(acc) }}
+          }
+        </div>
         <div class="selected-bar-info">
           <span class="selected-bar-name">{{ getFullName(acc) }}</span>
           <span class="selected-bar-number mono">{{ accNum }}</span>

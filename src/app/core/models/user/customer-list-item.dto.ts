@@ -4,4 +4,5 @@ export interface CustomerListItemDto {
   lastName: string;
   email: string;
   statusId: number;
+  profilePictureUrl?: string;
 }

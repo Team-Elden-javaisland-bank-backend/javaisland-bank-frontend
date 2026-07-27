@@ -22,6 +22,7 @@ export interface EmployeeListItemDto {
   lastName: string;
   email: string;
   status: string;
+  profilePictureUrl?: string;
   createdAt: string;
 }
 
@@ -50,6 +51,7 @@ export interface EmployeeDetailDto {
   email: string;
   birthDate: string;
   status: string;
+  profilePictureUrl?: string;
   createdAt: string;
 }
 
@@ -60,6 +62,7 @@ export interface AdminCustomerListItemDto {
   email: string;
   username: string;
   status: string;
+  profilePictureUrl?: string;
   accountCount: number;
   totalBalance: number;
   createdAt: string;
@@ -80,6 +83,7 @@ export interface AdminCustomerDetailDto {
   birthProvince: string;
   profession: string;
   status: string;
+  profilePictureUrl?: string;
   createdAt: string;
   accounts: any[];
 }
@@ -91,6 +95,7 @@ export interface AdminAccountListItemDto {
   userId: number;
   userFullName: string;
   userEmail: string;
+  profilePictureUrl?: string;
   createdAt: string;
   closedAt: string | null;
 }

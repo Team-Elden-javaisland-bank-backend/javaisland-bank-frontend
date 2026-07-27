@@ -3,10 +3,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
-import { AccountResponseDto } from '../../core/models/account/account-response.dto';
-import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
-import { BeneficiaryResponseDto } from '../../core/models/beneficiary/beneficiary-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-customer-transactions',
@@ -15,235 +13,37 @@ import { BeneficiaryResponseDto } from '../../core/models/beneficiary/beneficiar
   styleUrl: './customer-transactions.css',
 })
 export class CustomerTransactionsComponent implements OnInit {
-  accounts = signal<AccountResponseDto[]>([]);
-  beneficiaries = signal<BeneficiaryResponseDto[]>([]);
   allTransactions = signal<TransactionResponseDto[]>([]);
-  accountLimits = signal<AccountLimitResponseDto[]>([]);
   loading = signal(true);
-  activeTab = signal<'deposit' | 'withdraw' | 'transfer' | 'history'>('history');
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
-  // Deposit/Withdraw
-  dwAccount = '';
-  dwAmount: number | null = null;
-
-  // Transfer
-  txSource = '';
-  txDestination = '';
-  txAmount: number | null = null;
-  txDescription = '';
-  txBeneficiaryId: number | null = null;
-  txTransferType = signal<'normal' | 'instant'>('normal');
-  txScheduledDate = '';
-  today = '';
-  maxScheduleDate = '';
-
-  // History
   startDate = '';
   endDate = '';
   currentPage = signal(0);
   totalPages = 0;
 
-  constructor(private customerService: CustomerService, private translate: TranslateService) {
-    const now = new Date();
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    this.today = tomorrow.toISOString().split('T')[0];
-    const maxDate = new Date(tomorrow);
-    maxDate.setDate(maxDate.getDate() + 29);
-    this.maxScheduleDate = maxDate.toISOString().split('T')[0];
-
-    const oneMonthAgo = new Date(now);
+  constructor(
+    private customerService: CustomerService,
+    private translate: TranslateService,
+    private toastService: ToastService
+  ) {
+    const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
     this.startDate = oneMonthAgo.toISOString().split('T')[0];
-    this.endDate = now.toISOString().split('T')[0];
+    this.endDate = new Date().toISOString().split('T')[0];
   }
 
   ngOnInit(): void {
-    this.customerService.getAccounts().subscribe({
-      next: (data) => {
-        this.accounts.set(data);
-        if (data.length > 0) {
-          this.dwAccount = data[0].accountNumber;
-          this.txSource = data[0].accountNumber;
-          this.loadLimits(data[0].accountNumber);
-        }
-        this.loading.set(false);
-        this.loadHistory();
-      },
-      error: () => this.loading.set(false),
-    });
-
-    this.customerService.getBeneficiaries().subscribe({
-      next: (data) => this.beneficiaries.set(data),
-    });
-  }
-
-  onAccountChange(): void {
-    if (this.dwAccount) {
-      this.loadLimits(this.dwAccount);
-    }
-  }
-
-  onSourceChange(): void {
-    if (this.txSource) {
-      this.loadLimits(this.txSource);
-    }
-  }
-
-  private loadLimits(accountNumber: string): void {
-    this.customerService.getAccountLimits(accountNumber).subscribe({
-      next: (data) => this.accountLimits.set(data),
-    });
-  }
-
-  getLimitValue(typeName: string): number | null {
-    const limit = this.accountLimits().find(l => l.limitType === typeName);
-    return limit ? Number(limit.maxAmount) : null;
-  }
-
-  private validateAmount(value: number | null, min: number, max: number | null, fieldName: string): string | null {
-    if (value === null || value === undefined) {
-      return this.translate.instant('TRANSACTIONS.insert_amount');
-    }
-    if (value < min) {
-      return this.translate.instant('TRANSACTIONS.min_amount_error', { value: min.toFixed(2) });
-    }
-    if (max !== null && value > max) {
-      return this.translate.instant('TRANSACTIONS.max_amount_error', { value: max.toFixed(2) });
-    }
-    return null;
+    this.loading.set(false);
+    this.loadHistory();
   }
 
   private extractError(err: any): string {
-    return err?.message || 'An error occurred. Please try again later.';
-  }
-
-  deposit(): void {
-    this.message.set('');
-    const err = this.validateAmount(this.dwAmount, 0.01, null, 'importo');
-    if (err) {
-      this.message.set(err);
-      this.messageType.set('error');
-      return;
-    }
-
-    this.customerService.deposit({ accountNumber: this.dwAccount, amount: this.dwAmount! }).subscribe({
-      next: (res) => {
-        this.message.set(res.message);
-        this.messageType.set('success');
-        this.dwAmount = null;
-      },
-      error: (err) => { this.message.set(this.extractError(err)); this.messageType.set('error'); },
-    });
-  }
-
-  withdraw(): void {
-    this.message.set('');
-    const err = this.validateAmount(this.dwAmount, 10, null, 'importo');
-    if (err) {
-      this.message.set(err);
-      this.messageType.set('error');
-      return;
-    }
-
-    const atmLimit = this.getLimitValue('ATM_WITHDRAWAL');
-    if (atmLimit !== null && this.dwAmount! > atmLimit) {
-      this.message.set(this.translate.instant('TRANSACTIONS.atm_limit_exceeded', { value: atmLimit.toFixed(2) }));
-      this.messageType.set('error');
-      return;
-    }
-
-    this.customerService.withdraw({ accountNumber: this.dwAccount, amount: this.dwAmount! }).subscribe({
-      next: (res) => {
-        this.message.set(res.message);
-        this.messageType.set('success');
-        this.dwAmount = null;
-      },
-      error: (err) => { this.message.set(this.extractError(err)); this.messageType.set('error'); },
-    });
-  }
-
-  transfer(): void {
-    this.message.set('');
-    const err = this.validateAmount(this.txAmount, 1, null, 'importo');
-    if (err) {
-      this.message.set(err);
-      this.messageType.set('error');
-      return;
-    }
-
-    if (!this.txDestination && !this.txBeneficiaryId) {
-      this.message.set(this.translate.instant('TRANSACTIONS.select_destination'));
-      this.messageType.set('error');
-      return;
-    }
-
-    const isInstant = this.txTransferType() === 'instant';
-
-    if (!isInstant && !this.txScheduledDate) {
-      this.message.set(this.translate.instant('TRANSACTIONS.select_date'));
-      this.messageType.set('error');
-      return;
-    }
-
-    if (!isInstant) {
-      const scheduled = new Date(this.txScheduledDate);
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-      const maxDate = new Date(tomorrow);
-      maxDate.setDate(maxDate.getDate() + 29);
-
-      if (scheduled <= new Date()) {
-        this.message.set(this.translate.instant('TRANSACTIONS.date_must_be_tomorrow'));
-        this.messageType.set('error');
-        return;
-      }
-      if (scheduled > maxDate) {
-        this.message.set(this.translate.instant('TRANSACTIONS.date_max_30_days'));
-        this.messageType.set('error');
-        return;
-      }
-    }
-
-    const limitType = isInstant ? 'INSTANT_TRANSFER_SINGLE' : 'SINGLE_TRANSFER';
-    const singleLimit = this.getLimitValue(limitType);
-    if (singleLimit !== null && this.txAmount! > singleLimit) {
-      const label = isInstant ? this.translate.instant('TRANSACTIONS.instant_transfer') : this.translate.instant('TRANSACTIONS.normal_transfer');
-      this.message.set(this.translate.instant('TRANSACTIONS.transfer_limit_exceeded', { label, value: singleLimit.toFixed(2) }));
-      this.messageType.set('error');
-      return;
-    }
-
-    this.customerService.transfer({
-      sourceAccountNumber: this.txSource,
-      destinationAccountNumber: this.txDestination || '',
-      beneficiaryId: this.txBeneficiaryId,
-      amount: this.txAmount!,
-      description: this.txDescription,
-      isInstant,
-      scheduledDate: isInstant ? null : this.txScheduledDate,
-    }).subscribe({
-      next: () => {
-        const msg = isInstant ? this.translate.instant('TRANSACTIONS.instant_sent') : this.translate.instant('TRANSACTIONS.scheduled_sent');
-        this.message.set(msg);
-        this.messageType.set('success');
-        this.txAmount = null;
-        this.txDescription = '';
-        this.txDestination = '';
-        this.txBeneficiaryId = null;
-        this.txScheduledDate = '';
-      },
-      error: (err) => { this.message.set(this.extractError(err)); this.messageType.set('error'); },
-    });
+    return err?.error?.message || err?.message || 'An error occurred. Please try again later.';
   }
 
   loadHistory(): void {
     if (!this.startDate || !this.endDate) {
-      this.message.set(this.translate.instant('TRANSACTIONS.select_dates'));
-      this.messageType.set('error');
+      this.toastService.error(this.translate.instant('TRANSACTIONS.select_dates'));
       return;
     }
 
@@ -252,38 +52,26 @@ export class CustomerTransactionsComponent implements OnInit {
         this.allTransactions.set(data.content);
         this.totalPages = data.totalPages;
       },
-      error: (err) => { this.message.set(this.extractError(err)); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(this.extractError(err)),
     });
   }
 
-  selectBeneficiary(id: number, accountNumber: string): void {
-    this.txBeneficiaryId = id;
-    this.txDestination = accountNumber;
-  }
-
-  toggleBeneficiary(id: number, accountNumber: string): void {
-    if (this.txBeneficiaryId === id) {
-      this.txBeneficiaryId = null;
-      this.txDestination = '';
-    } else {
-      this.txBeneficiaryId = id;
-      this.txDestination = accountNumber;
-    }
-  }
-
-  getTransactionType(typeId: number): string {
-    const types: Record<number, string> = { 1: 'TX_TYPE.DEPOSIT', 2: 'TX_TYPE.WITHDRAWAL', 3: 'TX_TYPE.TRANSFER', 4: 'TX_TYPE.INITIAL_TRANSFER', 5: 'TX_TYPE.INSTANT_TRANSFER' };
-    return this.translate.instant(types[typeId] ?? 'TX_TYPE.UNKNOWN');
+  getTxIcon(typeId: number): string {
+    const icons: Record<number, string> = {
+      1: 'bi bi-plus-circle-fill',
+      2: 'bi bi-dash-circle-fill',
+      3: 'bi bi-send-fill',
+      4: 'bi bi-gift-fill',
+      5: 'bi bi-lightning-fill',
+    };
+    return icons[typeId] ?? 'bi bi-arrow-left-right';
   }
 
   getTypeNameLabel(typeName: string | undefined): string {
     const map: Record<string, string> = {
-      'DEPOSIT': 'TX_TYPE.DEPOSIT',
-      'Deposito': 'TX_TYPE.DEPOSIT',
-      'WITHDRAWAL': 'TX_TYPE.WITHDRAWAL',
-      'Prelievo': 'TX_TYPE.WITHDRAWAL',
-      'TRANSFER': 'TX_TYPE.TRANSFER',
-      'Bonifico': 'TX_TYPE.TRANSFER',
+      'DEPOSIT': 'TX_TYPE.DEPOSIT', 'Deposito': 'TX_TYPE.DEPOSIT',
+      'WITHDRAWAL': 'TX_TYPE.WITHDRAWAL', 'Prelievo': 'TX_TYPE.WITHDRAWAL',
+      'TRANSFER': 'TX_TYPE.TRANSFER', 'Bonifico': 'TX_TYPE.TRANSFER',
       'Bonifico Normale': 'TX_TYPE.TRANSFER',
       'INSTANT_TRANSFER': 'TX_TYPE.INSTANT_TRANSFER',
       'Bonifico Istantaneo': 'TX_TYPE.INSTANT_TRANSFER',
@@ -293,25 +81,26 @@ export class CustomerTransactionsComponent implements OnInit {
     return typeName ? this.translate.instant(map[typeName] ?? typeName) : this.translate.instant('TX_TYPE.UNKNOWN');
   }
 
-  getTxIcon(typeId: number): string {
-    const icons: Record<number, string> = {
-      1: 'bi bi-plus-circle',
-      2: 'bi bi-dash-circle',
-      3: 'bi bi-send',
-      4: 'bi bi-gift',
-      5: 'bi bi-lightning',
-    };
-    return icons[typeId] ?? 'bi bi-arrow-left-right';
-  }
-
-  getStatusNameLabel(statusName: string | undefined): string {
+  getStatusLabel(statusName: string | undefined): string {
     const map: Record<string, string> = {
-      'PENDING': 'TX_STATUS.PENDING',
-      'COMPLETED': 'TX_STATUS.COMPLETED',
-      'FAILED': 'TX_STATUS.FAILED',
-      'REJECTED': 'TX_STATUS.REJECTED',
+      'PENDING': 'TX_STATUS.PENDING', 'COMPLETED': 'TX_STATUS.COMPLETED',
+      'FAILED': 'TX_STATUS.FAILED', 'REJECTED': 'TX_STATUS.REJECTED',
     };
     return statusName ? this.translate.instant(map[statusName] ?? statusName) : this.translate.instant('TX_STATUS.UNKNOWN');
+  }
+
+  getStatusClass(statusName: string | undefined): string {
+    const map: Record<string, string> = {
+      'COMPLETED': 'status-completed', 'PENDING': 'status-pending',
+      'FAILED': 'status-failed', 'REJECTED': 'status-rejected',
+    };
+    return map[statusName ?? ''] ?? 'status-pending';
+  }
+
+  maskAccount(account: string | null): string {
+    if (!account) return '—';
+    if (account.length <= 8) return account;
+    return '****' + account.slice(-4);
   }
 
   prevPage(): void {

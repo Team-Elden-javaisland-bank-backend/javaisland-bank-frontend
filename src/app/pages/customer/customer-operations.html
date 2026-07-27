@@ -1,0 +1,219 @@
+<div class="container">
+  <!-- Hero -->
+  <div class="ops-hero mb-4">
+    <div class="ops-hero-bg"></div>
+    <div class="ops-hero-content">
+      <h2 class="ops-hero-title">{{ 'OPERATIONS.page_title' | translate }}</h2>
+      <p class="ops-hero-subtitle">{{ 'OPERATIONS.page_subtitle' | translate }}</p>
+      <div class="ops-hero-tabs">
+        <button class="ops-hero-tab" [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">
+          <i class="bi bi-plus-circle"></i>
+          <span>{{ 'TRANSACTIONS.deposit' | translate }}</span>
+        </button>
+        <button class="ops-hero-tab" [class.active]="activeTab() === 'withdraw'" (click)="activeTab.set('withdraw')">
+          <i class="bi bi-dash-circle"></i>
+          <span>{{ 'TRANSACTIONS.withdraw_tab' | translate }}</span>
+        </button>
+        <button class="ops-hero-tab" [class.active]="activeTab() === 'transfer'" (click)="activeTab.set('transfer')">
+          <i class="bi bi-send"></i>
+          <span>{{ 'TRANSACTIONS.transfer_tab' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT -->
+  @if (activeTab() === 'deposit') {
+    <div class="ops-section">
+      <div class="ops-section-header ops-section-deposit">
+        <div class="ops-section-icon">
+          <i class="bi bi-plus-circle-fill"></i>
+        </div>
+        <div class="ops-section-text">
+          <h3>{{ 'TRANSACTIONS.deposit_to' | translate }}</h3>
+          <p>{{ 'TRANSACTIONS.deposit_desc' | translate }}</p>
+        </div>
+      </div>
+      <div class="ops-section-body">
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.account' | translate }}</label>
+          <select class="ops-select" [(ngModel)]="dwAccount" (change)="onAccountChange()">
+            @for (account of accounts(); track account.accountNumber) {
+              <option [value]="account.accountNumber">{{ account.accountNumber }} &mdash; {{ account.balance | currency:'EUR' }}</option>
+            }
+          </select>
+        </div>
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.amount' | translate }}</label>
+          <div class="ops-amount-input">
+            <span class="ops-currency">&euro;</span>
+            <input class="ops-input ops-amount" type="number" [(ngModel)]="dwAmount" min="0.01" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <button class="ops-btn ops-btn-deposit" (click)="deposit()">
+          <i class="bi bi-plus-lg"></i>
+          {{ 'TRANSACTIONS.deposit_btn' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- WITHDRAW -->
+  @if (activeTab() === 'withdraw') {
+    <div class="ops-section">
+      <div class="ops-section-header ops-section-withdraw">
+        <div class="ops-section-icon">
+          <i class="bi bi-dash-circle-fill"></i>
+        </div>
+        <div class="ops-section-text">
+          <h3>{{ 'TRANSACTIONS.withdraw_from' | translate }}</h3>
+          <p>{{ 'TRANSACTIONS.withdraw_desc' | translate }}</p>
+        </div>
+      </div>
+      <div class="ops-section-body">
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.account' | translate }}</label>
+          <select class="ops-select" [(ngModel)]="dwAccount" (change)="onAccountChange()">
+            @for (account of accounts(); track account.accountNumber) {
+              <option [value]="account.accountNumber">{{ account.accountNumber }} &mdash; {{ account.balance | currency:'EUR' }}</option>
+            }
+          </select>
+        </div>
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.amount' | translate }}</label>
+          <div class="ops-amount-input">
+            <span class="ops-currency">&euro;</span>
+            <input class="ops-input ops-amount" type="number" [(ngModel)]="dwAmount" min="10" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="ops-hints">
+            <span class="ops-hint"><i class="bi bi-info-circle"></i> {{ 'TRANSACTIONS.min_withdraw' | translate }}</span>
+            @if (getLimitValue('ATM_WITHDRAWAL') !== null) {
+              <span class="ops-hint"><i class="bi bi-arrow-up-circle"></i> {{ 'TRANSACTIONS.max' | translate }}: &euro;{{ getLimitValue('ATM_WITHDRAWAL')!.toFixed(2) }}</span>
+            }
+          </div>
+        </div>
+        <button class="ops-btn ops-btn-withdraw" (click)="withdraw()">
+          <i class="bi bi-dash-lg"></i>
+          {{ 'TRANSACTIONS.withdraw_btn' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- TRANSFER -->
+  @if (activeTab() === 'transfer') {
+    <div class="ops-section">
+      <div class="ops-section-header ops-section-transfer">
+        <div class="ops-section-icon">
+          <i class="bi bi-send-fill"></i>
+        </div>
+        <div class="ops-section-text">
+          <h3>{{ (txTransferType() === 'instant' ? 'TRANSACTIONS.instant_transfer' : 'TRANSACTIONS.normal_transfer') | translate }}</h3>
+          <p>{{ 'TRANSACTIONS.send_funds' | translate }}</p>
+        </div>
+      </div>
+      <div class="ops-section-body">
+        <!-- Transfer type toggle -->
+        <div class="ops-type-toggle">
+          <button class="ops-type-btn" [class.active-normal]="txTransferType() === 'normal'" (click)="txTransferType.set('normal')">
+            <i class="bi bi-clock-fill"></i> {{ 'TRANSACTIONS.normal' | translate }}
+          </button>
+          <button class="ops-type-btn" [class.active-instant]="txTransferType() === 'instant'" (click)="txTransferType.set('instant')">
+            <i class="bi bi-lightning-fill"></i> {{ 'TRANSACTIONS.instant' | translate }}
+          </button>
+        </div>
+
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.source_account' | translate }}</label>
+          <select class="ops-select" [(ngModel)]="txSource" (change)="onSourceChange()">
+            @for (account of accounts(); track account.accountNumber) {
+              <option [value]="account.accountNumber">{{ account.accountNumber }} &mdash; {{ account.balance | currency:'EUR' }}</option>
+            }
+          </select>
+        </div>
+
+        @if (beneficiaries().length > 0) {
+          <div class="ops-form-group">
+            <label class="ops-label">{{ 'TRANSACTIONS.saved_beneficiary' | translate }}</label>
+            <div class="ops-beneficiary-list">
+              @for (b of beneficiaries(); track b.id) {
+                <div class="ops-beneficiary" [class.selected]="txBeneficiaryId === b.id" (click)="toggleBeneficiary(b.id, b.destinationAccountNumber)">
+                  <div class="ops-beneficiary-avatar">
+                    @if (b.profilePictureUrl) {
+                      <img [src]="'http://localhost:8081' + b.profilePictureUrl" alt="" class="avatar-img">
+                    } @else {
+                      {{ b.nickname.charAt(0) }}
+                    }
+                  </div>
+                  <div class="ops-beneficiary-info">
+                    <span class="ops-beneficiary-name">{{ b.nickname }}</span>
+                    <span class="ops-beneficiary-iban mono">{{ b.destinationAccountNumber }}</span>
+                  </div>
+                  @if (txBeneficiaryId === b.id) {
+                    <div class="ops-beneficiary-check"><i class="bi bi-check-circle-fill"></i></div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="ops-form-group" [class.locked]="txBeneficiaryId !== null">
+          <div class="ops-iban-header">
+            <label class="ops-label mb-0">{{ 'TRANSACTIONS.iban_dest' | translate }}</label>
+            @if (txBeneficiaryId !== null) {
+              <span class="ops-locked-badge"><i class="bi bi-lock-fill"></i> {{ 'TRANSACTIONS.locked' | translate }}</span>
+            }
+          </div>
+          <input class="ops-input" type="text" [(ngModel)]="txDestination" placeholder="IT00A0000000000000000000000" [disabled]="txBeneficiaryId !== null" />
+          @if (txBeneficiaryId !== null) {
+            <span class="ops-locked-hint">{{ 'TRANSACTIONS.locked_hint' | translate }}</span>
+          }
+        </div>
+
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.amount' | translate }}</label>
+          <div class="ops-amount-input">
+            <span class="ops-currency">&euro;</span>
+            <input class="ops-input ops-amount" type="number" [(ngModel)]="txAmount" min="1" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="ops-hints">
+            <span class="ops-hint"><i class="bi bi-info-circle"></i> Min: &euro;1.00</span>
+            @if (txTransferType() === 'instant') {
+              @if (getLimitValue('INSTANT_TRANSFER_SINGLE') !== null) {
+                <span class="ops-hint"><i class="bi bi-arrow-up-circle"></i> {{ 'TRANSACTIONS.max' | translate }}: &euro;{{ getLimitValue('INSTANT_TRANSFER_SINGLE')!.toFixed(2) }}</span>
+              }
+            } @else {
+              @if (getLimitValue('SINGLE_TRANSFER') !== null) {
+                <span class="ops-hint"><i class="bi bi-arrow-up-circle"></i> {{ 'TRANSACTIONS.max' | translate }}: &euro;{{ getLimitValue('SINGLE_TRANSFER')!.toFixed(2) }}</span>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="ops-form-group">
+          <label class="ops-label">{{ 'TRANSACTIONS.optional_description' | translate }}</label>
+          <input class="ops-input" type="text" [(ngModel)]="txDescription" [placeholder]="'TRANSACTIONS.description_placeholder' | translate" />
+        </div>
+
+        @if (txTransferType() === 'normal') {
+          <div class="ops-form-group">
+            <label class="ops-label">{{ 'TRANSACTIONS.exec_date' | translate }}</label>
+            <input class="ops-input" type="date" [(ngModel)]="txScheduledDate" [attr.min]="today" [attr.max]="maxScheduleDate" />
+            <span class="ops-input-hint">{{ 'TRANSACTIONS.schedule_hint' | translate }}</span>
+          </div>
+        }
+
+        <button class="ops-btn" [class.ops-btn-transfer]="txTransferType() === 'normal'" [class.ops-btn-instant]="txTransferType() === 'instant'" (click)="transfer()">
+          <i [class]="txTransferType() === 'instant' ? 'bi bi-lightning-fill' : 'bi bi-send-fill'"></i>
+          {{ (txTransferType() === 'instant' ? 'TRANSACTIONS.send_instant' : 'TRANSACTIONS.schedule_transfer') | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showPinModal()) {
+  <div class="pin-overlay" (click)="onPinCancelled()"></div>
+  <app-pin-confirm-modal (confirmed)="onPinConfirmed()" (cancelled)="onPinCancelled()" />
+}

@@ -6,250 +6,139 @@
     </div>
   </div>
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
-  <!-- Tabs -->
-  <div class="tabs-bar mb-4">
-    <button class="tab-item" [class.active]="activeTab() === 'deposit'" (click)="activeTab.set('deposit')">
-      <i class="bi bi-plus-circle"></i><span>{{ 'TRANSACTIONS.deposit' | translate }}</span>
-    </button>
-    <button class="tab-item" [class.active]="activeTab() === 'withdraw'" (click)="activeTab.set('withdraw')">
-      <i class="bi bi-dash-circle"></i><span>{{ 'TRANSACTIONS.withdraw_tab' | translate }}</span>
-    </button>
-    <button class="tab-item" [class.active]="activeTab() === 'transfer'" (click)="activeTab.set('transfer')">
-      <i class="bi bi-send"></i><span>{{ 'TRANSACTIONS.transfer_tab' | translate }}</span>
-    </button>
-    <button class="tab-item" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
-      <i class="bi bi-clock-history"></i><span>{{ 'TRANSACTIONS.history' | translate }}</span>
-    </button>
+  <!-- Date filter -->
+  <div class="filter-card mb-4">
+    <div class="filter-card-body">
+      <div class="date-filter-row">
+        <div class="form-group flex-grow-1">
+          <label class="form-label-sm">{{ 'TRANSACTIONS.from' | translate }}</label>
+          <input class="form-input-custom" type="date" [(ngModel)]="startDate" />
+        </div>
+        <div class="form-group flex-grow-1">
+          <label class="form-label-sm">{{ 'TRANSACTIONS.to' | translate }}</label>
+          <input class="form-input-custom" type="date" [(ngModel)]="endDate" />
+        </div>
+        <button class="form-btn btn-search" (click)="loadHistory()">
+          <i class="bi bi-search me-1"></i>{{ 'TRANSACTIONS.search' | translate }}
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- DEPOSIT / WITHDRAW -->
-  @if (activeTab() === 'deposit' || activeTab() === 'withdraw') {
-    <div class="form-card">
-      <div class="form-card-header">
-        <div [class]="'form-icon ' + activeTab()">
-          <i [class]="activeTab() === 'deposit' ? 'bi bi-plus-circle' : 'bi bi-dash-circle'"></i>
-        </div>
-        <div>
-          <h3 class="form-card-title">{{ (activeTab() === 'deposit' ? 'TRANSACTIONS.deposit_to' : 'TRANSACTIONS.withdraw_from') | translate }}</h3>
-          <p class="form-card-subtitle">{{ (activeTab() === 'deposit' ? 'TRANSACTIONS.deposit_desc' : 'TRANSACTIONS.withdraw_desc') | translate }}</p>
-        </div>
-      </div>
-      <div class="form-card-body">
-        <div class="form-group">
-          <label class="form-label-sm">{{ 'TRANSACTIONS.account' | translate }}</label>
-          <select class="form-select-custom" [(ngModel)]="dwAccount" (change)="onAccountChange()">
-            @for (account of accounts(); track account.accountNumber) {
-              <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
-            }
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label-sm">{{ 'TRANSACTIONS.amount' | translate }}</label>
-          <div class="input-with-prefix">
-            <span class="input-prefix">€</span>
-            <input class="form-input-custom" type="number" [(ngModel)]="dwAmount" [attr.min]="activeTab() === 'withdraw' ? 10 : 0.01" step="0.01" placeholder="0.00" />
-          </div>
-          @if (activeTab() === 'withdraw') {
-            <div class="limit-hints">
-              <span class="limit-hint"><i class="bi bi-info-circle me-1"></i>{{ 'TRANSACTIONS.min_withdraw' | translate }}</span>
-              @if (getLimitValue('ATM_WITHDRAWAL') !== null) {
-                <span class="limit-hint"><i class="bi bi-arrow-up me-1"></i>{{ 'TRANSACTIONS.max' | translate }}: €{{ getLimitValue('ATM_WITHDRAWAL')!.toFixed(2) }}</span>
-              }
-            </div>
-          }
-        </div>
-        <button class="form-btn" [class.btn-deposit]="activeTab() === 'deposit'" [class.btn-withdraw]="activeTab() === 'withdraw'" (click)="activeTab() === 'deposit' ? deposit() : withdraw()">
-          <i [class]="activeTab() === 'deposit' ? 'bi bi-plus-lg' : 'bi bi-dash-lg'"></i>
-          {{ (activeTab() === 'deposit' ? 'TRANSACTIONS.deposit_btn' : 'TRANSACTIONS.withdraw_btn') | translate }}
-        </button>
-      </div>
-    </div>
-  }
-
-  <!-- TRANSFER -->
-  @if (activeTab() === 'transfer') {
-    <div class="form-card">
-      <div class="form-card-header">
-        <div class="form-icon transfer">
-          <i class="bi bi-send"></i>
-        </div>
-        <div>
-          <h3 class="form-card-title">{{ (txTransferType() === 'instant' ? 'TRANSACTIONS.instant_transfer' : 'TRANSACTIONS.normal_transfer') | translate }}</h3>
-          <p class="form-card-subtitle">{{ 'TRANSACTIONS.send_funds' | translate }}</p>
-        </div>
-      </div>
-      <div class="form-card-body">
-        <!-- Transfer type toggle -->
-        <div class="transfer-toggle">
-          <button class="toggle-btn" [class.active]="txTransferType() === 'normal'" (click)="txTransferType.set('normal')">
-            <i class="bi bi-clock"></i> {{ 'TRANSACTIONS.normal' | translate }}
-          </button>
-          <button class="toggle-btn instant" [class.active]="txTransferType() === 'instant'" (click)="txTransferType.set('instant')">
-            <i class="bi bi-lightning"></i> {{ 'TRANSACTIONS.instant' | translate }}
-          </button>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label-sm">{{ 'TRANSACTIONS.source_account' | translate }}</label>
-          <select class="form-select-custom" [(ngModel)]="txSource" (change)="onSourceChange()">
-            @for (account of accounts(); track account.accountNumber) {
-              <option [value]="account.accountNumber">{{ account.accountNumber }} ({{ account.balance | currency:'EUR' }})</option>
-            }
-          </select>
-        </div>
-
-        @if (beneficiaries().length > 0) {
-          <div class="form-group">
-            <label class="form-label-sm">{{ 'TRANSACTIONS.saved_beneficiary' | translate }}</label>
-            <div class="beneficiary-list">
-              @for (b of beneficiaries(); track b.id) {
-                <div class="beneficiary-item" [class.selected]="txBeneficiaryId === b.id" (click)="toggleBeneficiary(b.id, b.destinationAccountNumber)">
-                  <div class="beneficiary-avatar">{{ b.nickname.charAt(0) }}</div>
-                  <div class="beneficiary-info">
-                    <span class="beneficiary-name">{{ b.nickname }}</span>
-                    <span class="beneficiary-iban mono">{{ b.destinationAccountNumber }}</span>
-                  </div>
-                  @if (txBeneficiaryId === b.id) {
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <div class="form-group" [class.locked]="txBeneficiaryId !== null">
-          <div class="iban-header">
-            <label class="form-label-sm mb-0">{{ 'TRANSACTIONS.iban_dest' | translate }}</label>
-            @if (txBeneficiaryId !== null) {
-              <span class="locked-badge"><i class="bi bi-lock-fill me-1"></i>{{ 'TRANSACTIONS.locked' | translate }}</span>
-            }
-          </div>
-          <input class="form-input-custom" type="text" [(ngModel)]="txDestination" placeholder="IT..." [disabled]="txBeneficiaryId !== null" />
-          @if (txBeneficiaryId !== null) {
-            <span class="locked-hint">{{ 'TRANSACTIONS.locked_hint' | translate }}</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label class="form-label-sm">{{ 'TRANSACTIONS.amount' | translate }}</label>
-          <div class="input-with-prefix">
-            <span class="input-prefix">€</span>
-            <input class="form-input-custom" type="number" [(ngModel)]="txAmount" min="1" step="0.01" placeholder="0.00" />
-          </div>
-          <div class="limit-hints">
-            <span class="limit-hint"><i class="bi bi-info-circle me-1"></i>Min: €1.00</span>
-            @if (txTransferType() === 'instant') {
-              @if (getLimitValue('INSTANT_TRANSFER_SINGLE') !== null) {
-                <span class="limit-hint"><i class="bi bi-arrow-up me-1"></i>{{ 'TRANSACTIONS.max' | translate }}: €{{ getLimitValue('INSTANT_TRANSFER_SINGLE')!.toFixed(2) }}</span>
-              }
-            } @else {
-              @if (getLimitValue('SINGLE_TRANSFER') !== null) {
-                <span class="limit-hint"><i class="bi bi-arrow-up me-1"></i>{{ 'TRANSACTIONS.max' | translate }}: €{{ getLimitValue('SINGLE_TRANSFER')!.toFixed(2) }}</span>
-              }
-            }
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label-sm">{{ 'TRANSACTIONS.optional_description' | translate }}</label>
-          <input class="form-input-custom" type="text" [(ngModel)]="txDescription" [placeholder]="'TRANSACTIONS.description_placeholder' | translate" />
-        </div>
-
-        @if (txTransferType() === 'normal') {
-          <div class="form-group">
-            <label class="form-label-sm">{{ 'TRANSACTIONS.exec_date' | translate }}</label>
-            <input class="form-input-custom" type="date" [(ngModel)]="txScheduledDate" [attr.min]="today" [attr.max]="maxScheduleDate" />
-            <span class="input-hint">{{ 'TRANSACTIONS.schedule_hint' | translate }}</span>
-          </div>
-        }
-
-        <button class="form-btn" [class.btn-transfer]="txTransferType() === 'normal'" [class.btn-instant]="txTransferType() === 'instant'" (click)="transfer()">
-          <i [class]="txTransferType() === 'instant' ? 'bi bi-lightning-fill' : 'bi bi-send-fill'"></i>
-          {{ (txTransferType() === 'instant' ? 'TRANSACTIONS.send_instant' : 'TRANSACTIONS.schedule_transfer') | translate }}
-        </button>
-      </div>
-    </div>
-  }
-
-  <!-- HISTORY -->
-  @if (activeTab() === 'history') {
-    <div class="form-card mb-4">
-      <div class="form-card-body">
-        <div class="date-filter-row">
-          <div class="form-group flex-grow-1">
-            <label class="form-label-sm">{{ 'TRANSACTIONS.from' | translate }}</label>
-            <input class="form-input-custom" type="date" [(ngModel)]="startDate" />
-          </div>
-          <div class="form-group flex-grow-1">
-            <label class="form-label-sm">{{ 'TRANSACTIONS.to' | translate }}</label>
-            <input class="form-input-custom" type="date" [(ngModel)]="endDate" />
-          </div>
-          <button class="form-btn btn-search" (click)="loadHistory()">
-            <i class="bi bi-search me-1"></i>{{ 'TRANSACTIONS.search' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    @if (allTransactions().length > 0) {
-      <div class="table-card">
-        <div class="table-responsive">
-          <table class="styled-table">
-            <thead>
-              <tr>
-                <th>{{ 'TRANSACTIONS.table_type' | translate }}</th>
-                <th>{{ 'TRANSACTIONS.table_amount' | translate }}</th>
-                <th>{{ 'TRANSACTIONS.table_sender' | translate }}</th>
-                <th>{{ 'TRANSACTIONS.table_recipient' | translate }}</th>
-                <th>{{ 'TRANSACTIONS.table_date' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (tx of allTransactions(); track tx.id) {
-                <tr>
-                  <td>
-                    <div class="tx-type-cell">
-                      <div [class]="'tx-type-icon tx-type-' + tx.typeId">
-                        <i [class]="getTxIcon(tx.typeId)"></i>
-                      </div>
-                      <span>{{ getTypeNameLabel(tx.typeName) }}</span>
+  @if (allTransactions().length > 0) {
+    <!-- Table desktop -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th class="th-type">{{ 'TRANSACTIONS.table_type' | translate }}</th>
+              <th class="th-desc">{{ 'TRANSACTIONS.table_description' | translate }}</th>
+              <th class="th-amount">{{ 'TRANSACTIONS.table_amount' | translate }}</th>
+              <th class="th-status">{{ 'TRANSACTIONS.table_status' | translate }}</th>
+              <th class="th-from">{{ 'TRANSACTIONS.table_sender' | translate }}</th>
+              <th class="th-to">{{ 'TRANSACTIONS.table_recipient' | translate }}</th>
+              <th class="th-date">{{ 'TRANSACTIONS.table_date' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tx of allTransactions(); track tx.id) {
+              <tr [class]="'tx-row tx-border-' + tx.typeId">
+                <td>
+                  <div class="tx-type-cell">
+                    <div [class]="'tx-type-icon tx-type-' + tx.typeId">
+                      <i [class]="getTxIcon(tx.typeId)"></i>
                     </div>
-                  </td>
-                  <td>
-                    <span [class]="'tx-amount tx-amount-' + tx.typeId">
-                      {{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
-                    </span>
-                  </td>
-                  <td><span class="mono text-muted">{{ tx.sourceAccountNumber || '-' }}</span></td>
-                  <td><span class="mono text-muted">{{ tx.destinationAccountNumber || '-' }}</span></td>
-                  <td><span class="text-muted">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</span></td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+                    <span class="tx-type-label">{{ getTypeNameLabel(tx.typeName) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="tx-desc">{{ tx.description || '—' }}</span>
+                </td>
+                <td>
+                  <span [class]="'tx-amount tx-amount-' + tx.typeId">
+                    {{ tx.typeId === 1 || tx.typeId === 4 ? '+' : '-' }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                  </span>
+                </td>
+                <td>
+                  <span [class]="'status-badge ' + getStatusClass(tx.statusName)">
+                    {{ getStatusLabel(tx.statusName) }}
+                  </span>
+                </td>
+                <td><span class="mono text-muted">{{ maskAccount(tx.sourceAccountNumber) }}</span></td>
+                <td><span class="mono text-muted">{{ maskAccount(tx.destinationAccountNumber) }}</span></td>
+                <td>
+                  <div class="tx-date-cell">
+                    <span class="tx-date">{{ tx.createdAt | date:'dd/MM/yyyy' }}</span>
+                    <span class="tx-time">{{ tx.createdAt | date:'HH:mm' }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
+    </div>
 
-      <div class="pagination-row">
-        <button class="pagination-btn" [disabled]="currentPage() === 0" (click)="prevPage()">
-          <i class="bi bi-chevron-left"></i> {{ 'TRANSACTIONS.prev' | translate }}
-        </button>
-        <span class="pagination-info">{{ 'TRANSACTIONS.page_of' | translate: {current: currentPage() + 1, total: totalPages} }}</span>
-        <button class="pagination-btn" [disabled]="currentPage() >= totalPages - 1" (click)="nextPage()">
-          {{ 'TRANSACTIONS.next' | translate }} <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-    } @else if (startDate && endDate) {
-      <div class="empty-state-card">
-        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
-        <h6 class="empty-state-title">{{ 'TRANSACTIONS.no_transactions' | translate }}</h6>
-        <p class="empty-state-text">{{ 'TRANSACTIONS.no_transactions_desc' | translate }}</p>
-      </div>
-    }
+    <!-- Cards mobile -->
+    <div class="tx-cards-mobile">
+      @for (tx of allTransactions(); track tx.id) {
+        <div [class]="'tx-card tx-border-left-' + tx.typeId">
+          <div class="tx-card-header">
+            <div class="tx-type-cell">
+              <div [class]="'tx-type-icon tx-type-' + tx.typeId">
+                <i [class]="getTxIcon(tx.typeId)"></i>
+              </div>
+              <span class="tx-type-label">{{ getTypeNameLabel(tx.typeName) }}</span>
+            </div>
+            <span [class]="'status-badge ' + getStatusClass(tx.statusName)">
+              {{ getStatusLabel(tx.statusName) }}
+            </span>
+          </div>
+          <div class="tx-card-body">
+            <div class="tx-card-row">
+              <span class="tx-card-label">{{ 'TRANSACTIONS.table_amount' | translate }}</span>
+              <span [class]="'tx-amount tx-amount-' + tx.typeId">
+                {{ tx.typeId === 1 || tx.typeId === 4 ? '+' : '-' }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+              </span>
+            </div>
+            @if (tx.description) {
+              <div class="tx-card-row">
+                <span class="tx-card-label">{{ 'TRANSACTIONS.table_description' | translate }}</span>
+                <span class="tx-desc">{{ tx.description }}</span>
+              </div>
+            }
+            <div class="tx-card-row">
+              <span class="tx-card-label">{{ 'TRANSACTIONS.table_sender' | translate }}</span>
+              <span class="mono">{{ maskAccount(tx.sourceAccountNumber) }}</span>
+            </div>
+            <div class="tx-card-row">
+              <span class="tx-card-label">{{ 'TRANSACTIONS.table_recipient' | translate }}</span>
+              <span class="mono">{{ maskAccount(tx.destinationAccountNumber) }}</span>
+            </div>
+          </div>
+          <div class="tx-card-footer">
+            <i class="bi bi-clock me-1"></i>
+            {{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="pagination-row">
+      <button class="pagination-btn" [disabled]="currentPage() === 0" (click)="prevPage()">
+        <i class="bi bi-chevron-left"></i> {{ 'TRANSACTIONS.prev' | translate }}
+      </button>
+      <span class="pagination-info">{{ 'TRANSACTIONS.page_of' | translate: {current: currentPage() + 1, total: totalPages} }}</span>
+      <button class="pagination-btn" [disabled]="currentPage() >= totalPages - 1" (click)="nextPage()">
+        {{ 'TRANSACTIONS.next' | translate }} <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  } @else if (startDate && endDate) {
+    <div class="empty-state-card">
+      <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+      <h6 class="empty-state-title">{{ 'TRANSACTIONS.no_transactions' | translate }}</h6>
+      <p class="empty-state-text">{{ 'TRANSACTIONS.no_transactions_desc' | translate }}</p>
+    </div>
   }
 </div>

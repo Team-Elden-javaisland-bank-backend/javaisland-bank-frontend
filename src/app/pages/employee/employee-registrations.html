@@ -80,7 +80,11 @@
             <div class="reg-card" [class.reg-card-refused]="activeTab() === 'refused'">
               <div class="reg-card-header">
                 <div class="reg-avatar reg-avatar-clickable" [class.reg-avatar-refused]="activeTab() === 'refused'" (click)="openUserDetail(reg.userId)" title="{{ 'EMPLOYEE.registrations.view_detail' | translate }}">
-                  {{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}
+                  @if (reg.profilePictureUrl) {
+                    <img [src]="'http://localhost:8081' + reg.profilePictureUrl" alt="" class="avatar-img">
+                  } @else {
+                    {{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}
+                  }
                 </div>
                 <div class="reg-user-info">
                   <div class="reg-name">{{ reg.firstName }} {{ reg.lastName }}</div>

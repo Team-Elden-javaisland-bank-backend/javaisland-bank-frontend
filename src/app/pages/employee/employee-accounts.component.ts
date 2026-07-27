@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
@@ -18,10 +18,28 @@ export class EmployeeAccountsComponent implements OnInit {
   message = signal('');
   messageType = signal<'success' | 'error'>('success');
   statusFilter = signal<number | null>(null);
+  searchQuery = signal('');
   selectedAccount = signal<string>('');
   limits = signal<AccountLimitResponseDto[]>([]);
   limitsLoading = signal(false);
   showLimits = signal(false);
+
+  filteredAccounts = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    let list = this.accounts();
+    if (q) {
+      list = list.filter(a =>
+        a.accountNumber?.toLowerCase().includes(q) ||
+        a.profileFirstName?.toLowerCase().includes(q) ||
+        a.profileLastName?.toLowerCase().includes(q)
+      );
+    }
+    return [...list].sort((a, b) => {
+      const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return db - da;
+    });
+  });
 
   limitType = '';
   limitAmount = 0;
@@ -160,5 +178,9 @@ export class EmployeeAccountsComponent implements OnInit {
 
   getPendingCount(): number {
     return this.accounts().filter(a => a.statusId === 1).length;
+  }
+
+  onSearchInput(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 }

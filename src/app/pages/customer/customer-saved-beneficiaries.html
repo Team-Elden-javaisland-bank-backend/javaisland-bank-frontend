@@ -60,7 +60,13 @@
       @for (b of savedBeneficiaries(); track b.id) {
         <div class="beneficiary-card">
           <div class="beneficiary-card-header">
-            <div class="beneficiary-avatar">{{ b.beneficiaryName.charAt(0).toUpperCase() }}</div>
+            <div class="beneficiary-avatar">
+              @if (b.profilePictureUrl) {
+                <img [src]="'http://localhost:8081' + b.profilePictureUrl" alt="" class="avatar-img">
+              } @else {
+                {{ b.beneficiaryName.charAt(0).toUpperCase() }}
+              }
+            </div>
             <div class="beneficiary-main">
               <div class="beneficiary-name">{{ b.beneficiaryName }}</div>
               <div class="beneficiary-iban mono">{{ b.accountNumber }}</div>

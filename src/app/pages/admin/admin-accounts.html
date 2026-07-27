@@ -48,8 +48,17 @@
                 <tr>
                   <td><span class="mono">{{ a.accountNumber }}</span></td>
                   <td>
-                    <div class="fw-semibold">{{ a.userFullName }}</div>
-                    <small class="text-muted">{{ a.userEmail }}</small>
+                    <div class="d-flex align-items-center gap-2">
+                      @if (a.profilePictureUrl) {
+                        <div class="admin-acc-avatar">
+                          <img [src]="'http://localhost:8081' + a.profilePictureUrl" alt="" class="avatar-img">
+                        </div>
+                      }
+                      <div>
+                        <div class="fw-semibold">{{ a.userFullName }}</div>
+                        <small class="text-muted">{{ a.userEmail }}</small>
+                      </div>
+                    </div>
                   </td>
                   <td><span class="badge" [ngClass]="getStatusClass(a.statusId)">{{ getStatusLabel(a.statusId) }}</span></td>
                   <td class="text-end fw-bold">{{ formatCurrency(a.balance) }}</td>

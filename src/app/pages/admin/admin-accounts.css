@@ -22,3 +22,19 @@
 .mono { font-family: monospace; font-size: 0.88rem; }
 .btn-bi-gold { background: var(--bi-gold); color: #fff; border-color: var(--bi-gold); }
 .btn-bi-gold:hover { background: var(--bi-gold-dark); border-color: var(--bi-gold-dark); }
+
+.admin-acc-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bi-gold), var(--bi-gold-dark));
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}

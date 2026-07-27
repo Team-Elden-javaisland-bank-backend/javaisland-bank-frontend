@@ -12,6 +12,7 @@ export interface EmployeeUserDetailDto {
   residence: string;
   birthPlace: string;
   birthProvince: string;
+  profilePictureUrl?: string;
   userStatus: string;
   userCreatedAt: string;
   accountNumber: string;

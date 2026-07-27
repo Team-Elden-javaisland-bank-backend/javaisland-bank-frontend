@@ -224,8 +224,8 @@
     }
   },
   "TRANSACTIONS": {
-    "page_title": "Transazioni",
-    "page_subtitle": "Deposita, preleva, bonifica e consulta lo storico",
+    "page_title": "Storico Transazioni",
+    "page_subtitle": "Consulta tutte le tue transazioni passate",
     "deposit": "Deposito",
     "from": "Da",
     "to": "A",
@@ -265,6 +265,8 @@
     "table_sender": "Mittente",
     "table_recipient": "Destinatario",
     "table_date": "Data",
+    "table_description": "Descrizione",
+    "table_status": "Stato",
     "prev": "Precedente",
     "page_of": "Pagina {{current}} di {{total}}",
     "next": "Successiva",
@@ -282,6 +284,10 @@
     "date_max_30_days": "La data non può essere oltre 30 giorni da oggi",
     "transfer_limit_exceeded": "Importo supera il limite {{label}} di €{{value}}",
     "select_dates": "Seleziona le date"
+  },
+  "OPERATIONS": {
+    "page_title": "Operazioni",
+    "page_subtitle": "Deposita, preleva o invia bonifici"
   },
   "BENEFICIARIES": {
     "page_title": "Beneficiari",
@@ -450,6 +456,7 @@
     "card_type_prepaid": "Carta Prepagata",
     "error_loading": "Errore nel caricamento del profilo",
     "error_password": "Errore nella richiesta di cambio password",
+    "password_changed": "Password cambiata con successo",
     "pdf_bank_name": "Elden Bank",
     "pdf_generation_date": "Data generazione",
     "pdf_account_holder": "Intestatario",
@@ -486,7 +493,11 @@
     "confirm_pin": "Conferma PIN",
     "pin_hint": "Il PIN deve essere composto da 4 cifre",
     "access": "Accedi",
-    "logout": "Esci dall'account"
+    "logout": "Esci dall'account",
+    "confirm_title": "Conferma con PIN",
+    "confirm_desc": "Inserisci il tuo PIN di 4 cifre per procedere",
+    "confirm_button": "Conferma",
+    "cancel": "Annulla"
   },
   "EMPLOYEE": {
     "dashboard": {
@@ -535,8 +546,11 @@
       "inactive": "Inattivi",
       "frozen": "Congelati",
       "closed": "Chiusi",
+      "search_placeholder": "Cerca per nome o numero conto...",
       "no_accounts": "Nessun conto trovato",
       "no_accounts_desc": "Non ci sono conti che corrispondono ai filtri selezionati.",
+      "no_results_for": "Nessun risultato per",
+      "try_another": "Prova con un altro termine.",
       "holder": "Intestatario",
       "iban": "IBAN",
       "balance": "Saldo",
@@ -566,8 +580,11 @@
       "page_subtitle": "Visualizza e gestisci le carte associate ai conti",
       "total": "Totale",
       "active": "Attive",
+      "search_placeholder": "Cerca per nome o numero carta...",
       "no_cards": "Nessuna carta trovata",
       "no_cards_desc": "Non ci sono carte associate ai conti degli utenti.",
+      "no_results_for": "Nessun risultato per",
+      "try_another": "Prova con un altro termine.",
       "card": "Carta",
       "holder": "Titolare",
       "type": "Tipo",
@@ -732,7 +749,8 @@
       "active_accounts": "Conti Attivi",
       "frozen_accounts": "Conti Bloccati",
       "pending_registrations": "Registrazioni In Attesa",
-      "transactions": "Transazioni",
+    "transactions": "Storico",
+    "operations": "Operazioni",
       "total_balance": "Saldo Totale",
       "manage_clients": "Gestione Clienti",
       "manage_clients_desc": "Gestisci i clienti registrati al sistema",

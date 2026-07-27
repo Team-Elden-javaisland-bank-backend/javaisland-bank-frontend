@@ -29,6 +29,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private fileInput: HTMLInputElement | null = null;
 
   currentLang = signal(localStorage.getItem('lang') || 'it');
+  darkMode = signal(false);
 
   constructor(
     public authService: AuthService,
@@ -39,6 +40,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    const stored = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = stored !== null ? stored === 'true' : prefersDark;
+    this.darkMode.set(isDark);
+    this.applyDarkMode(isDark);
+
     if (this.isCustomer) {
       this.loadUnreadCount();
       this.pollSub = interval(10000).subscribe(() => this.loadUnreadCount());
@@ -108,6 +115,17 @@ export class LayoutComponent implements OnInit, OnDestroy {
     if (this.showNotifications()) {
       this.loadNotifications();
     }
+  }
+
+  toggleDarkMode(): void {
+    const next = !this.darkMode();
+    this.darkMode.set(next);
+    localStorage.setItem('darkMode', String(next));
+    this.applyDarkMode(next);
+  }
+
+  private applyDarkMode(dark: boolean): void {
+    document.documentElement.classList.toggle('dark-mode', dark);
   }
 
   get isCustomer(): boolean {

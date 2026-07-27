@@ -53,7 +53,13 @@
                 <tr>
                   <td>
                     <div class="d-flex align-items-center">
-                      <div class="customer-avatar me-3">{{ getInitials(c) }}</div>
+                      <div class="customer-avatar me-3">
+                        @if (c.profilePictureUrl) {
+                          <img [src]="'http://localhost:8081' + c.profilePictureUrl" alt="" class="avatar-img">
+                        } @else {
+                          {{ getInitials(c) }}
+                        }
+                      </div>
                       <div>
                         <div class="fw-semibold">{{ getFullName(c) }}</div>
                         <small class="text-muted">{{ c.username }}</small>
@@ -95,7 +101,13 @@
               </div>
             } @else if (customerDetail(); as cust) {
               <div class="text-center mb-4">
-                <div class="detail-avatar mx-auto">{{ getInitials(cust) }}</div>
+                <div class="detail-avatar mx-auto">
+                  @if (cust.profilePictureUrl) {
+                    <img [src]="'http://localhost:8081' + cust.profilePictureUrl" alt="" class="avatar-img">
+                  } @else {
+                    {{ getInitials(cust) }}
+                  }
+                </div>
                 <h5 class="mt-3 mb-1">{{ cust.firstName }} {{ cust.lastName }}</h5>
                 <span class="badge" [ngClass]="getStatusClass(cust.status)">{{ cust.status }}</span>
               </div>

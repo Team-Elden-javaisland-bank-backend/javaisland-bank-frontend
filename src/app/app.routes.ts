@@ -7,11 +7,12 @@ import { CustomerDashboardComponent } from './pages/customer/customer-dashboard.
 import { CustomerAccountsComponent } from './pages/customer/customer-accounts.component';
 import { CustomerAccountDetailComponent } from './pages/customer/customer-account-detail.component';
 import { CustomerTransactionsComponent } from './pages/customer/customer-transactions.component';
+import { CustomerOperationsComponent } from './pages/customer/customer-operations.component';
 import { CustomerBeneficiariesComponent } from './pages/customer/customer-beneficiaries.component';
 import { CustomerCardsComponent } from './pages/customer/customer-cards.component';
 import { CustomerLimitsComponent } from './pages/customer/customer-limits.component';
 import { CustomerLimitsSetupComponent } from './pages/customer/customer-limits-setup.component';
-import { CustomerSavedBeneficiariesComponent } from './pages/customer/customer-saved-beneficiaries.component';
+
 import { CustomerProfileComponent } from './pages/customer/customer-profile.component';
 import { CustomerRequestsComponent } from './pages/customer/customer-requests.component';
 import { CustomerNotificationsComponent } from './pages/customer/customer-notifications.component';
@@ -45,10 +46,10 @@ export const routes: Routes = [
       { path: 'accounts', component: CustomerAccountsComponent },
       { path: 'accounts/:accountNumber', component: CustomerAccountDetailComponent },
       { path: 'transactions', component: CustomerTransactionsComponent },
+      { path: 'operations', component: CustomerOperationsComponent },
       { path: 'beneficiaries', component: CustomerBeneficiariesComponent },
       { path: 'limits', component: CustomerLimitsComponent },
       { path: 'cards', component: CustomerCardsComponent },
-      { path: 'saved-beneficiaries', component: CustomerSavedBeneficiariesComponent },
       { path: 'profile', component: CustomerProfileComponent },
       { path: 'requests', component: CustomerRequestsComponent },
       { path: 'notifications', component: CustomerNotificationsComponent },

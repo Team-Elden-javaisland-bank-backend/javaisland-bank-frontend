@@ -26,7 +26,11 @@
           <div class="row align-items-center">
             <div class="col-auto">
               <div class="avatar-circle">
-                <span class="avatar-initials">{{ getInitials() }}</span>
+                @if (profile()?.profilePictureUrl) {
+                  <img [src]="'http://localhost:8081' + profile()!.profilePictureUrl" alt="" class="avatar-img">
+                } @else {
+                  <span class="avatar-initials">{{ getInitials() }}</span>
+                }
               </div>
             </div>
             <div class="col">
@@ -318,5 +322,10 @@
         </div>
       </div>
     </div>
+  }
+
+  @if (showPinModal()) {
+    <div class="pin-overlay" (click)="onPinCancelled()"></div>
+    <app-pin-confirm-modal (confirmed)="onPinConfirmed()" (cancelled)="onPinCancelled()" />
   }
 </div>

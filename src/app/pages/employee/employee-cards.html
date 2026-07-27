@@ -33,6 +33,25 @@
       <p class="empty-state-text">{{ 'EMPLOYEE.cards.no_cards_desc' | translate }}</p>
     </div>
   } @else {
+    <!-- Search Bar -->
+    <div class="search-bar mb-3">
+      <div class="search-input-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="form-control search-input"
+          [placeholder]="'EMPLOYEE.cards.search_placeholder' | translate"
+          [value]="searchQuery()"
+          (input)="onSearchInput($event)"
+        />
+        @if (searchQuery()) {
+          <button class="btn-clear-search" (click)="searchQuery.set('')">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        }
+      </div>
+    </div>
+
     <div class="table-card">
       <div class="table-responsive">
         <table class="styled-table">
@@ -47,7 +66,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (card of cards(); track card.id) {
+            @for (card of filteredCards(); track card.id) {
               <tr>
                 <td>
                   <div class="card-number-cell">
@@ -79,6 +98,12 @@
           </tbody>
         </table>
       </div>
+      @if (filteredCards().length === 0 && searchQuery()) {
+        <div class="empty-search py-4 text-center">
+          <i class="bi bi-search" style="font-size:1.5rem;color:#cbd5e1;"></i>
+          <p class="text-muted mt-2 mb-0">{{ 'EMPLOYEE.cards.no_results_for' | translate }} "{{ searchQuery() }}". {{ 'EMPLOYEE.cards.try_another' | translate }}</p>
+        </div>
+      }
     </div>
   }
 </div>

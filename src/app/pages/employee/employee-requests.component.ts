@@ -14,6 +14,7 @@ interface EmployeeRequestDto {
   userFirstName: string;
   userLastName: string;
   userEmail: string;
+  profilePictureUrl?: string;
   accountNumber: string;
   limitTypeName: string;
   requestedAmount: number;

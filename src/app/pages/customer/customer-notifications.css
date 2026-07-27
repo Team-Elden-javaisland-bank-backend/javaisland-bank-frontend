@@ -113,29 +113,27 @@
 }
 
 /* ═══ DARK MODE ═══ */
-@media (prefers-color-scheme: dark) {
-  .notification-card {
-    background: #1e293b;
-    border-color: #334155;
-  }
+.dark-mode .notification-card {
+  background: #1e293b;
+  border-color: #334155;
+}
 
-  .notification-card .card-header {
-    background: #0f172a;
-  }
+.dark-mode .notification-card .card-header {
+  background: #0f172a;
+}
 
-  .notification-item:hover {
-    background: #1e293b;
-  }
+.dark-mode .notification-item:hover {
+  background: #1e293b;
+}
 
-  .notification-item.unread {
-    background: rgba(229, 169, 60, 0.08);
-  }
+.dark-mode .notification-item.unread {
+  background: rgba(229, 169, 60, 0.08);
+}
 
-  .badge-type {
-    color: #e2e8f0;
-  }
+.dark-mode .badge-type {
+  color: #e2e8f0;
+}
 
-  .notification-message {
-    color: #94a3b8;
-  }
+.dark-mode .notification-message {
+  color: #94a3b8;
 }

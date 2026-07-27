@@ -3,4 +3,5 @@ export interface BeneficiaryResponseDto {
   nickname: string;
   destinationAccountNumber: string;
   createdAt: string;
+  profilePictureUrl?: string;
 }
