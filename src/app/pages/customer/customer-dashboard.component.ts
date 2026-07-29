@@ -20,6 +20,7 @@ export class CustomerDashboardComponent implements OnInit {
   dashboardSummary = signal<DashboardSummaryDto | null>(null);
   loading = signal(true);
   selectedAccount = signal<string>('');
+  accountNumbers = signal<Set<string>>(new Set());
   transactionsLoading = signal(false);
   currentCardIndex = signal(0);
 
@@ -51,6 +52,7 @@ export class CustomerDashboardComponent implements OnInit {
   loadAccounts(): void {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
+        this.accountNumbers.set(new Set(data.map(a => a.accountNumber)));
         const sorted = [...data]
           .filter(a => a.statusId !== 4)
           .sort((a, b) =>
@@ -153,5 +155,31 @@ export class CustomerDashboardComponent implements OnInit {
       'REJECTED': 'rejected',
     };
     return statusName ? (map[statusName] ?? '') : '';
+  }
+
+  getTxDirection(tx: TransactionResponseDto): 'in' | 'out' | 'self' {
+    const accs = this.accountNumbers();
+    const isSource = tx.sourceAccountNumber ? accs.has(tx.sourceAccountNumber) : false;
+    const isDest = tx.destinationAccountNumber ? accs.has(tx.destinationAccountNumber) : false;
+    if (isSource && !isDest) return 'out';
+    if (isDest && !isSource) return 'in';
+    return 'self';
+  }
+
+  getTypeLabel(tx: TransactionResponseDto): string {
+    if (this.getTxDirection(tx) === 'self') return this.translate.instant('TX_TYPE.INTERNAL_TRANSFER');
+    return this.getTypeNameLabel(tx.typeName);
+  }
+
+  getAmountSign(tx: TransactionResponseDto): string {
+    const dir = this.getTxDirection(tx);
+    if (dir === 'self') return '';
+    return dir === 'in' ? '+' : '-';
+  }
+
+  getAmountClass(tx: TransactionResponseDto): string {
+    const dir = this.getTxDirection(tx);
+    if (dir === 'self') return 'amount-self';
+    return dir === 'in' ? 'amount-positive' : 'amount-negative';
   }
 }

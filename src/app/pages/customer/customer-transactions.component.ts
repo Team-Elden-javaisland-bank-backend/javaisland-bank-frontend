@@ -98,6 +98,11 @@ export class CustomerTransactionsComponent implements OnInit {
     return typeName ? this.translate.instant(map[typeName] ?? typeName) : this.translate.instant('TX_TYPE.UNKNOWN');
   }
 
+  getTypeLabel(tx: TransactionResponseDto): string {
+    if (this.getTxDirection(tx) === 'self') return this.translate.instant('TX_TYPE.INTERNAL_TRANSFER');
+    return this.getTypeNameLabel(tx.typeName);
+  }
+
   getStatusLabel(statusName: string | undefined): string {
     const map: Record<string, string> = {
       'PENDING': 'TX_STATUS.PENDING', 'COMPLETED': 'TX_STATUS.COMPLETED',

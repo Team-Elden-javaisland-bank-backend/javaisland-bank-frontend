@@ -44,9 +44,8 @@
 
     <!-- Main 2-col layout -->
     <div class="dashboard-grid">
-      <!-- Left column: accounts + transactions -->
-      <div class="dashboard-main">
-        <!-- Accounts section -->
+      <!-- ═══ ROW 1: Accounts (left) | Quick Actions (right) ═══ -->
+      <div class="dash-left dash-row-1">
         <div class="section-header mb-3">
           <h5 class="section-title"><i class="bi bi-bank me-2"></i>{{ 'DASHBOARD.your_accounts' | translate }}</h5>
         </div>
@@ -111,19 +110,59 @@
             }
           </div>
         } @else {
-          <div class="empty-state-card mb-4">
+          <div class="empty-state-card">
             <div class="empty-state-icon">
               <i class="bi bi-bank"></i>
             </div>
             <h6 class="empty-state-title">{{ 'DASHBOARD.no_active_accounts' | translate }}</h6>
             <p class="empty-state-text">{{ 'DASHBOARD.open_first_account' | translate }}</p>
-            <a routerLink="/customer/accounts" class="btn btn-success rounded-3 px-4">
+            <a [routerLink]="['/customer/accounts']" [queryParams]="{action: 'open'}" class="btn btn-success rounded-3 px-4">
               <i class="bi bi-plus-lg me-1"></i>{{ 'DASHBOARD.open_account' | translate }}
             </a>
           </div>
         }
+      </div>
 
-        <!-- Recent transactions section -->
+      <div class="dash-right dash-row-1">
+        <div class="sidebar-card h-100">
+          <div class="sidebar-card-header">
+            <i class="bi bi-lightning-charge me-2"></i>{{ 'DASHBOARD.quick_actions' | translate }}
+          </div>
+          <div class="sidebar-card-body sidebar-card-body--fill">
+            <a routerLink="/customer/operations" [queryParams]="{tab: 'deposit'}" class="quick-action">
+              <div class="qa-icon qa-green"><i class="bi bi-arrow-down-left"></i></div>
+              <div class="qa-info">
+                <span class="qa-title">{{ 'DASHBOARD.deposit' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.deposit_desc' | translate }}</span>
+              </div>
+            </a>
+            <a routerLink="/customer/operations" [queryParams]="{tab: 'withdraw'}" class="quick-action">
+              <div class="qa-icon qa-red"><i class="bi bi-arrow-up-right"></i></div>
+              <div class="qa-info">
+                <span class="qa-title">{{ 'DASHBOARD.withdraw' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.withdraw_desc' | translate }}</span>
+              </div>
+            </a>
+            <a routerLink="/customer/operations" [queryParams]="{tab: 'transfer'}" class="quick-action">
+              <div class="qa-icon qa-blue"><i class="bi bi-send"></i></div>
+              <div class="qa-info">
+                <span class="qa-title">{{ 'DASHBOARD.transfer' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.transfer_desc' | translate }}</span>
+              </div>
+            </a>
+            <a [routerLink]="['/customer/accounts']" [queryParams]="{action: 'open'}" class="quick-action">
+              <div class="qa-icon qa-purple"><i class="bi bi-plus-lg"></i></div>
+              <div class="qa-info">
+                <span class="qa-title">{{ 'DASHBOARD.new_account' | translate }}</span>
+                <span class="qa-desc">{{ 'DASHBOARD.new_account_desc' | translate }}</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ROW 2: Transactions (left) | Security + Summary (right) ═══ -->
+      <div class="dash-left dash-row-2">
         <div class="section-header mb-3">
           <h5 class="section-title"><i class="bi bi-clock-history me-2"></i>{{ 'DASHBOARD.recent_transactions_title' | translate }}</h5>
           <a routerLink="/customer/transactions" class="section-link">{{ 'DASHBOARD.see_all_transactions' | translate }} <i class="bi bi-arrow-right"></i></a>
@@ -156,10 +195,10 @@
                                 @default { <i class="bi bi-dash"></i> }
                               }
                             </div>
-                            <span class="fw-semibold">{{ getTypeNameLabel(tx.typeName) }}</span>
+                            <span class="fw-semibold">{{ getTypeLabel(tx) }}</span>
                           </div>
                         </td>
-                        <td [class]="'fw-bold amount-' + tx.typeId">{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+                        <td [class]="'fw-bold ' + getAmountClass(tx)">{{ getAmountSign(tx) }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}</td>
                         <td class="d-none d-md-table-cell text-muted">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
                         <td>
                           <span [class]="'tx-status-badge ' + getStatusNameClass(tx.statusName)">
@@ -184,51 +223,12 @@
         }
       </div>
 
-      <!-- Right sidebar -->
-      <div class="dashboard-sidebar">
-        <!-- Quick actions -->
-        <div class="sidebar-card">
-          <div class="sidebar-card-header">
-            <i class="bi bi-lightning-charge me-2"></i>{{ 'DASHBOARD.quick_actions' | translate }}
-          </div>
-          <div class="sidebar-card-body">
-            <a routerLink="/customer/operations" [queryParams]="{tab: 'deposit'}" class="quick-action">
-              <div class="qa-icon qa-green"><i class="bi bi-arrow-down-left"></i></div>
-              <div class="qa-info">
-                <span class="qa-title">{{ 'DASHBOARD.deposit' | translate }}</span>
-                <span class="qa-desc">{{ 'DASHBOARD.deposit_desc' | translate }}</span>
-              </div>
-            </a>
-            <a routerLink="/customer/operations" [queryParams]="{tab: 'withdraw'}" class="quick-action">
-              <div class="qa-icon qa-red"><i class="bi bi-arrow-up-right"></i></div>
-              <div class="qa-info">
-                <span class="qa-title">{{ 'DASHBOARD.withdraw' | translate }}</span>
-                <span class="qa-desc">{{ 'DASHBOARD.withdraw_desc' | translate }}</span>
-              </div>
-            </a>
-            <a routerLink="/customer/operations" [queryParams]="{tab: 'transfer'}" class="quick-action">
-              <div class="qa-icon qa-blue"><i class="bi bi-send"></i></div>
-              <div class="qa-info">
-                <span class="qa-title">{{ 'DASHBOARD.transfer' | translate }}</span>
-                <span class="qa-desc">{{ 'DASHBOARD.transfer_desc' | translate }}</span>
-              </div>
-            </a>
-            <a routerLink="/customer/accounts" class="quick-action">
-              <div class="qa-icon qa-purple"><i class="bi bi-plus-lg"></i></div>
-              <div class="qa-info">
-                <span class="qa-title">{{ 'DASHBOARD.new_account' | translate }}</span>
-                <span class="qa-desc">{{ 'DASHBOARD.new_account_desc' | translate }}</span>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- Tips panel -->
+      <div class="dash-right dash-row-2 dash-right-stack">
         <div class="sidebar-card">
           <div class="sidebar-card-header">
             <i class="bi bi-shield-check me-2"></i>{{ 'DASHBOARD.security' | translate }}
           </div>
-          <div class="sidebar-card-body">
+          <div class="sidebar-card-body sidebar-card-body--fill">
             <div class="tip-item">
               <div class="tip-icon"><i class="bi bi-key"></i></div>
               <div class="tip-text">
@@ -246,7 +246,6 @@
           </div>
         </div>
 
-        <!-- Account summary -->
         @if (accounts().length > 1) {
           <div class="sidebar-card">
             <div class="sidebar-card-header">

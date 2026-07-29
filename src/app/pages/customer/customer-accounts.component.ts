@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -20,6 +20,7 @@ export class CustomerAccountsComponent {
   showCloseForm = signal(false);
   showTransferForm = signal(false);
   showClosedAccounts = signal(false);
+  showCloseErrorModal = signal(false);
   currentCardIndex = signal(0);
 
   sourceAccountNumber = '';
@@ -46,7 +47,11 @@ export class CustomerAccountsComponent {
     private customerService: CustomerService,
     private toastService: ToastService,
     private translate: TranslateService,
+    private route: ActivatedRoute,
   ) {
+    if (this.route.snapshot.queryParamMap.get('action') === 'open') {
+      this.showOpenForm.set(true);
+    }
     this.loadAccounts();
   }
 
@@ -113,6 +118,11 @@ export class CustomerAccountsComponent {
       return;
     }
 
+    if (this.onlyActiveAccounts.length <= 1) {
+      this.showCloseErrorModal.set(true);
+      return;
+    }
+
     this.customerService.closureRequest({ accountNumber: this.closeAccountNumber }).subscribe({
       next: (res) => {
         this.toastService.success(res);
@@ -143,7 +153,7 @@ export class CustomerAccountsComponent {
       destinationAccountNumber: this.txDestination,
       beneficiaryId: null,
       amount: this.txAmount,
-      description: this.txDescription || 'Internal transfer',
+      description: this.txDescription || this.translate.instant('ACCOUNTS.internal_transfer'),
       isInstant: false,
       scheduledDate: null,
     }).subscribe({

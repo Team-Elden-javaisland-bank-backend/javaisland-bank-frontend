@@ -168,6 +168,9 @@
 .tx-amount-3 { color: #2563eb; }
 .tx-amount-4 { color: #059669; }
 .tx-amount-5 { color: #7c3aed; }
+.tx-amount-in { color: #059669; }
+.tx-amount-out { color: #dc2626; }
+.tx-amount-self { color: #1e293b; }
 
 .status-badge {
   display: inline-flex;

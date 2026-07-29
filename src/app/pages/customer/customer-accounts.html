@@ -383,4 +383,25 @@
       }
     </div>
   }
+
+  @if (showCloseErrorModal()) {
+    <div class="close-error-backdrop" (click)="showCloseErrorModal.set(false)"></div>
+    <div class="close-error-modal">
+      <div class="close-error-content">
+        <div class="close-error-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <h4 class="close-error-title">{{ 'ACCOUNTS.close_error_title' | translate }}</h4>
+        <p class="close-error-msg">{{ 'ACCOUNTS.close_error_msg' | translate }}</p>
+        <div class="close-error-actions">
+          <button class="close-error-btn" (click)="showCloseErrorModal.set(false)">{{ 'ACCOUNTS.close_error_got_it' | translate }}</button>
+          <a href="#" class="close-error-link">{{ 'ACCOUNTS.close_error_contact' | translate }}</a>
+        </div>
+      </div>
+    </div>
+  }
 </div>

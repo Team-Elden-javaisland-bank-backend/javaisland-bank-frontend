@@ -200,8 +200,13 @@
     "transfer_min": "Minimo €1,00",
     "transfer_description": "Descrizione",
     "transfer_description_placeholder": "es. Trasferimento interno",
+    "internal_transfer": "Trasferimento interno",
     "transfer_confirm": "Conferma Trasferimento",
     "optional": "facoltativo",
+    "close_error_title": "Impossibile chiudere il conto",
+    "close_error_msg": "Non puoi chiudere il tuo unico conto attivo. Il tuo profilo deve avere almeno un conto associato. Se desideri chiudere definitivamente il tuo profilo Elden Bank, contatta l'assistenza.",
+    "close_error_got_it": "Ho capito",
+    "close_error_contact": "Contatta assistenza",
     "toast": {
       "fill_fields": "Compila tutti i campi correttamente",
       "select_account": "Seleziona un conto",
@@ -1022,6 +1027,7 @@
     "TRANSFER": "Bonifico",
     "INSTANT_TRANSFER": "Bonifico Istantaneo",
     "INITIAL_TRANSFER": "Bonifico Iniziale",
+    "INTERNAL_TRANSFER": "Trasferimento Interno",
     "UNKNOWN": "Sconosciuto"
   },
   "TX_STATUS": {

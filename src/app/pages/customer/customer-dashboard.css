@@ -538,10 +538,9 @@
 .tx-icon-4 { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
 
 /* ── Amount colors ── */
-.amount-1 { color: #059669; }
-.amount-2 { color: #dc2626; }
-.amount-3 { color: var(--bi-gold-dark); }
-.amount-4 { color: #7c3aed; }
+.amount-positive { color: #059669; }
+.amount-negative { color: #dc2626; }
+.amount-self { color: #1e293b; }
 
 /* ── Transaction status badges ── */
 .tx-status-badge {
@@ -618,24 +617,51 @@
 }
 
 /* ═══ 2-COL DASHBOARD GRID ═══ */
-
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
+  grid-template-rows: auto auto;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 }
 
-.dashboard-main {
+.dash-left {
   min-width: 0;
 }
 
-/* ── Sidebar cards ── */
-.dashboard-sidebar {
+.dash-left.dash-row-1 {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.dash-right.dash-row-1 {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dash-left.dash-row-2 {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.dash-right.dash-row-2 {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.dash-right-stack {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
+
+.sidebar-card-body--fill {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Sidebar cards ── */
 
 .sidebar-card {
   background: #fff;
@@ -814,13 +840,11 @@
     grid-template-columns: 1fr;
   }
 
-  .dashboard-sidebar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-
-  .sidebar-card {
-    margin-bottom: 0 !important;
+  .dash-left.dash-row-1,
+  .dash-right.dash-row-1,
+  .dash-left.dash-row-2,
+  .dash-right.dash-row-2 {
+    grid-column: 1;
+    grid-row: auto;
   }
 }

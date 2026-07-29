@@ -200,8 +200,13 @@
     "transfer_min": "Minimum €1.00",
     "transfer_description": "Description",
     "transfer_description_placeholder": "e.g. Internal transfer",
+    "internal_transfer": "Internal transfer",
     "transfer_confirm": "Confirm Transfer",
     "optional": "optional",
+    "close_error_title": "Cannot close account",
+    "close_error_msg": "You cannot close your only active account. Your profile must have at least one associated account. If you wish to permanently close your Elden Bank profile, please contact support.",
+    "close_error_got_it": "Got it",
+    "close_error_contact": "Contact support",
     "toast": {
       "fill_fields": "Fill in all fields correctly",
       "select_account": "Select an account",
@@ -1022,6 +1027,7 @@
     "TRANSFER": "Transfer",
     "INSTANT_TRANSFER": "Instant Transfer",
     "INITIAL_TRANSFER": "Initial Transfer",
+    "INTERNAL_TRANSFER": "Internal Transfer",
     "UNKNOWN": "Unknown"
   },
   "TX_STATUS": {
