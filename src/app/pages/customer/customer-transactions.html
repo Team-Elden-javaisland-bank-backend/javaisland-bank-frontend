@@ -56,8 +56,12 @@
                   <span class="tx-desc">{{ tx.description || '—' }}</span>
                 </td>
                 <td>
-                  <span [class]="'tx-amount tx-amount-' + tx.typeId">
-                    {{ tx.typeId === 1 || tx.typeId === 4 ? '+' : '-' }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                  <span [class]="'tx-amount tx-amount-' + tx.typeId + ' tx-amount-' + getTxDirection(tx)">
+                    @if (getTxDirection(tx) === 'self') {
+                      {{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                    } @else {
+                      {{ getTxDirection(tx) === 'in' ? '+' : '-' }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                    }
                   </span>
                 </td>
                 <td>
@@ -98,8 +102,12 @@
           <div class="tx-card-body">
             <div class="tx-card-row">
               <span class="tx-card-label">{{ 'TRANSACTIONS.table_amount' | translate }}</span>
-              <span [class]="'tx-amount tx-amount-' + tx.typeId">
-                {{ tx.typeId === 1 || tx.typeId === 4 ? '+' : '-' }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+              <span [class]="'tx-amount tx-amount-' + tx.typeId + ' tx-amount-' + getTxDirection(tx)">
+                @if (getTxDirection(tx) === 'self') {
+                  {{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                } @else {
+                  {{ getTxDirection(tx) === 'in' ? '+' : '-' }}{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}
+                }
               </span>
             </div>
             @if (tx.description) {

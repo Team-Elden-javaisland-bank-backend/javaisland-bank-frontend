@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-transl
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-employee-accounts',
@@ -15,8 +16,6 @@ import { AccountLimitResponseDto } from '../../core/models/account/account-limit
 export class EmployeeAccountsComponent implements OnInit {
   accounts = signal<AccountResponseDto[]>([]);
   loading = signal(true);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
   statusFilter = signal<number | null>(null);
   searchQuery = signal('');
   selectedAccount = signal<string>('');
@@ -44,8 +43,6 @@ export class EmployeeAccountsComponent implements OnInit {
   limitType = '';
   limitAmount = 0;
 
-  private messageTimeout: ReturnType<typeof setTimeout> | null = null;
-
   private readonly LIMITS: Record<string, { min: number; max: number }> = {
     ATM_WITHDRAWAL: { min: 10, max: 300 },
     POS_SPENDING: { min: 0.10, max: 2500 },
@@ -55,17 +52,10 @@ export class EmployeeAccountsComponent implements OnInit {
     MONTHLY_TRANSFER: { min: 1, max: 50000 },
   };
 
-  constructor(private employeeService: EmployeeService, private translate: TranslateService) {}
+  constructor(private employeeService: EmployeeService, private translate: TranslateService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadAccounts();
-  }
-
-  private showMessage(text: string, type: 'success' | 'error'): void {
-    if (this.messageTimeout) clearTimeout(this.messageTimeout);
-    this.message.set(text);
-    this.messageType.set(type);
-    this.messageTimeout = setTimeout(() => this.message.set(''), 5000);
   }
 
   loadAccounts(): void {
@@ -86,44 +76,44 @@ export class EmployeeAccountsComponent implements OnInit {
 
   activate(accountNumber: string): void {
     this.employeeService.activateAccount(accountNumber).subscribe({
-      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   reject(accountNumber: string): void {
     if (!confirm('Rifiutare questo conto?')) return;
     this.employeeService.rejectAccount(accountNumber).subscribe({
-      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   freeze(accountNumber: string): void {
     this.employeeService.freezeAccount(accountNumber).subscribe({
-      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   unfreeze(accountNumber: string): void {
     this.employeeService.unfreezeAccount(accountNumber).subscribe({
-      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   validateClosure(accountNumber: string): void {
     this.employeeService.validateClosure(accountNumber).subscribe({
-      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   rejectClosure(accountNumber: string): void {
     this.employeeService.rejectClosure(accountNumber).subscribe({
-      next: (res) => { this.showMessage(res, 'success'); this.loadAccounts(); },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -139,18 +129,18 @@ export class EmployeeAccountsComponent implements OnInit {
 
   setLimit(): void {
     if (!this.limitType || this.limitAmount < 0.01) {
-      this.showMessage('Compila tipo e importo', 'error');
+      this.toastService.error(this.translate.instant('EMPLOYEE.accounts.toast.fill_fields'));
       return;
     }
 
     const limits = this.LIMITS[this.limitType];
     if (limits) {
       if (this.limitAmount < limits.min) {
-        this.showMessage(`L'importo minimo è €${limits.min}`, 'error');
+        this.toastService.error(this.translate.instant('EMPLOYEE.accounts.toast.min_amount', { min: limits.min }));
         return;
       }
       if (this.limitAmount > limits.max) {
-        this.showMessage(`L'importo massimo è €${limits.max.toLocaleString('it-IT')}`, 'error');
+        this.toastService.error(this.translate.instant('EMPLOYEE.accounts.toast.max_amount', { max: limits.max.toLocaleString('it-IT') }));
         return;
       }
     }
@@ -159,11 +149,11 @@ export class EmployeeAccountsComponent implements OnInit {
       maxAmount: this.limitAmount,
     }).subscribe({
       next: () => {
-        this.showMessage('Limite aggiornato!', 'success');
+        this.toastService.success(this.translate.instant('EMPLOYEE.accounts.toast.limit_updated'));
         this.limitAmount = 0;
         this.viewLimits(this.selectedAccount());
       },
-      error: (err) => { this.showMessage(err.message, 'error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 

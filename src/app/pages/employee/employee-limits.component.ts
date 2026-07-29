@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-transl
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 interface LimitMeta {
   type: string;
@@ -28,8 +29,6 @@ export class EmployeeLimitsComponent {
   limits = signal<AccountLimitResponseDto[]>([]);
   loading = signal(true);
   limitsLoading = signal(false);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
   filteredAccounts = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
@@ -67,7 +66,7 @@ export class EmployeeLimitsComponent {
     { type: 'POS_SPENDING', labelKey: 'LIMIT_TYPE.POS_SPENDING.label', descriptionKey: 'LIMIT_TYPE.POS_SPENDING.description', defaultValue: 2500, minValue: 0.10, maxValue: 2500 },
   ];
 
-  constructor(private employeeService: EmployeeService, private translate: TranslateService) {
+  constructor(private employeeService: EmployeeService, private translate: TranslateService, private toastService: ToastService) {
     this.employeeService.getAccounts().subscribe({
       next: (data) => {
         this.accounts.set(data.filter(a => a.statusId === 2));
@@ -79,7 +78,6 @@ export class EmployeeLimitsComponent {
 
   onAccountChange(accountNumber: string): void {
     this.selectedAccount.set(accountNumber);
-    this.message.set('');
     this.editingType.set('');
     if (!accountNumber) {
       this.limits.set([]);
@@ -137,15 +135,11 @@ export class EmployeeLimitsComponent {
       maxAmount: this.editAmount,
     }).subscribe({
       next: () => {
-        this.message.set(this.translate.instant('EMPLOYEE.limits.success_updated'));
-        this.messageType.set('success');
+        this.toastService.success(this.translate.instant('EMPLOYEE.limits.success_updated'));
         this.editingType.set('');
         this.onAccountChange(this.selectedAccount());
       },
-      error: (err) => {
-        this.message.set(err.message);
-        this.messageType.set('error');
-      },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 }

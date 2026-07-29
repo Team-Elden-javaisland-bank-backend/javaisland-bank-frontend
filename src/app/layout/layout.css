@@ -668,40 +668,7 @@
   }
 }
 
-/* ═══ DARK MODE ═══ */
-.dark-mode .notification-dropdown {
-  background: #1e293b;
-  border-color: #334155;
-}
 
-.dark-mode .notification-dropdown-header {
-  border-color: #334155;
-}
-
-.dark-mode .notification-item {
-  border-color: #1a2332;
-}
-
-.dark-mode .notification-item:hover {
-  background: #334155;
-}
-
-.dark-mode .notification-item.unread {
-  background: #1a2332;
-}
-
-.dark-mode .notification-message {
-  color: #e2e8f0;
-}
-
-.dark-mode .notification-dropdown-footer {
-  border-color: #334155;
-}
-
-.dark-mode .bottom-nav {
-  background: #1e293b;
-  border-color: #334155;
-}
 
 /* ── Language Switcher ────────────────────────── */
 .lang-switcher {
@@ -754,26 +721,4 @@
   background: var(--bi-gold, #e5a93c);
   color: var(--bi-navy, #0a192f);
   border-color: var(--bi-gold, #e5a93c);
-}
-
-/* ── Theme Toggle ──────────────────────────────── */
-.theme-toggle-btn {
-  background: none;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.6);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s;
-  font-size: 0.95rem;
-}
-
-.theme-toggle-btn:hover {
-  color: #fff;
-  border-color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.08);
 }

@@ -25,13 +25,6 @@
     }
   </div>
 
-  <!-- Message -->
-  @if (message()) {
-    <div class="alert" [class.alert-success]="messageType() === 'success'" [class.alert-danger]="messageType() === 'error'">
-      {{ message() }}
-    </div>
-  }
-
   <!-- Search Bar -->
   <div class="search-bar mb-3">
     <div class="search-input-wrapper">
@@ -289,7 +282,7 @@
                       <span [class]="'status-pill status-pill-sm ' + getCardStatusClass(card.cardStatus)">
                         {{ getCardStatusLabel(card.cardStatus) }}
                       </span>
-                      <span class="card-type-label">{{ card.cardType }}</span>
+                      <span class="card-type-label">{{ ('CARD_TYPE.' + card.cardType) | translate }}</span>
                     </div>
                     <div class="card-item-number mono">{{ card.maskedCardNumber }}</div>
                     <div class="card-item-details">

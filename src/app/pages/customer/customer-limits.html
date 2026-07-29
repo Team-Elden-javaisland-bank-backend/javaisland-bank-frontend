@@ -6,10 +6,6 @@
     </div>
   </div>
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
   @if (loading()) {
     <div class="d-flex justify-content-center py-5">
       <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
@@ -205,20 +201,6 @@
                 <span class="tip-title">{{ 'LIMITS.monitor' | translate }}</span>
                 <span class="tip-desc">{{ 'LIMITS.monitor_desc' | translate }}</span>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Need help -->
-        <div class="sidebar-card">
-          <div class="sidebar-card-header">
-            <i class="bi bi-headset me-2"></i>{{ 'LIMITS.need_help' | translate }}
-          </div>
-          <div class="sidebar-card-body">
-            <p class="help-text">{{ 'LIMITS.help_desc' | translate }}</p>
-            <div class="help-contact">
-              <div class="help-row"><i class="bi bi-telephone me-2"></i>+39 02 1234 5678</div>
-              <div class="help-row"><i class="bi bi-envelope me-2"></i>support&#64;javaislandbank.it</div>
             </div>
           </div>
         </div>

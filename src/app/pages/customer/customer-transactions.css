@@ -326,25 +326,4 @@
   .tx-cards-mobile { display: block; }
 }
 
-/* ═══ DARK MODE ═══ */
-.dark-mode .filter-card, .dark-mode .table-card, .dark-mode .empty-state-card { background: #1e293b; border-color: #334155; }
-.dark-mode .form-input-custom { background: #0f172a; border-color: #334155; color: #e2e8f0; }
-.dark-mode .form-label-sm { color: #94a3b8; }
-.dark-mode .page-title { color: #f1f5f9; }
 
-.dark-mode .styled-table thead th { background: #162032; border-bottom-color: #334155; color: #64748b; }
-.dark-mode .styled-table tbody td { border-bottom-color: #1e293b; }
-.dark-mode .tx-row:hover { background: rgba(229, 169, 60, 0.06); }
-.dark-mode .tx-type-label { color: #e2e8f0; }
-.dark-mode .tx-desc { color: #94a3b8; }
-.dark-mode .tx-date { color: #94a3b8; }
-.dark-mode .tx-time { color: #64748b; }
-
-.dark-mode .tx-card { background: #1e293b; border-color: #334155; }
-.dark-mode .tx-card-header { border-bottom-color: #334155; }
-.dark-mode .tx-card-row + .tx-card-row { border-top-color: #334155; }
-.dark-mode .tx-card-footer { background: #162032; }
-.dark-mode .tx-card-label { color: #64748b; }
-.dark-mode .tx-card-footer { color: #94a3b8; }
-
-.dark-mode .pagination-btn { background: #1e293b; border-color: #334155; color: #94a3b8; }

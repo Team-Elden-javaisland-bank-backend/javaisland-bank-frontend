@@ -1,13 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe } from '@ngx-translate/core';
+import { RouterLink } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-customer-accounts',
-  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './customer-accounts.html',
   styleUrl: './customer-accounts.css',
 })
@@ -16,16 +18,35 @@ export class CustomerAccountsComponent {
   loading = signal(true);
   showOpenForm = signal(false);
   showCloseForm = signal(false);
-  selectedAccount = signal<string>('');
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
+  showTransferForm = signal(false);
+  showClosedAccounts = signal(false);
   currentCardIndex = signal(0);
 
   sourceAccountNumber = '';
   initialAmount = 0;
   closeAccountNumber = '';
+  txSource = '';
+  txDestination = '';
+  txAmount: number | null = null;
+  txDescription = '';
 
-  constructor(private customerService: CustomerService) {
+  get activeAccounts() {
+    return this.accounts().filter(a => a.statusId !== 4);
+  }
+
+  get closedAccounts() {
+    return this.accounts().filter(a => a.statusId === 4);
+  }
+
+  get onlyActiveAccounts() {
+    return this.accounts().filter(a => a.statusId === 2);
+  }
+
+  constructor(
+    private customerService: CustomerService,
+    private toastService: ToastService,
+    private translate: TranslateService,
+  ) {
     this.loadAccounts();
   }
 
@@ -50,18 +71,24 @@ export class CustomerAccountsComponent {
 
   nextCard(): void {
     const idx = this.currentCardIndex();
-    if (idx < this.accounts().length - 1) this.currentCardIndex.set(idx + 1);
+    if (idx < this.activeAccounts.length - 1) this.currentCardIndex.set(idx + 1);
   }
 
   goToCard(index: number): void {
     this.currentCardIndex.set(index);
   }
 
+  toggleTransferForm(): void {
+    this.showTransferForm.set(!this.showTransferForm());
+    if (this.showTransferForm()) {
+      this.showOpenForm.set(false);
+      this.showCloseForm.set(false);
+    }
+  }
+
   openAccount(): void {
-    this.message.set('');
     if (!this.sourceAccountNumber || this.initialAmount < 0.01) {
-      this.message.set('Compila tutti i campi correttamente');
-      this.messageType.set('error');
+      this.toastService.error(this.translate.instant('ACCOUNTS.toast.fill_fields'));
       return;
     }
 
@@ -70,40 +97,66 @@ export class CustomerAccountsComponent {
       initialAmount: this.initialAmount,
     }).subscribe({
       next: () => {
-        this.message.set('Conto aperto con successo!');
-        this.messageType.set('success');
+        this.toastService.success(this.translate.instant('ACCOUNTS.toast.account_open_requested'));
         this.showOpenForm.set(false);
         this.sourceAccountNumber = '';
         this.initialAmount = 0;
         this.loadAccounts();
       },
-      error: (err) => {
-        this.message.set(err.message);
-        this.messageType.set('error');
-      },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ACCOUNTS.toast.generic_error')),
     });
   }
 
   requestClosure(): void {
-    this.message.set('');
     if (!this.closeAccountNumber) {
-      this.message.set('Seleziona un conto');
-      this.messageType.set('error');
+      this.toastService.error(this.translate.instant('ACCOUNTS.toast.select_account'));
       return;
     }
 
     this.customerService.closureRequest({ accountNumber: this.closeAccountNumber }).subscribe({
       next: (res) => {
-        this.message.set(res);
-        this.messageType.set('success');
+        this.toastService.success(res);
         this.showCloseForm.set(false);
         this.closeAccountNumber = '';
         this.loadAccounts();
       },
-      error: (err) => {
-        this.message.set(err.message);
-        this.messageType.set('error');
+      error: (err) => this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ACCOUNTS.toast.generic_error')),
+    });
+  }
+
+  transfer(): void {
+    if (!this.txSource || !this.txDestination) {
+      this.toastService.error(this.translate.instant('ACCOUNTS.toast.transfer_select_accounts'));
+      return;
+    }
+    if (this.txSource === this.txDestination) {
+      this.toastService.error(this.translate.instant('ACCOUNTS.toast.transfer_same_account'));
+      return;
+    }
+    if (!this.txAmount || this.txAmount < 1) {
+      this.toastService.error(this.translate.instant('ACCOUNTS.toast.transfer_min_amount'));
+      return;
+    }
+
+    this.customerService.transfer({
+      sourceAccountNumber: this.txSource,
+      destinationAccountNumber: this.txDestination,
+      beneficiaryId: null,
+      amount: this.txAmount,
+      description: this.txDescription || 'Internal transfer',
+      isInstant: false,
+      scheduledDate: null,
+    }).subscribe({
+      next: () => {
+        this.toastService.success(this.translate.instant('ACCOUNTS.toast.transfer_success'));
+        this.showTransferForm.set(false);
+        this.txSource = '';
+        this.txDestination = '';
+        this.txAmount = null;
+        this.txDescription = '';
+        this.loadAccounts();
       },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ACCOUNTS.toast.generic_error')),
     });
   }
 

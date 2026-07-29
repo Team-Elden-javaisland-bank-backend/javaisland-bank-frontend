@@ -3,6 +3,7 @@ import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { CardResponseDto } from '../../core/models/card/card-response.dto';
 import { CardSensitiveDto } from '../../core/models/card/card-sensitive.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-customer-cards',
@@ -15,11 +16,21 @@ export class CustomerCardsComponent {
   loading = signal(true);
   revealedCard = signal<CardSensitiveDto | null>(null);
   revealedId = signal<number | null>(null);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
+  showClosedCards = signal(false);
 
-  constructor(private customerService: CustomerService) {
+  constructor(
+    private customerService: CustomerService,
+    private toastService: ToastService,
+  ) {
     this.loadCards();
+  }
+
+  get activeCards(): CardResponseDto[] {
+    return this.cards().filter(c => c.status !== 'CLOSED');
+  }
+
+  get closedCards(): CardResponseDto[] {
+    return this.cards().filter(c => c.status === 'CLOSED');
   }
 
   loadCards(): void {
@@ -44,10 +55,7 @@ export class CustomerCardsComponent {
         this.revealedCard.set(data);
         this.revealedId.set(cardId);
       },
-      error: (err) => {
-        this.message.set(err.message);
-        this.messageType.set('error');
-      },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -57,7 +65,6 @@ export class CustomerCardsComponent {
 
   getCardGradient(type: string): string {
     if (type === 'DEBIT') return 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
-    if (type === 'CREDIT') return 'linear-gradient(135deg, #b45309 0%, #d97706 100%)';
     return '#1e293b';
   }
 
@@ -67,5 +74,9 @@ export class CustomerCardsComponent {
 
   getBlockedCardsCount(): number {
     return this.cards().filter(c => c.status === 'BLOCKED').length;
+  }
+
+  getClosedCardsCount(): number {
+    return this.cards().filter(c => c.status === 'CLOSED').length;
   }
 }

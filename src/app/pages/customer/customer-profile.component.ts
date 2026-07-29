@@ -162,18 +162,14 @@ export class CustomerProfileComponent implements OnInit {
 
   getCardGradient(type: string): string {
     switch (type?.toLowerCase()) {
-      case 'credit': return 'card-gradient-credit';
       case 'debit': return 'card-gradient-debit';
-      case 'prepaid': return 'card-gradient-prepaid';
       default: return 'card-gradient-default';
     }
   }
 
   getCardTypeLabel(type: string): string {
     const map: Record<string, string> = {
-      'credit': 'PROFILE.card_type_credit',
       'debit': 'PROFILE.card_type_debit',
-      'prepaid': 'PROFILE.card_type_prepaid',
     };
     return type ? this.translate.instant(map[type.toLowerCase()] ?? type) : type;
   }
@@ -220,6 +216,13 @@ export class CustomerProfileComponent implements OnInit {
 
   onPinCancelled(): void {
     this.showPinModal.set(false);
+  }
+
+  private translateTxStatus(statusName: string | null): string {
+    if (!statusName) return '-';
+    const key = `TX_STATUS.${statusName}`;
+    const translated = this.translate.instant(key);
+    return translated === key ? statusName : translated;
   }
 
   openPdfModal(): void {
@@ -284,7 +287,7 @@ export class CustomerProfileComponent implements OnInit {
       this.formatDate(tx.createdAt),
       tx.description || '-',
       tx.typeName === 'DEPOSIT' ? '+' + this.formatCurrency(tx.amount) : '-' + this.formatCurrency(tx.amount),
-      tx.statusName
+      this.translateTxStatus(tx.statusName)
     ]);
 
     autoTable(doc, {

@@ -8,6 +8,7 @@ import { AccountLimitResponseDto } from '../models/account/account-limit-respons
 import { SetLimitRequestDto } from '../models/account/set-limit-request.dto';
 import { OpenAccountRequestDto } from '../models/account/open-account-request.dto';
 import { CloseAccountRequestDto } from '../models/account/close-account-request.dto';
+import { DashboardSummaryDto } from '../models/account/dashboard-summary.dto';
 import { TransactionResponseDto } from '../models/transaction/transaction-response.dto';
 import { TransactionRequestDto } from '../models/transaction/transaction-request.dto';
 import { TransferRequestDto } from '../models/transaction/transfer-request.dto';
@@ -32,6 +33,12 @@ export class CustomerService {
   getAccounts(): Observable<AccountResponseDto[]> {
     return this.http
       .get<AccountResponseDto[]>(`${this.API_BASE}/accounts`)
+      .pipe(catchError(this.handleError));
+  }
+
+  getDashboardSummary(): Observable<DashboardSummaryDto> {
+    return this.http
+      .get<DashboardSummaryDto>(`${this.API_BASE}/accounts/dashboard-summary`)
       .pipe(catchError(this.handleError));
   }
 

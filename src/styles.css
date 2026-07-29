@@ -151,7 +151,6 @@ h1, h2, h3, h4, h5, h6 {
 .badge-pending  { background: #fef3c7; color: #92400e; }
 .badge-approved { background: #d1fae5; color: #065f46; }
 .badge-rejected { background: #fee2e2; color: #991b1b; }
-.badge-credit   { background: #ede9fe; color: #5b21b6; }
 .badge-debit    { background: #fef3c7; color: #92400e; }
 
 /* ── Table hover with accent ─────────────────── */
@@ -192,93 +191,7 @@ h1, h2, h3, h4, h5, h6 {
   .bottom-nav { padding-bottom: max(0px, env(safe-area-inset-bottom)); }
 }
 
-/* ═══ DARK MODE ═══ */
-.dark-mode {
-  --bi-bg: #0f172a;
-  --bi-text: #e2e8f0;
-  --bi-surface: #1e293b;
-  --bi-border: #334155;
-}
 
-.dark-mode body { background: var(--bi-bg); color: var(--bi-text); }
-
-.dark-mode .card,
-.dark-mode .form-card,
-.dark-mode .table-card,
-.dark-mode .empty-state-card,
-.dark-mode .limit-card,
-.dark-mode .reg-card,
-.dark-mode .beneficiary-card {
-  background: #1e293b;
-  border-color: #334155;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.dark-mode .styled-table tbody tr:hover { background: rgba(229, 169, 60, 0.06); }
-.dark-mode .styled-table thead th { background: #1a2332; border-color: #334155; color: #64748b; }
-.dark-mode .styled-table tbody td { border-color: #1a2332; }
-.dark-mode .styled-table tbody td,
-.dark-mode .styled-table tbody td span { color: #e2e8f0; }
-.dark-mode .styled-table tbody td .text-muted { color: #64748b !important; }
-
-.dark-mode .filter-bar,
-.dark-mode .tabs-bar { background: #1e293b; border-color: #334155; }
-.dark-mode .filter-pill { color: #94a3b8; }
-.dark-mode .filter-pill:hover { background: #334155; color: #e2e8f0; }
-.dark-mode .tab-item { color: #94a3b8; }
-.dark-mode .tab-item:hover { background: #334155; color: #e2e8f0; }
-
-.dark-mode .form-input-custom,
-.dark-mode .form-select-custom,
-.dark-mode .limit-input,
-.dark-mode .styled-select,
-.dark-mode .page-title { color: #e2e8f0; }
-.dark-mode .form-label-sm { color: #94a3b8; }
-.dark-mode .form-card-body,
-.dark-mode .limit-card-body { border-color: #334155; }
-.dark-mode .form-card-header { border-color: #334155; }
-
-.dark-mode .limit-value-display,
-.dark-mode .limit-progress-section { background: #0f172a; }
-
-.dark-mode .account-selector-card { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
-
-.dark-mode .section-badge { background: #334155; color: #94a3b8; }
-.dark-mode .section-title { color: #e2e8f0; }
-
-.dark-mode .page-title { color: #f1f5f9; }
-.dark-mode .page-subtitle { color: #64748b; }
-
-.dark-mode .empty-state-card { background: #1e293b; border-color: #334155; }
-.dark-mode .empty-state-title { color: #f1f5f9; }
-
-.dark-mode .tx-amount,
-.dark-mode .beneficiary-name,
-.dark-mode .limit-type-name,
-.dark-mode .holder-name { color: #e2e8f0; }
-
-.dark-mode .detail-label { color: #64748b; }
-.dark-mode .detail-value { color: #e2e8f0; }
-
-.dark-mode .toast-item { background: #1e293b; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
-.dark-mode .toast-message { color: #e2e8f0; }
-
-.dark-mode .account-balance-value { color: #f1f5f9; }
-.dark-mode .account-balance-label { color: #64748b; }
-
-.dark-mode .pagination-btn {
-  background: #1e293b;
-  border-color: #334155;
-  color: #94a3b8;
-}
-.dark-mode .pagination-btn:hover:not(:disabled) { background: #334155; }
-.dark-mode .pagination-info { color: #64748b; }
-
-.dark-mode .limit-range-label { color: #64748b; }
-.dark-mode .limit-updated { color: #64748b; }
-.dark-mode .limit-not-set { color: #64748b; }
-
-.dark-mode .hero-date { color: rgba(255,255,255,0.4); }
 
 /* ═══ FOCUS VISIBLE (accessibility) ═══ */
 :focus-visible {

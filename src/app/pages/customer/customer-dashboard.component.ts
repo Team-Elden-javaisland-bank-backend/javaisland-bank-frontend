@@ -6,6 +6,7 @@ import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
+import { DashboardSummaryDto } from '../../core/models/account/dashboard-summary.dto';
 
 @Component({
   selector: 'app-customer-dashboard',
@@ -16,6 +17,7 @@ import { TransactionResponseDto } from '../../core/models/transaction/transactio
 export class CustomerDashboardComponent implements OnInit {
   accounts = signal<AccountResponseDto[]>([]);
   recentTransactions = signal<TransactionResponseDto[]>([]);
+  dashboardSummary = signal<DashboardSummaryDto | null>(null);
   loading = signal(true);
   selectedAccount = signal<string>('');
   transactionsLoading = signal(false);
@@ -49,18 +51,30 @@ export class CustomerDashboardComponent implements OnInit {
   loadAccounts(): void {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
-        const sorted = [...data].sort((a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
+        const sorted = [...data]
+          .filter(a => a.statusId !== 4)
+          .sort((a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         this.accounts.set(sorted);
         this.currentCardIndex.set(0);
         if (sorted.length > 0) {
           this.selectAccount(sorted[0].accountNumber);
+          this.loadDashboardSummary();
         } else {
           this.loading.set(false);
         }
       },
       error: () => this.loading.set(false),
+    });
+  }
+
+  loadDashboardSummary(): void {
+    this.customerService.getDashboardSummary().subscribe({
+      next: (data) => {
+        this.dashboardSummary.set(data);
+      },
+      error: () => {}
     });
   }
 
@@ -95,7 +109,9 @@ export class CustomerDashboardComponent implements OnInit {
   }
 
   get totalBalance(): number {
-    return this.accounts().reduce((sum, acc) => sum + acc.balance, 0);
+    return this.accounts()
+      .filter(a => a.statusId !== 4)
+      .reduce((sum, acc) => sum + acc.balance, 0);
   }
 
   get activeAccounts(): number {

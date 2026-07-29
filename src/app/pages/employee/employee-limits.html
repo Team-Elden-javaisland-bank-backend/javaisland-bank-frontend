@@ -6,10 +6,6 @@
     </div>
   </div>
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
   <!-- Account selection: show grid when no account selected -->
   @if (!selectedAccount()) {
     <div class="account-select-section mb-4">
@@ -84,7 +80,7 @@
           <span class="selected-bar-label">{{ 'EMPLOYEE.limits.balance' | translate }}</span>
           <span class="selected-bar-amount">{{ acc.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
         </div>
-        <button class="selected-bar-change" (click)="selectedAccount.set(''); limits.set([]); message.set('')">
+        <button class="selected-bar-change" (click)="selectedAccount.set(''); limits.set([])">
           <i class="bi bi-arrow-left"></i> {{ 'EMPLOYEE.limits.change_account' | translate }}
         </button>
       </div>

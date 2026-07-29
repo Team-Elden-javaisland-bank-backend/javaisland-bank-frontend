@@ -61,65 +61,235 @@
   margin-top: 0.75rem;
 }
 
-/* ── Stat cards ── */
-.stat-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s, box-shadow 0.2s;
+/* ── Balance hero card ── */
+.balance-hero {
+  background: linear-gradient(135deg, var(--bi-navy) 0%, #0f1d36 50%, #162a4a 100%);
+  border-radius: 20px;
+  padding: 2.5rem 2.5rem 2rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  animation: balanceHeroIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+@keyframes balanceHeroIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.stat-icon-box {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+.balance-hero::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  right: -8%;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: rgba(229, 169, 60, 0.07);
+  pointer-events: none;
+}
+
+.balance-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40%;
+  left: 10%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(229, 169, 60, 0.04);
+  pointer-events: none;
+}
+
+.balance-hero-inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.balance-hero-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.balance-hero-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.375rem;
+}
+
+.balance-hero-value {
+  display: block;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  color: #fff;
+  animation: balanceValueIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.15s both;
+}
+
+@keyframes balanceValueIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.balance-hero .balance-variation {
+  margin-top: 0.625rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.balance-hero .balance-variation.positive {
+  color: #34d399;
+}
+
+.balance-hero .balance-variation.negative {
+  color: #f87171;
+}
+
+.balance-hero .balance-variation.neutral {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.balance-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
   flex-shrink: 0;
 }
 
-.stat-balance .stat-icon-box {
-  background: rgba(16, 185, 129, 0.1);
+.balance-hero-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.balance-hero-stat {
+  text-align: center;
+}
+
+.bhs-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.bhs-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.125rem;
+}
+
+/* ── Balance variation (outside hero, unused but kept) ── */
+.balance-variation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.balance-variation.positive {
   color: #059669;
 }
 
-.stat-accounts .stat-icon-box {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+.balance-variation.negative {
+  color: #dc2626;
 }
 
-.stat-transactions .stat-icon-box {
-  background: rgba(229, 169, 60, 0.1);
-  color: var(--bi-gold-dark);
+.balance-variation.neutral {
+  color: #64748b;
 }
 
-.stat-label {
-  display: block;
+.balance-variation i {
+  font-size: 0.875rem;
+}
+
+.variation-amount {
+  font-weight: 700;
+}
+
+.variation-pct {
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* ── Monthly expenses in hero ── */
+.monthly-expenses {
+  margin-top: 0.875rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.me-label {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #94a3b8;
-  margin-bottom: 0.125rem;
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.stat-value {
-  display: block;
-  font-size: 1.375rem;
+.me-value {
+  font-size: 1.125rem;
   font-weight: 700;
-  color: var(--bi-navy);
+  color: #f87171;
+}
+
+.me-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 1rem;
+}
+
+.me-change.me-positive {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.me-change.me-negative {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.me-change i {
+  font-size: 0.6875rem;
+}
+
+.me-vs {
+  font-weight: 400;
+  opacity: 0.7;
+  margin-left: 2px;
 }
 
 /* ── Section header ── */
@@ -150,10 +320,10 @@
 
 /* ── Account cards v2 ── */
 .account-card-v2 {
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s;
 }
 
 .account-card-v2:hover {
@@ -196,7 +366,7 @@
 .account-card-header .status-4 { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
 
 .account-card-body {
-  padding: 1rem 1.25rem;
+  padding: 1.25rem;
 }
 
 .account-balance-label {
@@ -206,13 +376,15 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #94a3b8;
-  margin-bottom: 0.125rem;
+  margin-bottom: 0.25rem;
 }
 
 .account-balance-value {
-  font-size: 1.5rem;
+  display: block;
+  font-size: 1.625rem;
   font-weight: 700;
   color: var(--bi-navy);
+  letter-spacing: -0.5px;
 }
 
 /* ═══ DASHBOARD ACCOUNT CAROUSEL ═══ */
@@ -224,13 +396,13 @@
 .dash-carousel-viewport {
   width: 100%;
   overflow: hidden;
-  padding: 10px 0 16px;
+  padding: 12px 0 20px;
 }
 
 .dash-carousel-track {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 170px;
   perspective: 800px;
 }
 
@@ -462,12 +634,12 @@
 .dashboard-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.75rem;
 }
 
 .sidebar-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.04);
   overflow: hidden;
@@ -616,12 +788,24 @@
     font-size: 1.25rem;
   }
 
-  .stat-card {
-    padding: 1rem;
+  .balance-hero {
+    padding: 1.75rem 1.5rem 1.5rem;
   }
 
-  .stat-value {
-    font-size: 1.125rem;
+  .balance-hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .balance-hero-value {
+    font-size: 2.25rem;
+  }
+
+  .balance-hero-stats {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 1.25rem;
   }
 }
 

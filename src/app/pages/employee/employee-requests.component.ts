@@ -4,6 +4,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 interface EmployeeRequestDto {
   id: number;
@@ -34,8 +35,6 @@ type StatusTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 export class EmployeeRequestsComponent implements OnInit {
   allRequests = signal<EmployeeRequestDto[]>([]);
   loading = signal(true);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
   activeType = signal<RequestType>('ALL');
   activeStatus = signal<StatusTab>('PENDING');
@@ -108,7 +107,7 @@ export class EmployeeRequestsComponent implements OnInit {
     };
   });
 
-  constructor(private employeeService: EmployeeService, private translate: TranslateService) {}
+  constructor(private employeeService: EmployeeService, private translate: TranslateService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadRequests();
@@ -165,26 +164,26 @@ export class EmployeeRequestsComponent implements OnInit {
     switch (req.type) {
       case 'PASSWORD_CHANGE':
         this.employeeService.approvePasswordRequest(req.id).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_OPENING':
         this.employeeService.activateAccount(req.accountNumber).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_CLOSURE':
         this.employeeService.validateClosure(req.accountNumber).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'LIMIT_CHANGE':
         this.employeeService.approveLimitRequest(req.id).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
     }
@@ -196,26 +195,26 @@ export class EmployeeRequestsComponent implements OnInit {
     switch (req.type) {
       case 'PASSWORD_CHANGE':
         this.employeeService.rejectPasswordRequest(req.id).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_OPENING':
         this.employeeService.rejectAccount(req.accountNumber).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_CLOSURE':
         this.employeeService.rejectClosure(req.accountNumber).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'LIMIT_CHANGE':
         this.employeeService.rejectLimitRequest(req.id).subscribe({
-          next: (res) => { this.toast(res, 'success'); this.loadRequests(); },
-          error: (err) => this.toast(err.message, 'error'),
+          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
     }
@@ -253,11 +252,10 @@ export class EmployeeRequestsComponent implements OnInit {
       const amount = req.requestedAmount != null ? req.requestedAmount.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0';
       return label + ' — €' + amount;
     }
+    if (req.type === 'ACCOUNT_OPENING' && req.requestedAmount != null) {
+      const amount = req.requestedAmount.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+      return req.description + ' — Importo: €' + amount;
+    }
     return req.description;
-  }
-
-  private toast(msg: string, type: 'success' | 'error'): void {
-    this.message.set(msg);
-    this.messageType.set(type);
   }
 }

@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { PendingRegistrationDto } from '../../core/models/user/pending-registration.dto';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-employee-registrations',
@@ -19,8 +20,6 @@ export class EmployeeRegistrationsComponent implements OnInit {
   refusedRegistrations = signal<PendingRegistrationDto[]>([]);
 
   loading = signal(true);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
   searchQuery = signal('');
 
   showModal = signal(false);
@@ -39,7 +38,7 @@ export class EmployeeRegistrationsComponent implements OnInit {
     );
   });
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(private employeeService: EmployeeService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadRegistrations();
@@ -71,11 +70,10 @@ export class EmployeeRegistrationsComponent implements OnInit {
   validate(userId: number): void {
     this.employeeService.validateRegistration(userId).subscribe({
       next: (res) => {
-        this.message.set(res);
-        this.messageType.set('success');
+        this.toastService.success(res);
         this.loadRegistrations();
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -84,12 +82,11 @@ export class EmployeeRegistrationsComponent implements OnInit {
 
     this.employeeService.rejectRegistration(userId).subscribe({
       next: (res) => {
-        this.message.set(res);
-        this.messageType.set('success');
+        this.toastService.success(res);
         this.loadRegistrations();
         this.loadRefusedRegistrations();
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -98,12 +95,11 @@ export class EmployeeRegistrationsComponent implements OnInit {
 
     this.employeeService.reopenRegistration(userId).subscribe({
       next: (res) => {
-        this.message.set(res);
-        this.messageType.set('success');
+        this.toastService.success(res);
         this.loadRegistrations();
         this.loadRefusedRegistrations();
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -112,11 +108,10 @@ export class EmployeeRegistrationsComponent implements OnInit {
 
     this.employeeService.deleteUser(userId).subscribe({
       next: (res) => {
-        this.message.set(res);
-        this.messageType.set('success');
+        this.toastService.success(res);
         this.loadRefusedRegistrations();
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 

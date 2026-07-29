@@ -2,6 +2,7 @@ import { Component, signal, ViewChildren, QueryList, ElementRef } from '@angular
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-pin-verify',
@@ -13,13 +14,12 @@ import { AuthService } from '../../core/services/auth.service';
 export class PinVerifyComponent {
   digits = signal<string[]>(['', '', '', '']);
   loading = signal(false);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
   @ViewChildren('pinInput') pinInputs!: QueryList<ElementRef>;
 
   constructor(
     private authService: AuthService,
     private router: Router,
+    private toastService: ToastService,
   ) {}
 
   onInput(index: number, event: Event): void {
@@ -31,7 +31,6 @@ export class PinVerifyComponent {
     this.digits.set(updated);
 
     input.value = value;
-    this.message.set('');
 
     if (value && index < 3) {
       const inputs = this.pinInputs.toArray();
@@ -61,8 +60,7 @@ export class PinVerifyComponent {
         this.router.navigate(['/customer/dashboard']);
       },
       error: (err) => {
-        this.message.set(err.message);
-        this.messageType.set('error');
+        this.toastService.error(err?.error?.message || err?.message);
         this.loading.set(false);
         this.resetInputs();
       },

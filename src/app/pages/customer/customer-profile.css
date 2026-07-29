@@ -19,16 +19,43 @@
 
 .loading-text {
   margin-top: 1rem;
-  color: #8892b0;
+  color: #64748b;
 }
 
 /* Profile Header */
 .profile-header-card {
-  background: linear-gradient(135deg, #0a192f 0%, #112240 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%);
   border-radius: 16px;
   padding: 2rem;
-  color: #fff;
-  box-shadow: 0 8px 32px rgba(10, 25, 47, 0.3);
+  color: #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -5%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(229, 169, 60, 0.08);
+  pointer-events: none;
+}
+
+.profile-header-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: 15%;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.06);
+  pointer-events: none;
 }
 
 .avatar-circle {
@@ -39,45 +66,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(229, 169, 60, 0.3);
+  box-shadow: 0 4px 16px rgba(229, 169, 60, 0.25);
   overflow: hidden;
 }
 
 .avatar-initials {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #0a192f;
+  color: #fff;
 }
 
 .profile-name {
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
-  color: #fff;
+  color: #1e293b;
 }
 
 .profile-email {
-  color: #8892b0;
+  color: #64748b;
   margin-bottom: 0.5rem;
 }
 
 /* Info Cards */
 .info-card {
-  background: #112240;
-  border: 1px solid #1d3557;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 12px;
-  color: #ccd6f6;
+  color: #1e293b;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .info-card .card-header {
-  background: rgba(229, 169, 60, 0.08);
-  border-bottom: 1px solid #1d3557;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   padding: 1rem 1.25rem;
 }
 
 .info-card .card-title {
-  color: #e5a93c;
+  color: #0369a1;
   font-size: 1rem;
   font-weight: 600;
 }
@@ -91,7 +125,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(29, 53, 87, 0.5);
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .info-row:last-child {
@@ -99,12 +133,12 @@
 }
 
 .info-label {
-  color: #8892b0;
+  color: #64748b;
   font-size: 0.875rem;
 }
 
 .info-value {
-  color: #ccd6f6;
+  color: #1e293b;
   font-weight: 500;
   text-align: right;
 }
@@ -117,34 +151,34 @@
 }
 
 .badge-active {
-  background: rgba(40, 167, 69, 0.15);
-  color: #28a745;
-  border: 1px solid rgba(40, 167, 69, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-inactive {
-  background: rgba(108, 117, 125, 0.15);
-  color: #6c757d;
-  border: 1px solid rgba(108, 117, 125, 0.3);
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.2);
 }
 
 .badge-blocked {
-  background: rgba(220, 53, 69, 0.15);
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .badge-pending {
-  background: rgba(229, 169, 60, 0.15);
-  color: #e5a93c;
-  border: 1px solid rgba(229, 169, 60, 0.3);
+  background: rgba(229, 169, 60, 0.1);
+  color: #b45309;
+  border: 1px solid rgba(229, 169, 60, 0.2);
 }
 
 /* Buttons */
 .btn-gold {
   background: linear-gradient(135deg, #e5a93c 0%, #d4942f 100%);
   border: none;
-  color: #0a192f;
+  color: #fff;
   font-weight: 600;
   padding: 0.5rem 1.25rem;
   border-radius: 8px;
@@ -153,7 +187,7 @@
 
 .btn-gold:hover {
   background: linear-gradient(135deg, #d4942f 0%, #c08428 100%);
-  color: #0a192f;
+  color: #fff;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(229, 169, 60, 0.3);
 }
@@ -165,8 +199,8 @@
 }
 
 .btn-outline-gold {
-  border: 1px solid #e5a93c;
-  color: #e5a93c;
+  border: 1px solid #d4942f;
+  color: #b45309;
   background: transparent;
   font-weight: 600;
   padding: 0.5rem 1.25rem;
@@ -175,22 +209,22 @@
 }
 
 .btn-outline-gold:hover {
-  background: rgba(229, 169, 60, 0.1);
-  color: #e5a93c;
-  border-color: #e5a93c;
+  background: rgba(229, 169, 60, 0.08);
+  color: #b45309;
+  border-color: #b45309;
 }
 
 /* Account Cards */
 .account-card {
-  background: #0d1b30;
-  border: 1px solid #1d3557;
+  background: #f8fafc;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 12px;
   padding: 1.25rem;
   transition: all 0.2s ease;
 }
 
 .account-card:hover {
-  border-color: #e5a93c;
+  border-color: var(--bi-gold);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(229, 169, 60, 0.1);
 }
@@ -203,7 +237,7 @@
 }
 
 .account-type {
-  color: #e5a93c;
+  color: var(--bi-navy);
   font-weight: 600;
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -215,7 +249,7 @@
 }
 
 .account-iban {
-  color: #8892b0;
+  color: #64748b;
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
   letter-spacing: 1px;
@@ -224,12 +258,12 @@
 .account-balance {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ccd6f6;
+  color: #1e293b;
   margin-bottom: 0.5rem;
 }
 
 .account-date {
-  color: #6c757d;
+  color: #94a3b8;
   font-size: 0.8rem;
 }
 
@@ -244,7 +278,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease;
 }
 
@@ -252,26 +286,18 @@
   transform: translateY(-4px);
 }
 
-.card-gradient-credit {
-  background: linear-gradient(135deg, #0a192f 0%, #1d3557 50%, #e5a93c 150%);
-}
-
 .card-gradient-debit {
-  background: linear-gradient(135deg, #112240 0%, #1d3557 50%, #28a745 150%);
-}
-
-.card-gradient-prepaid {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 150%);
+  background: linear-gradient(135deg, #065f46 0%, #10b981 50%, #6ee7b7 150%);
 }
 
 .card-gradient-default {
-  background: linear-gradient(135deg, #0a192f 0%, #112240 100%);
+  background: linear-gradient(135deg, #334155 0%, #64748b 50%, #94a3b8 150%);
 }
 
 .bank-card-chip {
   width: 40px;
   height: 30px;
-  background: linear-gradient(135deg, #c9b037 0%, #e5a93c 100%);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   border-radius: 6px;
   margin-bottom: 1rem;
 }
@@ -310,34 +336,34 @@
 
 /* Modal */
 .modal-dark .modal-content {
-  background: #112240;
-  border: 1px solid #1d3557;
-  color: #ccd6f6;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1e293b;
 }
 
 .modal-dark .modal-header {
-  border-bottom: 1px solid #1d3557;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-dark .modal-footer {
-  border-top: 1px solid #1d3557;
+  border-top: 1px solid #e2e8f0;
 }
 
 .form-control-dark {
-  background: #0d1b30;
-  border: 1px solid #1d3557;
-  color: #ccd6f6;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
 }
 
 .form-control-dark:focus {
-  background: #0d1b30;
-  border-color: #e5a93c;
-  color: #ccd6f6;
+  background: #fff;
+  border-color: #d4942f;
+  color: #1e293b;
   box-shadow: 0 0 0 0.2rem rgba(229, 169, 60, 0.15);
 }
 
 .form-control-dark::placeholder {
-  color: #6c757d;
+  color: #94a3b8;
 }
 
 /* Password Strength Meter */
@@ -350,7 +376,7 @@
 .strength-bar {
   flex: 1;
   height: 6px;
-  background: #1d3557;
+  background: #e2e8f0;
   border-radius: 3px;
   overflow: hidden;
 }
@@ -362,50 +388,50 @@
 }
 
 .strength-weak {
-  background: #dc3545;
+  background: #dc2626;
 }
 
 .strength-medium {
-  background: #ffc107;
+  background: #f59e0b;
 }
 
 .strength-strong {
-  background: #28a745;
+  background: #10b981;
 }
 
 .text-strength-weak {
-  color: #dc3545;
+  color: #dc2626;
   font-weight: 600;
 }
 
 .text-strength-medium {
-  color: #ffc107;
+  color: #f59e0b;
   font-weight: 600;
 }
 
 .text-strength-strong {
-  color: #28a745;
+  color: #10b981;
   font-weight: 600;
 }
 
 /* List Group in Modal */
 .list-group-item {
-  background: #0d1b30;
-  border: 1px solid #1d3557;
-  color: #ccd6f6;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .list-group-item:hover {
-  background: #1d3557;
-  border-color: #e5a93c;
+  background: #f1f5f9;
+  border-color: #d4942f;
 }
 
 .list-group-item.active-account {
-  background: rgba(229, 169, 60, 0.1);
-  border-color: #e5a93c;
-  color: #e5a93c;
+  background: rgba(229, 169, 60, 0.08);
+  border-color: #d4942f;
+  color: #b45309;
 }
 
 /* Section Counts */
@@ -415,7 +441,7 @@
 
 /* Text Gold */
 .text-gold {
-  color: #e5a93c !important;
+  color: #d4942f !important;
 }
 
 /* Responsive */
@@ -458,7 +484,7 @@
 .pin-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 1045;
   animation: pinOverlayIn 0.25s ease;
 }

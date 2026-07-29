@@ -112,7 +112,7 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
   }
 
   goToTransfer(): void {
-    this.router.navigate(['/customer/transactions'], {
+    this.router.navigate(['/customer/operations'], {
       queryParams: { source: this.accountNumber, tab: 'transfer' },
     });
   }

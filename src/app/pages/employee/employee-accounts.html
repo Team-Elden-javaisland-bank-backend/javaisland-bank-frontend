@@ -21,14 +21,6 @@
     </div>
   </div>
 
-  @if (message()) {
-    <div class="toast-notification" [class.toast-error]="messageType() === 'error'" [class.toast-success]="messageType() === 'success'" (click)="message.set('')">
-      <i class="bi" [class]="messageType() === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'"></i>
-      <span>{{ message() }}</span>
-      <i class="bi bi-x-lg toast-close"></i>
-    </div>
-  }
-
   <!-- Filter pills -->
   <nav class="mb-4">
     <div class="filter-bar">
@@ -176,7 +168,7 @@
             <div class="limits-list mb-4">
               @for (limit of limits(); track limit.id) {
                 <div class="limit-row">
-                  <span class="limit-type-label">{{ limit.limitType }}</span>
+                  <span class="limit-type-label">{{ ('LIMIT_TYPE.' + limit.limitType + '.label') | translate }}</span>
                   <span class="limit-amount-value">{{ limit.maxAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
                 </div>
               }

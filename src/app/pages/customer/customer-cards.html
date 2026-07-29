@@ -6,32 +6,28 @@
     </div>
   </div>
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
   @if (loading()) {
     <div class="text-center py-5 text-muted">{{ 'CARDS.loading' | translate }}</div>
   } @else {
     <div class="cards-layout">
       <!-- Main cards area -->
       <div class="cards-main">
-        @if (cards().length === 0) {
+        @if (activeCards.length === 0 && closedCards.length === 0) {
           <div class="empty-state-card">
             <div class="empty-state-icon"><i class="bi bi-credit-card"></i></div>
             <h6 class="empty-state-title">{{ 'CARDS.no_cards' | translate }}</h6>
             <p class="empty-state-text">{{ 'CARDS.no_cards_desc' | translate }}</p>
           </div>
-        } @else {
+        } @else if (activeCards.length > 0) {
           <div class="row g-4 justify-content-center">
-            @for (card of cards(); track card.id) {
+            @for (card of activeCards; track card.id) {
               <div class="col-12 col-md-6 col-xl-4 d-flex flex-column align-items-center mb-4">
                 <div class="credit-card" [style.background]="getCardGradient(card.cardType)">
                   <!-- Top row: type + chip + status -->
                   <div class="cc-top">
-                    <span class="cc-type">{{ card.cardType }}</span>
+                    <span class="cc-type">{{ ('CARD_TYPE.' + card.cardType) | translate }}</span>
                     <div class="cc-chip"></div>
-                    <span [class]="'cc-status cs-' + card.status">{{ card.status }}</span>
+                    <span [class]="'cc-status cs-' + card.status">{{ ('STATUS.' + card.status) | translate }}</span>
                   </div>
 
                   <!-- Center: card number -->
@@ -93,6 +89,10 @@
               <span class="summary-label">{{ 'CARDS.blocked_cards' | translate }}</span>
               <span class="summary-value text-danger">{{ getBlockedCardsCount() }}</span>
             </div>
+            <div class="summary-row">
+              <span class="summary-label">{{ 'CARDS.closed_cards' | translate }}</span>
+              <span class="summary-value text-muted">{{ getClosedCardsCount() }}</span>
+            </div>
           </div>
         </div>
 
@@ -139,16 +139,49 @@
                 <span class="cti-desc">{{ 'CARDS.debit_desc' | translate }}</span>
               </div>
             </div>
-            <div class="card-type-info">
-              <div class="cti-icon cti-credit"><i class="bi bi-credit-card-2-front"></i></div>
-              <div class="cti-text">
-                <span class="cti-title">{{ 'CARDS.credit_card' | translate }}</span>
-                <span class="cti-desc">{{ 'CARDS.credit_desc' | translate }}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Closed Cards Section -->
+    @if (closedCards.length > 0) {
+      <div class="closed-section mt-4">
+        <button class="closed-toggle" (click)="showClosedCards.set(!showClosedCards())">
+          <div class="closed-toggle-left">
+            <div class="closed-toggle-icon"><i class="bi bi-archive"></i></div>
+            <div class="closed-toggle-text">
+              <span class="closed-toggle-title">{{ 'CARDS.closed_cards' | translate }}</span>
+              <span class="closed-toggle-count">{{ closedCards.length }} {{ 'CARDS.closed_count_label' | translate }}</span>
+            </div>
+          </div>
+          <div class="closed-toggle-right">
+            <span class="closed-toggle-hint" [class.open]="showClosedCards()">
+              {{ (showClosedCards() ? 'CARDS.closed_hide' : 'CARDS.closed_show') | translate }}
+            </span>
+            <i class="bi closed-chevron" [class.bi-chevron-down]="!showClosedCards()" [class.bi-chevron-up]="showClosedCards()"></i>
+          </div>
+        </button>
+
+        @if (showClosedCards()) {
+          <div class="closed-grid">
+            @for (card of closedCards; track card.id) {
+              <div class="closed-card">
+                <div class="closed-card-left">
+                  <div class="closed-card-icon"><i class="bi bi-lock"></i></div>
+                  <div class="closed-card-info">
+                    <span class="closed-card-number">{{ card.maskedCardNumber }}</span>
+                    <span class="closed-card-holder">{{ card.holderName }}</span>
+                  </div>
+                </div>
+                <div class="closed-card-right">
+                  <span class="closed-card-type">{{ ('CARD_TYPE.' + card.cardType) | translate }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
   }
 </div>

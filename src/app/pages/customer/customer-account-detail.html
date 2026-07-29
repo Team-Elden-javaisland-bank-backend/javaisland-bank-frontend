@@ -108,7 +108,7 @@
                 <div class="d-flex justify-content-between align-items-center py-1">
                   <span class="detail-label">{{ 'ACCOUNT_DETAIL.details.status' | translate }}</span>
                   <span class="detail-value" [class.status-pending]="isPending(tx)" [class.status-cancelled]="isCancelled(tx)">
-                    {{ tx.statusName === 'PENDING' ? ('ACCOUNT_DETAIL.statuses.pending' | translate) : tx.statusName === 'COMPLETED' ? ('ACCOUNT_DETAIL.statuses.completed' | translate) : tx.statusName === 'CANCELLED' ? ('ACCOUNT_DETAIL.statuses.cancelled' | translate) : tx.statusName }}
+                    {{ ('TX_STATUS.' + tx.statusName) | translate }}
                   </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-1">

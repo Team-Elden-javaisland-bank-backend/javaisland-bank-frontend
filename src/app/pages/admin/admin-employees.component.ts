@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AdminService, EmployeeListItemDto, CreateEmployeeRequestDto, EmployeeDetailDto } from '../../core/services/admin.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-employees',
@@ -15,8 +16,6 @@ export class AdminEmployeesComponent implements OnInit {
   employees = signal<EmployeeListItemDto[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
   searchQuery = signal('');
   filterStatus = signal<string>('ALL');
@@ -69,7 +68,7 @@ export class AdminEmployeesComponent implements OnInit {
     };
   });
 
-  constructor(private adminService: AdminService, private translate: TranslateService) {}
+  constructor(private adminService: AdminService, private translate: TranslateService, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -119,7 +118,7 @@ export class AdminEmployeesComponent implements OnInit {
   createEmployee(): void {
     const emp = this.newEmployee();
     if (!emp.firstName || !emp.lastName || !emp.email || !emp.password) {
-      this.showMessage(this.translate.instant('ADMIN.employees.error_required'), 'error');
+      this.toastService.error(this.translate.instant('ADMIN.employees.error_required'));
       return;
     }
 
@@ -127,13 +126,13 @@ export class AdminEmployeesComponent implements OnInit {
     this.adminService.createEmployee(emp).subscribe({
       next: (created) => {
         this.employees.update((list) => [...list, created]);
-        this.showMessage(this.translate.instant('ADMIN.employees.success_created'), 'success');
+        this.toastService.success(this.translate.instant('ADMIN.employees.success_created'));
         this.showCreateForm.set(false);
         this.resetForm();
         this.creating.set(false);
       },
       error: (err) => {
-        this.showMessage(err.message || this.translate.instant('ADMIN.employees.error_create'), 'error');
+        this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ADMIN.employees.error_create'));
         this.creating.set(false);
       }
     });
@@ -146,11 +145,11 @@ export class AdminEmployeesComponent implements OnInit {
         this.employees.update((list) =>
           list.map((e) => (e.userId === userId ? { ...e, status: 'SUSPENDED' } : e))
         );
-        this.showMessage(this.translate.instant('ADMIN.employees.success_suspend'), 'success');
+        this.toastService.success(this.translate.instant('ADMIN.employees.success_suspend'));
         this.actingEmployeeId.set(null);
       },
       error: (err) => {
-        this.showMessage(err.message || this.translate.instant('ADMIN.employees.error_suspend'), 'error');
+        this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ADMIN.employees.error_suspend'));
         this.actingEmployeeId.set(null);
       }
     });
@@ -163,11 +162,11 @@ export class AdminEmployeesComponent implements OnInit {
         this.employees.update((list) =>
           list.map((e) => (e.userId === userId ? { ...e, status: 'ACTIVE' } : e))
         );
-        this.showMessage(this.translate.instant('ADMIN.employees.success_activate'), 'success');
+        this.toastService.success(this.translate.instant('ADMIN.employees.success_activate'));
         this.actingEmployeeId.set(null);
       },
       error: (err) => {
-        this.showMessage(err.message || this.translate.instant('ADMIN.employees.error_activate'), 'error');
+        this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ADMIN.employees.error_activate'));
         this.actingEmployeeId.set(null);
       }
     });
@@ -214,12 +213,6 @@ export class AdminEmployeesComponent implements OnInit {
       month: '2-digit',
       year: 'numeric',
     });
-  }
-
-  private showMessage(text: string, type: 'success' | 'error'): void {
-    this.message.set(text);
-    this.messageType.set(type);
-    setTimeout(() => this.message.set(''), 4000);
   }
 
   trackByUserId(_index: number, employee: EmployeeListItemDto): number {

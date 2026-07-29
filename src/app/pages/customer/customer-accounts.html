@@ -4,7 +4,14 @@
       <h2 class="page-title">{{ 'ACCOUNTS.page_title' | translate }}</h2>
       <p class="page-subtitle">{{ 'ACCOUNTS.page_subtitle' | translate }}</p>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap justify-content-end">
+      <button class="header-btn header-btn-transfer" (click)="toggleTransferForm()">
+        @if (showTransferForm()) {
+          <i class="bi bi-x-lg me-1"></i>{{ 'ACCOUNTS.cancel' | translate }}
+        } @else {
+          <i class="bi bi-arrow-left-right me-1"></i>{{ 'ACCOUNTS.transfer' | translate }}
+        }
+      </button>
       <button class="header-btn header-btn-primary" (click)="showOpenForm.set(!showOpenForm())">
         @if (showOpenForm()) {
           <i class="bi bi-x-lg me-1"></i>{{ 'ACCOUNTS.cancel' | translate }}
@@ -12,7 +19,7 @@
           <i class="bi bi-plus-lg me-1"></i>{{ 'ACCOUNTS.open_account' | translate }}
         }
       </button>
-      @if (accounts().some(a => a.statusId === 2)) {
+      @if (onlyActiveAccounts.length > 0) {
         <button class="header-btn header-btn-danger" (click)="showCloseForm.set(!showCloseForm())">
           @if (showCloseForm()) {
             {{ 'ACCOUNTS.cancel' | translate }}
@@ -25,12 +32,12 @@
   </div>
 
   <!-- Summary bar -->
-  @if (accounts().length > 0) {
+  @if (activeAccounts.length > 0) {
     <div class="summary-bar mb-4">
       <div class="summary-item">
         <div class="summary-icon si-total"><i class="bi bi-bank"></i></div>
         <div class="summary-data">
-          <span class="summary-val">{{ accounts().length }}</span>
+          <span class="summary-val">{{ activeAccounts.length }}</span>
           <span class="summary-lbl">{{ 'ACCOUNTS.total_accounts' | translate }}</span>
         </div>
       </div>
@@ -38,7 +45,7 @@
       <div class="summary-item">
         <div class="summary-icon si-active"><i class="bi bi-check-circle"></i></div>
         <div class="summary-data">
-          <span class="summary-val">{{ accounts().filter(a => a.statusId === 2).length }}</span>
+          <span class="summary-val">{{ onlyActiveAccounts.length }}</span>
           <span class="summary-lbl">{{ 'ACCOUNTS.active' | translate }}</span>
         </div>
       </div>
@@ -53,34 +60,124 @@
     </div>
   }
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
-  @if (showOpenForm()) {
-    <div class="card shadow-sm rounded-3 border-0 mb-4">
-      <div class="card-header bg-light border-0 d-flex align-items-center gap-3 p-4">
-        <div class="form-icon open">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-        </div>
+  <!-- Transfer Form -->
+  @if (showTransferForm()) {
+    <div class="action-card transfer-card mb-4">
+      <div class="action-card-header">
+        <div class="action-icon transfer"><i class="bi bi-arrow-left-right"></i></div>
         <div>
-          <h3 class="h6 fw-bold mb-0">{{ 'ACCOUNTS.new_account_title' | translate }}</h3>
-          <p class="text-muted small mb-0 mt-1">{{ 'ACCOUNTS.new_account_subtitle' | translate }}</p>
+          <h3 class="action-card-title">{{ 'ACCOUNTS.transfer_title' | translate }}</h3>
+          <p class="action-card-subtitle">{{ 'ACCOUNTS.transfer_subtitle' | translate }}</p>
         </div>
       </div>
-      <div class="card-body p-4">
+      <div class="action-card-body">
+        <!-- Account selectors -->
+        <div class="tx-accounts-row">
+          <div class="tx-account-col">
+            <span class="tx-label">{{ 'ACCOUNTS.transfer_from' | translate }}</span>
+            <div class="tx-account-list">
+              @for (account of onlyActiveAccounts; track account.accountNumber) {
+                <button
+                  class="tx-account-pick"
+                  [class.selected]="txSource === account.accountNumber"
+                  (click)="txSource = account.accountNumber"
+                  type="button"
+                >
+                  <div class="tx-pick-chip pick-source"><i class="bi bi-arrow-up-right"></i></div>
+                  <div class="tx-pick-info">
+                    <span class="tx-pick-iban">{{ account.accountNumber }}</span>
+                    <span class="tx-pick-bal">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                  @if (txSource === account.accountNumber) {
+                    <i class="bi bi-check-circle-fill tx-pick-check"></i>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="tx-flow-divider">
+            <div class="tx-flow-line"></div>
+            <div class="tx-flow-icon"><i class="bi bi-arrow-right"></i></div>
+            <div class="tx-flow-line"></div>
+          </div>
+
+          <div class="tx-account-col">
+            <span class="tx-label">{{ 'ACCOUNTS.transfer_to' | translate }}</span>
+            <div class="tx-account-list">
+              @for (account of onlyActiveAccounts; track account.accountNumber) {
+                <button
+                  class="tx-account-pick"
+                  [class.selected]="txDestination === account.accountNumber"
+                  [class.disabled]="txSource === account.accountNumber"
+                  (click)="txSource !== account.accountNumber && (txDestination = account.accountNumber)"
+                  type="button"
+                  [disabled]="txSource === account.accountNumber"
+                >
+                  <div class="tx-pick-chip pick-dest"><i class="bi bi-arrow-down-left"></i></div>
+                  <div class="tx-pick-info">
+                    <span class="tx-pick-iban">{{ account.accountNumber }}</span>
+                    <span class="tx-pick-bal">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                  @if (txDestination === account.accountNumber) {
+                    <i class="bi bi-check-circle-fill tx-pick-check"></i>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary of selected accounts -->
+        @if (txSource && txDestination) {
+          <div class="tx-summary">
+            <div class="tx-summary-chip">
+              <i class="bi bi-arrow-left-right"></i>
+              {{ txSource }} <i class="bi bi-arrow-right mx-1"></i> {{ txDestination }}
+            </div>
+          </div>
+        }
+
+        <div class="mt-3">
+          <label class="form-label fw-semibold small">{{ 'ACCOUNTS.transfer_amount' | translate }}</label>
+          <div class="input-wrapper">
+            <span class="input-prefix">€</span>
+            <input class="form-control rounded-3" type="number" [(ngModel)]="txAmount" min="1" step="0.01" placeholder="0.00" />
+          </div>
+          <span class="form-text">{{ 'ACCOUNTS.transfer_min' | translate }}</span>
+        </div>
+
+        <div class="mt-3">
+          <label class="form-label fw-semibold small">{{ 'ACCOUNTS.transfer_description' | translate }} <span class="text-muted">({{ 'ACCOUNTS.optional' | translate }})</span></label>
+          <input class="form-control rounded-3" type="text" [(ngModel)]="txDescription" [placeholder]="'ACCOUNTS.transfer_description_placeholder' | translate" maxlength="140" />
+        </div>
+
+        <button class="btn btn-gold rounded-3 w-100 mt-3" (click)="transfer()">
+          <i class="bi bi-send me-1"></i>{{ 'ACCOUNTS.transfer_confirm' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Open Account Form -->
+  @if (showOpenForm()) {
+    <div class="action-card open-card mb-4">
+      <div class="action-card-header">
+        <div class="action-icon open"><i class="bi bi-plus-lg"></i></div>
+        <div>
+          <h3 class="action-card-title">{{ 'ACCOUNTS.new_account_title' | translate }}</h3>
+          <p class="action-card-subtitle">{{ 'ACCOUNTS.new_account_subtitle' | translate }}</p>
+        </div>
+      </div>
+      <div class="action-card-body">
         <div class="mb-3">
           <label class="form-label fw-semibold small">{{ 'ACCOUNTS.source_account' | translate }}</label>
           <select class="form-select rounded-3" [(ngModel)]="sourceAccountNumber">
             <option value="">{{ 'ACCOUNTS.select_account' | translate }}</option>
-            @for (account of accounts(); track account.accountNumber) {
-              @if (account.statusId === 2) {
-                <option [value]="account.accountNumber">
-                  {{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
-                </option>
-              }
+            @for (account of onlyActiveAccounts; track account.accountNumber) {
+              <option [value]="account.accountNumber">
+                {{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
+              </option>
             }
           </select>
         </div>
@@ -97,28 +194,23 @@
     </div>
   }
 
+  <!-- Close Account Form -->
   @if (showCloseForm()) {
-    <div class="card shadow-sm rounded-3 border-0 mb-4 border-danger">
-      <div class="card-header bg-light border-0 d-flex align-items-center gap-3 p-4">
-        <div class="form-icon close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-          </svg>
-        </div>
+    <div class="action-card close-card mb-4">
+      <div class="action-card-header">
+        <div class="action-icon close"><i class="bi bi-x-circle"></i></div>
         <div>
-          <h3 class="h6 fw-bold mb-0">{{ 'ACCOUNTS.closure_title' | translate }}</h3>
-          <p class="text-muted small mb-0 mt-1">{{ 'ACCOUNTS.closure_subtitle' | translate }}</p>
+          <h3 class="action-card-title">{{ 'ACCOUNTS.closure_title' | translate }}</h3>
+          <p class="action-card-subtitle">{{ 'ACCOUNTS.closure_subtitle' | translate }}</p>
         </div>
       </div>
-      <div class="card-body p-4">
+      <div class="action-card-body">
         <div class="mb-3">
           <label class="form-label fw-semibold small">{{ 'ACCOUNTS.close_account' | translate }}</label>
           <select class="form-select rounded-3" [(ngModel)]="closeAccountNumber">
             <option value="">{{ 'ACCOUNTS.select_one' | translate }}</option>
-            @for (account of accounts(); track account.accountNumber) {
-              @if (account.statusId === 2) {
-                <option [value]="account.accountNumber">{{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</option>
-              }
+            @for (account of onlyActiveAccounts; track account.accountNumber) {
+              <option [value]="account.accountNumber">{{ account.accountNumber }} — {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</option>
             }
           </select>
         </div>
@@ -127,9 +219,10 @@
     </div>
   }
 
+  <!-- Loading / Empty / Carousel -->
   @if (loading()) {
     <div class="text-center py-5 text-muted">{{ 'ACCOUNTS.loading' | translate }}</div>
-  } @else if (accounts().length === 0) {
+  } @else if (activeAccounts.length === 0 && closedAccounts.length === 0) {
     <div class="empty-state">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
@@ -137,12 +230,12 @@
       <p>{{ 'ACCOUNTS.no_accounts' | translate }}</p>
       <button class="btn btn-success rounded-3" (click)="showOpenForm.set(true)">{{ 'ACCOUNTS.open_first' | translate }}</button>
     </div>
-  } @else {
+  } @else if (activeAccounts.length > 0) {
     <!-- Card carousel -->
     <div class="carousel-section">
       <div class="carousel-viewport">
         <div class="carousel-track">
-          @for (account of accounts(); track account.accountNumber; let i = $index) {
+          @for (account of activeAccounts; track account.accountNumber; let i = $index) {
             <div
               class="carousel-slide"
               [class.active]="i === currentCardIndex()"
@@ -151,7 +244,7 @@
               [class.hidden-slide]="i < currentCardIndex() - 1 || i > currentCardIndex() + 1"
               (click)="goToCard(i)"
             >
-              <div class="account-card card-theme-{{ account.statusId }}">
+              <div class="account-card card-theme-{{ account.statusId }}" [routerLink]="['/customer/accounts', account.accountNumber]">
                 <div class="card-bg-pattern"></div>
 
                 <div class="card-top">
@@ -198,6 +291,12 @@
                 <span class="account-balance-value" [class.negative]="account.balance < 0">
                   {{ account.balance | currency:'EUR':'symbol':'1.2-2' }}
                 </span>
+                @if (account.statusId === 1 && account.initialAmount) {
+                  <div class="future-balance">
+                    <span class="future-balance-label">{{ 'ACCOUNTS.future_balance' | translate }}</span>
+                    <span class="future-balance-value">+ {{ account.initialAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                }
               </div>
             </div>
           }
@@ -205,7 +304,7 @@
       </div>
 
       <!-- Navigation -->
-      @if (accounts().length > 1) {
+      @if (activeAccounts.length > 1) {
         <div class="carousel-nav">
           <button
             class="carousel-arrow"
@@ -217,7 +316,7 @@
           </button>
 
           <div class="carousel-dots">
-            @for (account of accounts(); track account.accountNumber; let i = $index) {
+            @for (account of activeAccounts; track account.accountNumber; let i = $index) {
               <button
                 class="carousel-dot"
                 [class.active]="i === currentCardIndex()"
@@ -229,7 +328,7 @@
 
           <button
             class="carousel-arrow"
-            [disabled]="currentCardIndex() === accounts().length - 1"
+            [disabled]="currentCardIndex() === activeAccounts.length - 1"
             (click)="nextCard()"
             [attr.aria-label]="'ACCOUNTS.card_next' | translate"
           >
@@ -238,10 +337,50 @@
         </div>
       }
 
-      <!-- Card counter -->
       <div class="carousel-counter">
-        {{ currentCardIndex() + 1 }} / {{ accounts().length }}
+        {{ currentCardIndex() + 1 }} / {{ activeAccounts.length }}
       </div>
+    </div>
+  }
+
+  <!-- Closed Accounts Section -->
+  @if (closedAccounts.length > 0) {
+    <div class="closed-section">
+      <button class="closed-toggle" (click)="showClosedAccounts.set(!showClosedAccounts())">
+        <div class="closed-toggle-left">
+          <div class="closed-toggle-icon"><i class="bi bi-archive"></i></div>
+          <div class="closed-toggle-text">
+            <span class="closed-toggle-title">{{ 'ACCOUNTS.closed_accounts' | translate }}</span>
+            <span class="closed-toggle-count">{{ closedAccounts.length }} {{ 'ACCOUNTS.closed_count_label' | translate }}</span>
+          </div>
+        </div>
+        <div class="closed-toggle-right">
+          <span class="closed-toggle-hint" [class.open]="showClosedAccounts()">
+            {{ (showClosedAccounts() ? 'ACCOUNTS.closed_hide' : 'ACCOUNTS.closed_show') | translate }}
+          </span>
+          <i class="bi closed-chevron" [class.bi-chevron-down]="!showClosedAccounts()" [class.bi-chevron-up]="showClosedAccounts()"></i>
+        </div>
+      </button>
+
+      @if (showClosedAccounts()) {
+        <div class="closed-grid">
+          @for (account of closedAccounts; track account.accountNumber) {
+            <a class="closed-card" [routerLink]="['/customer/accounts', account.accountNumber]">
+              <div class="closed-card-left">
+                <div class="closed-card-icon"><i class="bi bi-lock"></i></div>
+                <div class="closed-card-info">
+                  <span class="closed-card-iban">{{ account.accountNumber }}</span>
+                  <span class="closed-card-date">{{ 'ACCOUNTS.closed_on' | translate }} {{ account.closedAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+              <div class="closed-card-right">
+                <span class="closed-card-balance">{{ account.balance | currency:'EUR':'symbol':'1.2-2' }}</span>
+                <i class="bi bi-chevron-right closed-card-arrow"></i>
+              </div>
+            </a>
+          }
+        </div>
+      }
     </div>
   }
 </div>

@@ -1,6 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -41,7 +42,8 @@ export class CustomerOperationsComponent implements OnInit {
   constructor(
     private customerService: CustomerService,
     private translate: TranslateService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private route: ActivatedRoute,
   ) {
     const now = new Date();
     const tomorrow = new Date(now);
@@ -53,9 +55,14 @@ export class CustomerOperationsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam && ['deposit', 'withdraw', 'transfer'].includes(tabParam)) {
+      this.activeTab.set(tabParam as 'deposit' | 'withdraw' | 'transfer');
+    }
+
     this.customerService.getAccounts().subscribe({
       next: (data) => {
-        this.accounts.set(data);
+        this.accounts.set(data.filter(a => a.statusId !== 4));
         if (data.length > 0) {
           this.dwAccount = data[0].accountNumber;
           this.txSource = data[0].accountNumber;
@@ -144,6 +151,14 @@ export class CustomerOperationsComponent implements OnInit {
     if (!this.txDestination && !this.txBeneficiaryId) {
       this.toastService.error(this.translate.instant('TRANSACTIONS.select_destination'));
       return;
+    }
+
+    if (this.txDestination) {
+      const isOwnAccount = this.accounts().some(a => a.accountNumber === this.txDestination);
+      if (isOwnAccount) {
+        this.toastService.error(this.translate.instant('TRANSACTIONS.own_account_error'));
+        return;
+      }
     }
 
     const isInstant = this.txTransferType() === 'instant';

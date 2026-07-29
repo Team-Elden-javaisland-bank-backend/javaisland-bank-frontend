@@ -197,11 +197,6 @@
   color: #2563eb;
 }
 
-.type-credit {
-  background: rgba(124, 58, 237, 0.1);
-  color: #7c3aed;
-}
-
 /* ── Card status pills ── */
 .card-status-active {
   background: #d1fae5;

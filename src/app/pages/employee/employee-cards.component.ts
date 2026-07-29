@@ -12,8 +12,6 @@ import { CardResponseDto } from '../../core/models/card/card-response.dto';
 export class EmployeeCardsComponent {
   cards = signal<CardResponseDto[]>([]);
   loading = signal(true);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
   searchQuery = signal('');
 
   filteredCards = computed(() => {

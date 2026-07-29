@@ -3,6 +3,7 @@
     "dashboard": "Dashboard",
     "accounts": "Accounts",
     "transactions": "Transactions",
+    "operations": "Operations",
     "beneficiaries": "Beneficiaries",
     "limits": "Limits",
     "cards": "Cards",
@@ -152,7 +153,9 @@
     "card_goto": "Card",
     "greeting_morning": "Good morning",
     "greeting_afternoon": "Good afternoon",
-    "greeting_evening": "Good evening"
+    "greeting_evening": "Good evening",
+    "monthly_expenses": "Monthly Expenses",
+    "vs_last_month": "vs last month"
   },
   "ACCOUNTS": {
     "page_title": "My Accounts",
@@ -179,9 +182,38 @@
     "no_accounts": "You don't have any accounts yet",
     "open_first": "Open your first account",
     "balance": "Available balance",
+    "future_balance": "Future balance",
     "card_prev": "Previous card",
     "card_next": "Next card",
-    "card_goto": "Go to card"
+    "card_goto": "Go to card",
+    "closed_accounts": "Closed Accounts",
+    "closed_count_label": "accounts",
+    "closed_show": "Show",
+    "closed_hide": "Hide",
+    "closed_on": "Closed:",
+    "transfer": "Transfer",
+    "transfer_title": "Transfer between accounts",
+    "transfer_subtitle": "Move funds from one account to another",
+    "transfer_from": "From account",
+    "transfer_to": "To account",
+    "transfer_amount": "Amount",
+    "transfer_min": "Minimum €1.00",
+    "transfer_description": "Description",
+    "transfer_description_placeholder": "e.g. Internal transfer",
+    "transfer_confirm": "Confirm Transfer",
+    "optional": "optional",
+    "toast": {
+      "fill_fields": "Fill in all fields correctly",
+      "select_account": "Select an account",
+      "account_opened": "Account opened successfully",
+      "account_open_requested": "Account opening request sent. Awaiting approval.",
+      "closure_requested": "Closure request submitted",
+      "generic_error": "An error occurred. Please try again later.",
+      "transfer_select_accounts": "Select both source and destination accounts",
+      "transfer_same_account": "Source and destination accounts must be different",
+      "transfer_min_amount": "Minimum transfer amount is €1.00",
+      "transfer_success": "Transfer completed successfully"
+    }
   },
   "ACCOUNT_DETAIL": {
     "back": "Back",
@@ -283,7 +315,8 @@
     "date_must_be_tomorrow": "Date must be at least tomorrow",
     "date_max_30_days": "Date cannot be more than 30 days from today",
     "transfer_limit_exceeded": "Amount exceeds {{label}} limit of €{{value}}",
-    "select_dates": "Select dates"
+    "select_dates": "Select dates",
+    "own_account_error": "Cannot transfer to your own account. Use the Transfer section on the Accounts page."
   },
   "OPERATIONS": {
     "page_title": "Operations",
@@ -304,11 +337,39 @@
     "add_first": "Add the first one",
     "added_on": "Added:",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "toast": {
+      "fill_fields": "Fill in all fields correctly",
+      "added": "Beneficiary added",
+      "removed": "Beneficiary removed",
+      "confirm_delete": "Delete this beneficiary?"
+    }
+  },
+  "SAVED_BENEFICIARIES": {
+    "page_title": "Saved Beneficiaries",
+    "page_subtitle": "Manage your saved beneficiaries",
+    "add": "Add",
+    "new_beneficiary": "New Beneficiary",
+    "new_beneficiary_desc": "Save a new beneficiary for quick access",
+    "nickname": "Name",
+    "nickname_placeholder": "e.g. John Smith",
+    "iban_dest": "Account Number / IBAN",
+    "save": "Save",
+    "no_beneficiaries": "No saved beneficiaries",
+    "add_first_desc": "Save a beneficiary to make transfers faster.",
+    "add_first": "Add the first one",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "toast": {
+      "fill_fields": "Fill in all fields correctly",
+      "added": "Beneficiary saved",
+      "removed": "Beneficiary removed",
+      "confirm_delete": "Delete this beneficiary?"
+    }
   },
   "CARDS": {
     "page_title": "Your Cards",
-    "page_subtitle": "Manage your debit and credit cards",
+    "page_subtitle": "Manage your debit cards",
     "loading": "Loading...",
     "no_cards": "No cards",
     "no_cards_desc": "You don't have any cards linked to your accounts yet.",
@@ -320,6 +381,10 @@
     "total_cards": "Total Cards",
     "active_cards": "Active Cards",
     "blocked_cards": "Blocked Cards",
+    "closed_cards": "Closed Cards",
+    "closed_count_label": "closed",
+    "closed_show": "Show",
+    "closed_hide": "Hide",
     "card_security": "Card Security",
     "protect_data": "Protect your data",
     "protect_data_desc": "Never share your full card number, CVV or PIN.",
@@ -327,11 +392,9 @@
     "push_notifications_desc": "Enable notifications to receive alerts on every transaction.",
     "quick_block": "Quick block",
     "quick_block_desc": "If lost, contact us immediately to block the card.",
-    "card_types": "Card Types",
+    "card_types": "Card Type",
     "debit_card": "Debit Card",
-    "debit_desc": "Withdraw and pay directly from your checking account.",
-    "credit_card": "Credit Card",
-    "credit_desc": "Pay with credit and settle the balance monthly."
+    "debit_desc": "Withdraw and pay directly from your checking account."
   },
   "LIMITS": {
     "page_title": "My Limits",
@@ -405,7 +468,10 @@
     "no_accounts": "No active accounts found.",
     "loading_limits": "Loading limits...",
     "missing_warning": "limits still need to be set. Set all limits before proceeding.",
-    "confirm": "Confirm and continue"
+    "confirm": "Confirm and continue",
+    "toast": {
+      "saved": "Limit saved!"
+    }
   },
   "NOTIFICATIONS": {
     "page_title": "My Notifications",
@@ -451,9 +517,7 @@
     "status_inactive": "Inactive",
     "status_blocked": "Blocked",
     "status_pending": "Pending",
-    "card_type_credit": "Credit Card",
     "card_type_debit": "Debit Card",
-    "card_type_prepaid": "Prepaid Card",
     "error_loading": "Error loading profile",
     "error_password": "Error requesting password change",
     "password_changed": "Password changed successfully",
@@ -573,7 +637,13 @@
       "atm_withdrawal": "ATM Withdrawal",
       "pos_spending": "POS Spending",
       "save": "Save",
-      "amount_placeholder": "Max amount (e.g. 5,000)"
+      "amount_placeholder": "Max amount (e.g. 5,000)",
+      "toast": {
+        "fill_fields": "Fill in type and amount",
+        "min_amount": "Minimum amount is €{{min}}",
+        "max_amount": "Maximum amount is €{{max}}",
+        "limit_updated": "Limit updated!"
+      }
     },
     "cards": {
       "page_title": "Card Management",
@@ -959,6 +1029,7 @@
     "COMPLETED": "Completed",
     "FAILED": "Failed",
     "REJECTED": "Rejected",
+    "CANCELLED": "Cancelled",
     "UNKNOWN": "Unknown"
   },
   "LIMIT_TYPE": {
@@ -1009,6 +1080,9 @@
     "ACCOUNT_FROZEN_DESC": "Account freeze requested",
     "CARD_BLOCKED_DESC": "Card block requested",
     "LIMIT_CHANGE_DESC": "Limit change requested"
+  },
+  "CARD_TYPE": {
+    "DEBIT": "Debit"
   },
   "STATUS": {
     "ACTIVE": "Active",

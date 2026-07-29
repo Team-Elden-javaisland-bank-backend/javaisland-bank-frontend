@@ -187,43 +187,6 @@
   }
 }
 
-/* Dark mode */
-.dark-mode .card-header {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-
-.dark-mode .table code {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .table tbody tr:hover {
-  background-color: rgba(229, 169, 60, 0.08);
-}
-
-.dark-mode .create-form-card {
-  border-color: rgba(229, 169, 60, 0.5);
-}
-
-/* Bootstrap 5.3 dark mode class support */
-:root.dark .card-header,
-:root[data-bs-theme="dark"] .card-header {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-
-:root.dark .table code,
-:root[data-bs-theme="dark"] .table code {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-:root.dark .table tbody tr:hover,
-:root[data-bs-theme="dark"] .table tbody tr:hover {
-  background-color: rgba(229, 169, 60, 0.08);
-}
-
-:root.dark .create-form-card,
-:root[data-bs-theme="dark"] .create-form-card {
-  border-color: rgba(229, 169, 60, 0.5);
-}
 
 .avatar-img {
   width: 100%;

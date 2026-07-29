@@ -57,13 +57,6 @@
       </div>
     </div>
 
-    @if (message()) {
-      <div class="setup-alert" [class.alert-success]="messageType() === 'success'" [class.alert-error]="messageType() === 'error'">
-        <i class="bi" [ngClass]="messageType() === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'"></i>
-        <span>{{ message() }}</span>
-      </div>
-    }
-
     @if (loading()) {
       <div class="empty-state">
         <div class="spinner-border text-primary"></div>

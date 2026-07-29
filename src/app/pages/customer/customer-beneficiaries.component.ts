@@ -1,9 +1,10 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { BeneficiaryResponseDto } from '../../core/models/beneficiary/beneficiary-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-customer-beneficiaries',
@@ -15,13 +16,15 @@ export class CustomerBeneficiariesComponent implements OnInit {
   beneficiaries = signal<BeneficiaryResponseDto[]>([]);
   loading = signal(true);
   showForm = signal(false);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
   nickname = '';
   destinationAccountNumber = '';
 
-  constructor(private customerService: CustomerService) {}
+  constructor(
+    private customerService: CustomerService,
+    private toastService: ToastService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     this.loadBeneficiaries();
@@ -38,10 +41,8 @@ export class CustomerBeneficiariesComponent implements OnInit {
   }
 
   addBeneficiary(): void {
-    this.message.set('');
     if (!this.nickname || !this.destinationAccountNumber) {
-      this.message.set('Compila tutti i campi');
-      this.messageType.set('error');
+      this.toastService.error(this.translate.instant('BENEFICIARIES.toast.fill_fields'));
       return;
     }
 
@@ -50,27 +51,25 @@ export class CustomerBeneficiariesComponent implements OnInit {
       destinationAccountNumber: this.destinationAccountNumber,
     }).subscribe({
       next: () => {
-        this.message.set('Beneficiario aggiunto!');
-        this.messageType.set('success');
+        this.toastService.success(this.translate.instant('BENEFICIARIES.toast.added'));
         this.showForm.set(false);
         this.nickname = '';
         this.destinationAccountNumber = '';
         this.loadBeneficiaries();
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   deleteBeneficiary(id: number): void {
-    if (!confirm('Vuoi eliminare questo beneficiario?')) return;
+    if (!confirm(this.translate.instant('BENEFICIARIES.toast.confirm_delete'))) return;
 
     this.customerService.deleteBeneficiary(id).subscribe({
       next: () => {
-        this.message.set('Beneficiario eliminato');
-        this.messageType.set('success');
+        this.toastService.success(this.translate.instant('BENEFICIARIES.toast.removed'));
         this.loadBeneficiaries();
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 }

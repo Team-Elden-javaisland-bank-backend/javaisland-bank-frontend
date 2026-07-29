@@ -13,10 +13,6 @@
     </button>
   </div>
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
   @if (showForm()) {
     <div class="form-card mb-4">
       <div class="form-card-header">

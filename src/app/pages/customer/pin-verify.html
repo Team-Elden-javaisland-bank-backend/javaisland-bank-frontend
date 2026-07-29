@@ -29,12 +29,6 @@
       }
     </div>
 
-    @if (message()) {
-      <div class="pin-message" [class]="'pin-message-' + messageType()">
-        {{ message() }}
-      </div>
-    }
-
     <button class="btn btn-gold w-100" (click)="submit()" [disabled]="loading() || digits().some(d => !d)">
       @if (loading()) {
         <span class="spinner-border spinner-border-sm me-2"></span>

@@ -12,10 +12,6 @@
     }
   </div>
 
-  @if (message()) {
-    <div [class]="'alert alert-' + messageType()">{{ message() }}</div>
-  }
-
   <!-- Type filter tabs -->
   <nav class="mb-3">
     <div class="filter-bar">
@@ -152,7 +148,7 @@
                   <span class="text-muted small">{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                 </td>
                 <td>
-                  <span [class]="'status-badge badge-' + req.status.toLowerCase()">{{ req.status }}</span>
+                  <span [class]="'status-badge badge-' + req.status.toLowerCase()">{{ ('STATUS.' + req.status) | translate }}</span>
                 </td>
                 <td class="text-end">
                   @if (req.status === 'PENDING') {
@@ -249,7 +245,7 @@
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">{{ 'EMPLOYEE.requests.user_status' | translate }}</span>
-                  <span class="detail-value">{{ userDetail()!.userStatus }}</span>
+                  <span class="detail-value">{{ ('STATUS.' + userDetail()!.userStatus) | translate }}</span>
                 </div>
               </div>
             </div>

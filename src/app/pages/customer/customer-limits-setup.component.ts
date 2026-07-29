@@ -8,6 +8,7 @@ import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 interface LimitMeta {
   type: string;
@@ -36,8 +37,6 @@ export class CustomerLimitsSetupComponent {
   limits = signal<AccountLimitResponseDto[]>([]);
   loading = signal(true);
   limitsLoading = signal(false);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
   editingType = signal('');
   editingError = signal('');
@@ -64,6 +63,7 @@ export class CustomerLimitsSetupComponent {
     private customerService: CustomerService,
     private authService: AuthService,
     private router: Router,
+    private toastService: ToastService,
   ) {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
@@ -85,7 +85,6 @@ export class CustomerLimitsSetupComponent {
 
   onAccountChange(accountNumber: string): void {
     this.selectedAccount.set(accountNumber);
-    this.message.set('');
     this.editingType.set('');
     if (!accountNumber) { this.limits.set([]); return; }
     this.limitsLoading.set(true);
@@ -134,8 +133,7 @@ export class CustomerLimitsSetupComponent {
       maxAmount: this.editAmount,
     }).subscribe({
       next: (saved) => {
-        this.message.set('Limite salvato!');
-        this.messageType.set('success');
+        this.toastService.success(this.translate.instant('LIMITS_SETUP.toast.saved'));
         this.editingType.set('');
         this.limits.update(list => {
           const idx = list.findIndex(l => l.limitType === type);
@@ -146,7 +144,7 @@ export class CustomerLimitsSetupComponent {
           }
         });
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -160,7 +158,7 @@ export class CustomerLimitsSetupComponent {
         }
         this.router.navigate(['/customer/dashboard']);
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 }

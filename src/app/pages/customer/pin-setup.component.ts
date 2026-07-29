@@ -2,6 +2,7 @@ import { Component, inject, signal, ViewChildren, QueryList, ElementRef } from '
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-pin-setup',
@@ -12,12 +13,11 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class PinSetupComponent {
   private translate = inject(TranslateService);
+  private toastService = inject(ToastService);
   currentLang = localStorage.getItem('lang') || 'it';
 
   digits = signal<string[]>(['', '', '', '']);
   loading = signal(false);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
   @ViewChildren('pinInput') pinInputs!: QueryList<ElementRef>;
 
   constructor(
@@ -40,7 +40,6 @@ export class PinSetupComponent {
     this.digits.set(updated);
 
     input.value = value;
-    this.message.set('');
 
     if (value && index < 3) {
       const inputs = this.pinInputs.toArray();
@@ -75,8 +74,7 @@ export class PinSetupComponent {
         this.router.navigate(['/customer/dashboard']);
       },
       error: (err) => {
-        this.message.set(err.message);
-        this.messageType.set('error');
+        this.toastService.error(err?.error?.message || err?.message);
         this.loading.set(false);
         this.resetInputs();
       },

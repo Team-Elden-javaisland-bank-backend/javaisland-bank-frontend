@@ -20,38 +20,23 @@
       </div>
     </div>
 
-    <!-- Stats row -->
-    <div class="row g-3 mb-4">
-      <div class="col-12 col-md-4">
-        <div class="stat-card stat-balance">
-          <div class="stat-icon-box">
-            <i class="bi bi-wallet2"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">{{ 'DASHBOARD.total_balance' | translate }}</span>
-            <span class="stat-value">{{ totalBalance | currency:'EUR':'symbol':'1.2-2' }}</span>
-          </div>
+    <!-- Balance hero -->
+    <div class="balance-hero mb-4">
+      <div class="balance-hero-inner">
+        <div class="balance-hero-left">
+          <span class="balance-hero-label">{{ 'DASHBOARD.total_balance' | translate }}</span>
+          <span class="balance-hero-value">{{ totalBalance | currency:'EUR':'symbol':'1.2-2' }}</span>
+
         </div>
-      </div>
-      <div class="col-12 col-md-4">
-        <div class="stat-card stat-accounts">
-          <div class="stat-icon-box">
-            <i class="bi bi-bank"></i>
+        <div class="balance-hero-stats">
+          <div class="balance-hero-stat">
+            <span class="bhs-value">{{ activeAccounts }}</span>
+            <span class="bhs-label">{{ 'DASHBOARD.active_accounts' | translate }}</span>
           </div>
-          <div class="stat-info">
-            <span class="stat-label">{{ 'DASHBOARD.active_accounts' | translate }}</span>
-            <span class="stat-value">{{ activeAccounts }}</span>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-4">
-        <div class="stat-card stat-transactions">
-          <div class="stat-icon-box">
-            <i class="bi bi-arrow-left-right"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">{{ 'DASHBOARD.recent_transactions' | translate }}</span>
-            <span class="stat-value">{{ recentTransactions().length }}</span>
+          <div class="balance-hero-divider"></div>
+          <div class="balance-hero-stat">
+            <span class="bhs-value">{{ recentTransactions().length }}</span>
+            <span class="bhs-label">{{ 'DASHBOARD.recent_transactions' | translate }}</span>
           </div>
         </div>
       </div>
@@ -202,26 +187,26 @@
       <!-- Right sidebar -->
       <div class="dashboard-sidebar">
         <!-- Quick actions -->
-        <div class="sidebar-card mb-3">
+        <div class="sidebar-card">
           <div class="sidebar-card-header">
             <i class="bi bi-lightning-charge me-2"></i>{{ 'DASHBOARD.quick_actions' | translate }}
           </div>
           <div class="sidebar-card-body">
-            <a routerLink="/customer/transactions" class="quick-action">
+            <a routerLink="/customer/operations" [queryParams]="{tab: 'deposit'}" class="quick-action">
               <div class="qa-icon qa-green"><i class="bi bi-arrow-down-left"></i></div>
               <div class="qa-info">
                 <span class="qa-title">{{ 'DASHBOARD.deposit' | translate }}</span>
                 <span class="qa-desc">{{ 'DASHBOARD.deposit_desc' | translate }}</span>
               </div>
             </a>
-            <a routerLink="/customer/transactions" class="quick-action">
+            <a routerLink="/customer/operations" [queryParams]="{tab: 'withdraw'}" class="quick-action">
               <div class="qa-icon qa-red"><i class="bi bi-arrow-up-right"></i></div>
               <div class="qa-info">
                 <span class="qa-title">{{ 'DASHBOARD.withdraw' | translate }}</span>
                 <span class="qa-desc">{{ 'DASHBOARD.withdraw_desc' | translate }}</span>
               </div>
             </a>
-            <a routerLink="/customer/transactions" class="quick-action">
+            <a routerLink="/customer/operations" [queryParams]="{tab: 'transfer'}" class="quick-action">
               <div class="qa-icon qa-blue"><i class="bi bi-send"></i></div>
               <div class="qa-info">
                 <span class="qa-title">{{ 'DASHBOARD.transfer' | translate }}</span>
@@ -239,7 +224,7 @@
         </div>
 
         <!-- Tips panel -->
-        <div class="sidebar-card mb-3">
+        <div class="sidebar-card">
           <div class="sidebar-card-header">
             <i class="bi bi-shield-check me-2"></i>{{ 'DASHBOARD.security' | translate }}
           </div>

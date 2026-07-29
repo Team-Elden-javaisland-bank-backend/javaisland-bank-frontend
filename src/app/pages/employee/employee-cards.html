@@ -18,10 +18,6 @@
     }
   </div>
 
-  @if (message()) {
-    <div class="alert-alert">{{ message() }}</div>
-  }
-
   @if (loading()) {
     <div class="d-flex justify-content-center py-5">
       <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
@@ -82,14 +78,14 @@
                 </td>
                 <td>
                   <span [class]="'type-pill type-' + card.cardType.toLowerCase()">
-                    <i [class]="card.cardType.toLowerCase() === 'credit' ? 'bi bi-gem' : 'bi bi-wallet2'"></i>
-                    {{ card.cardType }}
+                    <i class="bi bi-wallet2"></i>
+                    {{ ('CARD_TYPE.' + card.cardType) | translate }}
                   </span>
                 </td>
                 <td><span class="mono">{{ card.expirationDate }}</span></td>
                 <td>
                   <span [class]="'status-pill card-status-' + card.status.toLowerCase()">
-                    {{ card.status }}
+                    {{ ('STATUS.' + card.status) | translate }}
                   </span>
                 </td>
                 <td><span class="mono text-muted">#{{ card.accountId }}</span></td>

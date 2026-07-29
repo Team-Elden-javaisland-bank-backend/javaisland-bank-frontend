@@ -15,15 +15,6 @@
     </div>
   </div>
 
-  <!-- Toast Message -->
-  @if (message()) {
-    <div class="alert alert-dismissible fade show" [ngClass]="messageType() === 'success' ? 'alert-success' : 'alert-danger'" role="alert">
-      <i class="bi" [ngClass]="messageType() === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
-      {{ message() }}
-      <button type="button" class="btn-close" (click)="message.set('')"></button>
-    </div>
-  }
-
   <!-- Create Employee Form -->
   @if (showCreateForm()) {
     <div class="card create-form-card mb-4">

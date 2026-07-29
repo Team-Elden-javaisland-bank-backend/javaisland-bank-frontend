@@ -3,6 +3,7 @@
     "dashboard": "Dashboard",
     "accounts": "Conti",
     "transactions": "Transazioni",
+    "operations": "Operazioni",
     "beneficiaries": "Beneficiari",
     "limits": "Limiti",
     "cards": "Carte",
@@ -152,7 +153,9 @@
     "card_goto": "Carta",
     "greeting_morning": "Buongiorno",
     "greeting_afternoon": "Buon pomeriggio",
-    "greeting_evening": "Buonasera"
+    "greeting_evening": "Buonasera",
+    "monthly_expenses": "Spese Mensili",
+    "vs_last_month": "vs mese scorso"
   },
   "ACCOUNTS": {
     "page_title": "I miei Conti",
@@ -179,9 +182,38 @@
     "no_accounts": "Non hai ancora conti",
     "open_first": "Apri il tuo primo conto",
     "balance": "Saldo disponibile",
+    "future_balance": "Saldo previsto",
     "card_prev": "Carta precedente",
     "card_next": "Carta successiva",
-    "card_goto": "Vai alla carta"
+    "card_goto": "Vai alla carta",
+    "closed_accounts": "Conti Chiusi",
+    "closed_count_label": "conti",
+    "closed_show": "Mostra",
+    "closed_hide": "Nascondi",
+    "closed_on": "Chiuso il:",
+    "transfer": "Trasferisci",
+    "transfer_title": "Trasferimento tra conti",
+    "transfer_subtitle": "Sposta fondi da un conto all'altro",
+    "transfer_from": "Da conto",
+    "transfer_to": "A conto",
+    "transfer_amount": "Importo",
+    "transfer_min": "Minimo €1,00",
+    "transfer_description": "Descrizione",
+    "transfer_description_placeholder": "es. Trasferimento interno",
+    "transfer_confirm": "Conferma Trasferimento",
+    "optional": "facoltativo",
+    "toast": {
+      "fill_fields": "Compila tutti i campi correttamente",
+      "select_account": "Seleziona un conto",
+      "account_opened": "Conto aperto con successo",
+      "account_open_requested": "Richiesta di apertura conto inviata. In attesa di approvazione.",
+      "closure_requested": "Richiesta di chiusura inviata",
+      "generic_error": "Si è verificato un errore. Riprova più tardi.",
+      "transfer_select_accounts": "Seleziona sia il conto origine che il conto destinazione",
+      "transfer_same_account": "I conti di origine e destinazione devono essere diversi",
+      "transfer_min_amount": "L'importo minimo di trasferimento è €1,00",
+      "transfer_success": "Trasferimento completato con successo"
+    }
   },
   "ACCOUNT_DETAIL": {
     "back": "Indietro",
@@ -283,7 +315,8 @@
     "date_must_be_tomorrow": "La data deve essere almeno domani",
     "date_max_30_days": "La data non può essere oltre 30 giorni da oggi",
     "transfer_limit_exceeded": "Importo supera il limite {{label}} di €{{value}}",
-    "select_dates": "Seleziona le date"
+    "select_dates": "Seleziona le date",
+    "own_account_error": "Impossibile effettuare un bonifico a un conto proprio. Utilizzare la sezione Trasferisci nella schermata Conti."
   },
   "OPERATIONS": {
     "page_title": "Operazioni",
@@ -304,11 +337,39 @@
     "add_first": "Aggiungi il primo",
     "added_on": "Aggiunto:",
     "cancel": "Annulla",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "toast": {
+      "fill_fields": "Compila tutti i campi",
+      "added": "Beneficiario aggiunto",
+      "removed": "Beneficiario eliminato",
+      "confirm_delete": "Eliminare questo beneficiario?"
+    }
+  },
+  "SAVED_BENEFICIARIES": {
+    "page_title": "Beneficiari Salvati",
+    "page_subtitle": "Gestisci i tuoi beneficiari salvati",
+    "add": "Aggiungi",
+    "new_beneficiary": "Nuovo Beneficiario",
+    "new_beneficiary_desc": "Salva un nuovo beneficiario per accesso rapido",
+    "nickname": "Nome",
+    "nickname_placeholder": "Es. Mario Rossi",
+    "iban_dest": "Numero Conto / IBAN",
+    "save": "Salva",
+    "no_beneficiaries": "Nessun beneficiario salvato",
+    "add_first_desc": "Salva un beneficiario per velocizzare i bonifici.",
+    "add_first": "Aggiungi il primo",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "toast": {
+      "fill_fields": "Compila tutti i campi",
+      "added": "Beneficiario salvato",
+      "removed": "Beneficiario eliminato",
+      "confirm_delete": "Eliminare questo beneficiario?"
+    }
   },
   "CARDS": {
     "page_title": "Le tue Carte",
-    "page_subtitle": "Gestisci le tue carte di debito e credito",
+    "page_subtitle": "Gestisci le tue carte di debito",
     "loading": "Caricamento...",
     "no_cards": "Nessuna carta",
     "no_cards_desc": "Non hai ancora carte associate ai tuoi conti.",
@@ -320,6 +381,10 @@
     "total_cards": "Carte Totali",
     "active_cards": "Carte Attive",
     "blocked_cards": "Carte Bloccate",
+    "closed_cards": "Carte Chiuse",
+    "closed_count_label": "chiuse",
+    "closed_show": "Mostra",
+    "closed_hide": "Nascondi",
     "card_security": "Sicurezza Carta",
     "protect_data": "Proteggi i dati",
     "protect_data_desc": "Non condividere mai il numero completo, CVV o PIN della tua carta.",
@@ -327,11 +392,9 @@
     "push_notifications_desc": "Attiva le notifiche per ricevere avvisi su ogni transazione.",
     "quick_block": "Blocco rapido",
     "quick_block_desc": "In caso di smarrimento, contattaci subito per bloccare la carta.",
-    "card_types": "Tipi di Carta",
+    "card_types": "Tipo di Carta",
     "debit_card": "Carta di Debito",
-    "debit_desc": "Preleva e paga direttamente dal tuo conto corrente.",
-    "credit_card": "Carta di Credito",
-    "credit_desc": "Paga con credito e paga il saldo mensilmente."
+    "debit_desc": "Preleva e paga direttamente dal tuo conto corrente."
   },
   "LIMITS": {
     "page_title": "I miei Limiti",
@@ -405,7 +468,10 @@
     "no_accounts": "Nessun conto attivo trovato.",
     "loading_limits": "Caricamento limiti...",
     "missing_warning": "limiti ancora da impostare. Imposta tutti i limiti prima di procedere.",
-    "confirm": "Conferma e continua"
+    "confirm": "Conferma e continua",
+    "toast": {
+      "saved": "Limite salvato!"
+    }
   },
   "NOTIFICATIONS": {
     "page_title": "Le Mie Notifiche",
@@ -451,9 +517,7 @@
     "status_inactive": "Inattivo",
     "status_blocked": "Bloccato",
     "status_pending": "In attesa",
-    "card_type_credit": "Carta di Credito",
     "card_type_debit": "Carta di Debito",
-    "card_type_prepaid": "Carta Prepagata",
     "error_loading": "Errore nel caricamento del profilo",
     "error_password": "Errore nella richiesta di cambio password",
     "password_changed": "Password cambiata con successo",
@@ -573,7 +637,13 @@
       "atm_withdrawal": "Prelievo ATM",
       "pos_spending": "Spesa POS",
       "save": "Salva",
-      "amount_placeholder": "Importo max (es. 5.000)"
+      "amount_placeholder": "Importo max (es. 5.000)",
+      "toast": {
+        "fill_fields": "Compila tipo e importo",
+        "min_amount": "L'importo minimo è €{{min}}",
+        "max_amount": "L'importo massimo è €{{max}}",
+        "limit_updated": "Limite aggiornato!"
+      }
     },
     "cards": {
       "page_title": "Gestione Carte",
@@ -959,6 +1029,7 @@
     "COMPLETED": "Completato",
     "FAILED": "Fallito",
     "REJECTED": "Rifiutato",
+    "CANCELLED": "Annullato",
     "UNKNOWN": "Sconosciuto"
   },
   "LIMIT_TYPE": {
@@ -1009,6 +1080,9 @@
     "ACCOUNT_FROZEN_DESC": "Congelamento conto richiesto",
     "CARD_BLOCKED_DESC": "Blocco carta richiesto",
     "LIMIT_CHANGE_DESC": "Modifica limite richiesta"
+  },
+  "CARD_TYPE": {
+    "DEBIT": "Debito"
   },
   "STATUS": {
     "ACTIVE": "Attivo",

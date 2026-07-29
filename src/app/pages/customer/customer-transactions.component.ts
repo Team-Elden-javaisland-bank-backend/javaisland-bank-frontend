@@ -15,6 +15,7 @@ import { ToastService } from '../../core/services/toast.service';
 export class CustomerTransactionsComponent implements OnInit {
   allTransactions = signal<TransactionResponseDto[]>([]);
   loading = signal(true);
+  accountNumbers = signal<Set<string>>(new Set());
 
   startDate = '';
   endDate = '';
@@ -34,7 +35,23 @@ export class CustomerTransactionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading.set(false);
+    this.loadAccounts();
     this.loadHistory();
+  }
+
+  private loadAccounts(): void {
+    this.customerService.getAccounts().subscribe({
+      next: (accounts) => this.accountNumbers.set(new Set(accounts.map(a => a.accountNumber))),
+    });
+  }
+
+  getTxDirection(tx: TransactionResponseDto): 'in' | 'out' | 'self' {
+    const accs = this.accountNumbers();
+    const isSource = tx.sourceAccountNumber ? accs.has(tx.sourceAccountNumber) : false;
+    const isDest = tx.destinationAccountNumber ? accs.has(tx.destinationAccountNumber) : false;
+    if (isSource && !isDest) return 'out';
+    if (isDest && !isSource) return 'in';
+    return 'self';
   }
 
   private extractError(err: any): string {

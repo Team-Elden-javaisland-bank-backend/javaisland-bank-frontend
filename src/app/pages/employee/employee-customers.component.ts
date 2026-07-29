@@ -28,8 +28,6 @@ export class EmployeeCustomersComponent {
   loadingModal = signal(false);
   modalMode = signal<'user' | 'account'>('account');
 
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
   isGeneratingPdf = signal<boolean>(false);
 
   filteredCustomers = computed(() => {

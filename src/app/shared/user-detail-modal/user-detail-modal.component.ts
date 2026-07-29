@@ -449,45 +449,6 @@ import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-deta
         grid-template-columns: 1fr;
       }
     }
-
-    @media (prefers-color-scheme: dark) {
-      .modal-content-custom {
-        background: #1e293b;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      }
-
-      .modal-header-custom {
-        border-color: #334155;
-      }
-
-      .modal-title-custom { color: #f1f5f9; }
-
-      .btn-close-custom {
-        color: #64748b;
-      }
-
-      .btn-close-custom:hover {
-        color: #e2e8f0;
-        background: #334155;
-      }
-
-      .modal-footer-custom {
-        border-color: #334155;
-      }
-
-      .detail-section-title { color: #f1f5f9; }
-
-      .detail-value { color: #e2e8f0; }
-
-      .detail-value-sm { color: #e2e8f0; }
-
-      .card-item {
-        background: linear-gradient(135deg, #0f172a, #1a2744);
-      }
-
-      .no-cards-msg { color: #64748b; }
-      .empty-detail { color: #64748b; }
-    }
   `]
 })
 export class UserDetailModalComponent {

@@ -112,28 +112,4 @@
   }
 }
 
-/* ═══ DARK MODE ═══ */
-.dark-mode .notification-card {
-  background: #1e293b;
-  border-color: #334155;
-}
 
-.dark-mode .notification-card .card-header {
-  background: #0f172a;
-}
-
-.dark-mode .notification-item:hover {
-  background: #1e293b;
-}
-
-.dark-mode .notification-item.unread {
-  background: rgba(229, 169, 60, 0.08);
-}
-
-.dark-mode .badge-type {
-  color: #e2e8f0;
-}
-
-.dark-mode .notification-message {
-  color: #94a3b8;
-}

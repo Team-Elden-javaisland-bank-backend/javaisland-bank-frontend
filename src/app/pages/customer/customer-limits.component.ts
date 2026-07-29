@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-transl
 import { CustomerService } from '../../core/services/customer.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
+import { ToastService } from '../../core/services/toast.service';
 
 interface LimitMeta {
   type: string;
@@ -27,8 +28,6 @@ export class CustomerLimitsComponent {
   limits = signal<AccountLimitResponseDto[]>([]);
   loading = signal(true);
   limitsLoading = signal(false);
-  message = signal('');
-  messageType = signal<'success' | 'error'>('success');
 
   editingType = signal('');
   editingError = signal('');
@@ -61,7 +60,7 @@ export class CustomerLimitsComponent {
     });
   }
 
-  constructor(private customerService: CustomerService, private translate: TranslateService) {
+  constructor(private customerService: CustomerService, private translate: TranslateService, private toastService: ToastService) {
     this.customerService.getAccounts().subscribe({
       next: (data) => {
         this.accounts.set(data.filter(a => a.statusId === 2));
@@ -76,7 +75,6 @@ export class CustomerLimitsComponent {
 
   onAccountChange(accountNumber: string): void {
     this.selectedAccount.set(accountNumber);
-    this.message.set('');
     this.editingType.set('');
     if (!accountNumber) { this.limits.set([]); return; }
     this.limitsLoading.set(true);
@@ -166,12 +164,11 @@ export class CustomerLimitsComponent {
       maxAmount: this.editAmount,
     }).subscribe({
       next: () => {
-        this.message.set(this.translate.instant('LIMITS.success_updated'));
-        this.messageType.set('success');
+        this.toastService.success(this.translate.instant('LIMITS.success_updated'));
         this.editingType.set('');
         this.onAccountChange(this.selectedAccount());
       },
-      error: (err) => { this.message.set(err.message); this.messageType.set('error'); },
+      error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
@@ -240,8 +237,7 @@ export class CustomerLimitsComponent {
         this.showSuccessAnimation.set(true);
         setTimeout(() => {
           this.showSuccessAnimation.set(false);
-          this.message.set(this.translate.instant('LIMITS.request_modal.success'));
-          this.messageType.set('success');
+          this.toastService.success(this.translate.instant('LIMITS.request_modal.success'));
           this.onAccountChange(this.selectedAccount());
         }, 2500);
       },

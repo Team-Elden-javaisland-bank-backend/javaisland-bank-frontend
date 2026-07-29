@@ -15,7 +15,6 @@ export class AdminCustomersComponent implements OnInit {
   customers = signal<AdminCustomerListItemDto[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
-  message = signal<string | null>(null);
   searchQuery = signal('');
 
   showModal = signal(false);
@@ -77,6 +76,13 @@ export class AdminCustomersComponent implements OnInit {
       ANNULLED: 'bg-secondary',
     };
     return classes[status] || 'bg-secondary';
+  }
+
+  getAccountStatusLabel(statusId: number): string {
+    const map: Record<number, string> = { 1: 'INACTIVE', 2: 'ACTIVE', 3: 'FROZEN', 4: 'CLOSED' };
+    const key = 'STATUS.' + (map[statusId] || 'UNKNOWN');
+    const translated = this.translate.instant(key);
+    return translated === key ? String(statusId) : translated;
   }
 
   formatDate(dateStr: string): string {

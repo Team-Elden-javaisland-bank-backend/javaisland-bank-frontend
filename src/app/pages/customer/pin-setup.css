@@ -138,36 +138,4 @@
   color: #94a3b8;
 }
 
-.dark-mode .pin-card {
-  background: #1e293b;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
 
-.dark-mode .pin-header h1 {
-  color: #f1f5f9;
-}
-
-.dark-mode .pin-header p {
-  color: #64748b;
-}
-
-.dark-mode .pin-digit {
-  background: #0f172a;
-  border-color: #334155;
-  color: #f1f5f9;
-}
-
-.dark-mode .pin-digit:focus {
-  border-color: var(--bi-gold);
-  box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.3);
-}
-
-.dark-mode .pin-digit.filled {
-  background: #1a2332;
-  border-color: var(--bi-gold);
-}
-
-.dark-mode .pin-message-error {
-  background: #450a0a;
-  color: #fca5a5;
-}
