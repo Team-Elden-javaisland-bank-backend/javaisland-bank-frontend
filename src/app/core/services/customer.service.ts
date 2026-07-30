@@ -16,8 +16,6 @@ import { CardResponseDto } from '../models/card/card-response.dto';
 import { CardSensitiveDto } from '../models/card/card-sensitive.dto';
 import { BeneficiaryRequestDto } from '../models/beneficiary/beneficiary-request.dto';
 import { BeneficiaryResponseDto } from '../models/beneficiary/beneficiary-response.dto';
-import { SavedBeneficiaryRequestDto } from '../models/saved-beneficiary/saved-beneficiary-request.dto';
-import { SavedBeneficiaryResponseDto } from '../models/saved-beneficiary/saved-beneficiary-response.dto';
 import { CustomerProfileDto } from '../models/user/customer-profile.dto';
 import { PageResponseDto } from '../models/common/page-response.dto';
 import { ErrorResponseDto } from '../models/common/error-response.dto';
@@ -112,9 +110,9 @@ export class CustomerService {
       .pipe(catchError(this.handleError));
   }
 
-  requestPasswordChange(currentPassword: string, newPassword: string): Observable<string> {
+  requestPasswordChange(): Observable<string> {
     return this.http
-      .post(`${this.API_BASE}/password-change`, { currentPassword, newPassword }, { responseType: 'text' })
+      .post(`${this.API_BASE}/password-change`, null, { responseType: 'text' })
       .pipe(catchError(this.handleError));
   }
 
@@ -277,26 +275,6 @@ export class CustomerService {
   cancelTransaction(transactionId: number): Observable<{message: string}> {
     return this.http
       .delete<{message: string}>(`${this.API_BASE}/transactions/${transactionId}/cancel`)
-      .pipe(catchError(this.handleError));
-  }
-
-  // ── Saved Beneficiari ──────────────────────────────────────────
-
-  getSavedBeneficiaries(): Observable<SavedBeneficiaryResponseDto[]> {
-    return this.http
-      .get<SavedBeneficiaryResponseDto[]>(`${this.API_BASE}/saved-beneficiaries`)
-      .pipe(catchError(this.handleError));
-  }
-
-  saveSavedBeneficiary(data: SavedBeneficiaryRequestDto): Observable<SavedBeneficiaryResponseDto> {
-    return this.http
-      .post<SavedBeneficiaryResponseDto>(`${this.API_BASE}/saved-beneficiaries`, data)
-      .pipe(catchError(this.handleError));
-  }
-
-  deleteSavedBeneficiary(id: number): Observable<string> {
-    return this.http
-      .delete(`${this.API_BASE}/saved-beneficiaries/${id}`, { responseType: 'text' })
       .pipe(catchError(this.handleError));
   }
 

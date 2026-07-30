@@ -28,7 +28,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (!this.username || !this.password) {
-      this.error.set('Inserisci username e password');
+      this.error.set(this.translate.instant('AUTH.required_credentials'));
       return;
     }
 

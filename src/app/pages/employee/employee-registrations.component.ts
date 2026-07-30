@@ -1,7 +1,7 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { EmployeeService } from '../../core/services/employee.service';
 import { PendingRegistrationDto } from '../../core/models/user/pending-registration.dto';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
@@ -38,7 +38,11 @@ export class EmployeeRegistrationsComponent implements OnInit {
     );
   });
 
-  constructor(private employeeService: EmployeeService, private toastService: ToastService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private toastService: ToastService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.loadRegistrations();
@@ -104,7 +108,7 @@ export class EmployeeRegistrationsComponent implements OnInit {
   }
 
   deleteUser(userId: number): void {
-    if (!confirm('Vuoi eliminare questo utente e il conto associato? Questa azione è irreversibile.')) return;
+    if (!confirm(this.translate.instant('EMPLOYEE.registrations.confirm_delete'))) return;
 
     this.employeeService.deleteUser(userId).subscribe({
       next: (res) => {

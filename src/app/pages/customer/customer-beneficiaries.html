@@ -28,6 +28,11 @@
           <input class="form-input-custom" type="text" [(ngModel)]="nickname" [placeholder]="'BENEFICIARIES.nickname_placeholder' | translate" />
         </div>
         <div class="form-group">
+          <label class="form-label-sm">{{ 'BENEFICIARIES.beneficiary_name' | translate }}</label>
+          <input class="form-input-custom" type="text" [(ngModel)]="beneficiaryName" [placeholder]="'BENEFICIARIES.beneficiary_name_placeholder' | translate" />
+          <small class="form-hint">{{ 'BENEFICIARIES.beneficiary_name_hint' | translate }}</small>
+        </div>
+        <div class="form-group">
           <label class="form-label-sm">{{ 'BENEFICIARIES.iban_dest' | translate }}</label>
           <input class="form-input-custom" type="text" [(ngModel)]="destinationAccountNumber" placeholder="IT..." />
         </div>
@@ -64,7 +69,7 @@
               }
             </div>
             <div class="beneficiary-main">
-              <div class="beneficiary-name">{{ b.nickname }}</div>
+              <div class="beneficiary-name">{{ b.beneficiaryName || b.nickname }}</div>
               <div class="beneficiary-iban mono">{{ b.destinationAccountNumber }}</div>
             </div>
           </div>

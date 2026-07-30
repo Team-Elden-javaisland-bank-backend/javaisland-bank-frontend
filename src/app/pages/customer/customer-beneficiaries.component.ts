@@ -18,6 +18,7 @@ export class CustomerBeneficiariesComponent implements OnInit {
   showForm = signal(false);
 
   nickname = '';
+  beneficiaryName = '';
   destinationAccountNumber = '';
 
   constructor(
@@ -46,14 +47,20 @@ export class CustomerBeneficiariesComponent implements OnInit {
       return;
     }
 
-    this.customerService.saveBeneficiary({
+    const data: any = {
       nickname: this.nickname,
       destinationAccountNumber: this.destinationAccountNumber,
-    }).subscribe({
+    };
+    if (this.beneficiaryName) {
+      data.beneficiaryName = this.beneficiaryName;
+    }
+
+    this.customerService.saveBeneficiary(data).subscribe({
       next: () => {
         this.toastService.success(this.translate.instant('BENEFICIARIES.toast.added'));
         this.showForm.set(false);
         this.nickname = '';
+        this.beneficiaryName = '';
         this.destinationAccountNumber = '';
         this.loadBeneficiaries();
       },

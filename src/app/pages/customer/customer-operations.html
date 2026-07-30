@@ -134,7 +134,7 @@
 
         @if (beneficiaries().length > 0) {
           <div class="ops-form-group">
-            <label class="ops-label">{{ 'TRANSACTIONS.saved_beneficiary' | translate }}</label>
+            <label class="ops-label">{{ 'TRANSACTIONS.beneficiary' | translate }}</label>
             <div class="ops-beneficiary-list">
               @for (b of beneficiaries(); track b.id) {
                 <div class="ops-beneficiary" [class.selected]="txBeneficiaryId === b.id" (click)="toggleBeneficiary(b.id, b.destinationAccountNumber)">

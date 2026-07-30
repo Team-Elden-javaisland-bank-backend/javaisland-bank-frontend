@@ -6,19 +6,12 @@ import { CustomerService } from '../../core/services/customer.service';
 import { CustomerProfileDto } from '../../core/models/user/customer-profile.dto';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { PinConfirmModalComponent } from '../../shared/pin-confirm-modal/pin-confirm-modal.component';
 import { ToastService } from '../../core/services/toast.service';
-
-interface PasswordChangeRequest {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
 
 @Component({
   selector: 'app-customer-profile',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective, PinConfirmModalComponent],
+  imports: [CommonModule, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-profile.html',
   styleUrls: ['./customer-profile.css']
 })
@@ -27,45 +20,13 @@ export class CustomerProfileComponent implements OnInit {
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
 
-  passwordRequest = signal<PasswordChangeRequest>({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-
-  passwordStrength = computed(() => {
-    const pwd = this.passwordRequest().newPassword;
-    if (!pwd) return { level: 'none', score: 0, label: '' };
-
-    let score = 0;
-    if (pwd.length >= 8) score++;
-    if (pwd.length >= 12) score++;
-    if (/[A-Z]/.test(pwd)) score++;
-    if (/[a-z]/.test(pwd)) score++;
-    if (/[0-9]/.test(pwd)) score++;
-    if (/[^A-Za-z0-9]/.test(pwd)) score++;
-
-    if (score <= 2) return { level: 'weak', score: 33, label: this.translate.instant('PROFILE.strength_weak') };
-    if (score <= 4) return { level: 'medium', score: 66, label: this.translate.instant('PROFILE.strength_medium') };
-    return { level: 'strong', score: 100, label: this.translate.instant('PROFILE.strength_strong') };
-  });
-
-  isPasswordValid = computed(() => {
-    const req = this.passwordRequest();
-    return (
-      req.currentPassword.length > 0 &&
-      req.newPassword.length >= 8 &&
-      req.newPassword === req.confirmPassword
-    );
-  });
+  isSubmittingPassword = signal<boolean>(false);
 
   isGeneratingPdf = signal<boolean>(false);
-  isSubmittingPassword = signal<boolean>(false);
   selectedAccountForPdf = signal<string | null>(null);
 
   showPasswordModal = signal<boolean>(false);
   showPdfModal = signal<boolean>(false);
-  showPinModal = signal<boolean>(false);
 
   transactions = signal<any[]>([]);
 
@@ -175,11 +136,6 @@ export class CustomerProfileComponent implements OnInit {
   }
 
   openPasswordModal(): void {
-    this.passwordRequest.set({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
     this.showPasswordModal.set(true);
   }
 
@@ -187,35 +143,20 @@ export class CustomerProfileComponent implements OnInit {
     this.showPasswordModal.set(false);
   }
 
-  updatePasswordField(field: keyof PasswordChangeRequest, value: string): void {
-    this.passwordRequest.update(req => ({ ...req, [field]: value }));
-  }
-
   submitPasswordChange(): void {
-    if (!this.isPasswordValid()) return;
-    this.showPinModal.set(true);
-  }
-
-  onPinConfirmed(): void {
-    this.showPinModal.set(false);
     this.isSubmittingPassword.set(true);
-    const req = this.passwordRequest();
 
-    this.customerService.requestPasswordChange(req.currentPassword, req.newPassword).subscribe({
+    this.customerService.requestPasswordChange().subscribe({
       next: () => {
         this.isSubmittingPassword.set(false);
         this.closePasswordModal();
-        this.toastService.success(this.translate.instant('PROFILE.password_changed'));
+        this.toastService.success(this.translate.instant('PROFILE.password_change_requested'));
       },
       error: (err: any) => {
         this.isSubmittingPassword.set(false);
         this.toastService.error(err.error?.message || this.translate.instant('PROFILE.error_password'));
       }
     });
-  }
-
-  onPinCancelled(): void {
-    this.showPinModal.set(false);
   }
 
   private translateTxStatus(statusName: string | null): string {

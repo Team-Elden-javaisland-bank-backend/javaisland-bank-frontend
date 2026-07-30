@@ -197,62 +197,16 @@
             <h5 class="modal-title"><i class="bi bi-key me-2"></i>{{ 'PROFILE.change_password' | translate }}</h5>
             <button type="button" class="btn-close btn-close-white" (click)="closePasswordModal()"></button>
           </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">{{ 'PROFILE.current_password' | translate }}</label>
-              <input
-                type="password"
-                class="form-control form-control-dark"
-                [value]="passwordRequest().currentPassword"
-                (input)="updatePasswordField('currentPassword', $any($event.target).value)"
-                [placeholder]="'PROFILE.enter_current_password' | translate"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ 'PROFILE.new_password' | translate }}</label>
-              <input
-                type="password"
-                class="form-control form-control-dark"
-                [value]="passwordRequest().newPassword"
-                (input)="updatePasswordField('newPassword', $any($event.target).value)"
-                [placeholder]="'PROFILE.min_8_chars' | translate"
-              />
-              <!-- Strength Meter -->
-              @if (passwordRequest().newPassword) {
-                <div class="strength-meter mt-2">
-                  <div class="strength-bar">
-                    <div
-                      class="strength-fill"
-                      [ngClass]="'strength-' + passwordStrength().level"
-                      [style.width.%]="passwordStrength().score"
-                    ></div>
-                  </div>
-                  <small class="strength-label" [ngClass]="'text-strength-' + passwordStrength().level">
-                    {{ passwordStrength().label }}
-                  </small>
-                </div>
-              }
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ 'PROFILE.confirm_password' | translate }}</label>
-              <input
-                type="password"
-                class="form-control form-control-dark"
-                [value]="passwordRequest().confirmPassword"
-                (input)="updatePasswordField('confirmPassword', $any($event.target).value)"
-                [placeholder]="'PROFILE.repeat_new_password' | translate"
-              />
-              @if (passwordRequest().confirmPassword && passwordRequest().newPassword !== passwordRequest().confirmPassword) {
-                <small class="text-danger">{{ 'PROFILE.passwords_mismatch' | translate }}</small>
-              }
-            </div>
+          <div class="modal-body text-center py-4">
+            <i class="bi bi-shield-check" style="font-size: 3rem; color: var(--bi-gold);"></i>
+            <p class="mt-3 mb-0">{{ 'PROFILE.password_change_confirm' | translate }}</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closePasswordModal()">{{ 'PROFILE.cancel' | translate }}</button>
             <button
               type="button"
               class="btn btn-gold"
-              [disabled]="!isPasswordValid() || isSubmittingPassword()"
+              [disabled]="isSubmittingPassword()"
               (click)="submitPasswordChange()"
             >
               @if (isSubmittingPassword()) {
@@ -322,10 +276,5 @@
         </div>
       </div>
     </div>
-  }
-
-  @if (showPinModal()) {
-    <div class="pin-overlay" (click)="onPinCancelled()"></div>
-    <app-pin-confirm-modal (confirmed)="onPinConfirmed()" (cancelled)="onPinCancelled()" />
   }
 </div>
