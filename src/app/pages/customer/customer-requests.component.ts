@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
@@ -9,12 +9,13 @@ import { CustomerRequestDto } from '../../core/models/customer/customer-request.
   imports: [CommonModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-requests.html',
   styleUrl: './customer-requests.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerRequestsComponent {
   allRequests = signal<CustomerRequestDto[]>([]);
   loading = signal(true);
   activeTab = signal<'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
-  error = signal('');
+  errorKey = signal<string | null>(null);
 
   readonly tabs: { key: 'PENDING' | 'APPROVED' | 'REJECTED'; labelKey: string; icon: string }[] = [
     { key: 'PENDING', labelKey: 'REQUESTS.tab_pending', icon: 'bi-hourglass-split' },
@@ -79,14 +80,14 @@ export class CustomerRequestsComponent {
 
   loadRequests(): void {
     this.loading.set(true);
-    this.error.set('');
+    this.errorKey.set(null);
     this.customerService.getMyRequests().subscribe({
       next: (data) => {
         this.allRequests.set(data);
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err.message || this.translate.instant('REQUESTS.loading'));
+        this.errorKey.set(err.message || 'REQUESTS.loading');
         this.loading.set(false);
       },
     });

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, EventEmitter, Output, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -8,14 +8,15 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [TranslatePipe],
   templateUrl: './pin-confirm-modal.component.html',
   styleUrl: './pin-confirm-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PinConfirmModalComponent {
-  @Output() confirmed = new EventEmitter<void>();
+  @Output() confirmed = new EventEmitter<string>();
   @Output() cancelled = new EventEmitter<void>();
 
   digits = signal<string[]>(['', '', '', '']);
   loading = signal(false);
-  message = signal('');
+  messageKey = signal<string | null>(null);
   @ViewChildren('pinInput') pinInputs!: QueryList<ElementRef>;
 
   constructor(private authService: AuthService) {}
@@ -29,8 +30,8 @@ export class PinConfirmModalComponent {
     this.digits.set(updated);
 
     input.value = value;
-    this.message.set('');
-
+    this.messageKey.set(null);
+ 
     if (value && index < 3) {
       const inputs = this.pinInputs.toArray();
       inputs[index + 1]?.nativeElement.focus();
@@ -55,10 +56,10 @@ export class PinConfirmModalComponent {
     this.loading.set(true);
     this.authService.verifyPin(pin).subscribe({
       next: () => {
-        this.confirmed.emit();
+        this.confirmed.emit(pin);
       },
       error: (err) => {
-        this.message.set(err.message);
+        this.messageKey.set(err.message);
         this.loading.set(false);
         this.resetInputs();
       },

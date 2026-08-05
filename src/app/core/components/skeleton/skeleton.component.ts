@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
 @Component({
   selector: 'app-skeleton',
@@ -132,7 +132,8 @@ import { Component, Input } from '@angular/core';
       0% { background-position: -200% 0; }
       100% { background-position: 200% 0; }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkeletonComponent {
   @Input() type: 'card' | 'table' | 'stats' | 'lines' = 'lines';

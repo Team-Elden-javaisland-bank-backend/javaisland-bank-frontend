@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { EmployeeService } from '../../core/services/employee.service';
   imports: [RouterLink, DatePipe, TranslatePipe, TranslateDirective],
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeDashboardComponent implements OnInit {
   pendingCount = signal(0);
@@ -34,7 +35,7 @@ export class EmployeeDashboardComponent implements OnInit {
     });
 
     this.employeeService.getCustomers().subscribe({
-      next: (data) => this.totalCustomers.set(data.length),
+      next: (data) => this.totalCustomers.set(data.totalElements),
     });
   }
 }

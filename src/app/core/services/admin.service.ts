@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ErrorResponseDto } from '../models/common/error-response.dto';
+import { handleHttpError } from '../interceptors/error.interceptor';
+import { environment } from '../../../environments/environment';
+import { PageResponseDto } from '../models/common/page-response.dto';
 
 export interface AdminDashboardDto {
   totalCustomers: number;
@@ -105,6 +107,8 @@ export interface AdminTransactionListItemDto {
   amount: number;
   typeId: number;
   statusId: number;
+  typeName: string;
+  statusName: string;
   description: string;
   sourceAccountNumber: string;
   destinationAccountNumber: string;
@@ -113,74 +117,80 @@ export interface AdminTransactionListItemDto {
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-  private readonly API_BASE = 'http://localhost:8081/api/v1/admin';
+  private readonly API_BASE = `${environment.apiUrl}/api/v1/admin`;
 
   constructor(private http: HttpClient) {}
 
   getDashboard(): Observable<AdminDashboardDto> {
     return this.http
       .get<AdminDashboardDto>(`${this.API_BASE}/dashboard`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
-  getEmployees(): Observable<EmployeeListItemDto[]> {
+  getEmployees(page?: number, size: number = 1000): Observable<PageResponseDto<EmployeeListItemDto>> {
+    const params: Record<string, string> = {};
+    if (page !== undefined) params['page'] = page.toString();
+    if (size !== undefined) params['size'] = size.toString();
     return this.http
-      .get<EmployeeListItemDto[]>(`${this.API_BASE}/employees?t=${Date.now()}`)
-      .pipe(catchError(this.handleError));
+      .get<PageResponseDto<EmployeeListItemDto>>(`${this.API_BASE}/employees`, { params })
+      .pipe(catchError(handleHttpError));
   }
 
   createEmployee(data: CreateEmployeeRequestDto): Observable<EmployeeListItemDto> {
     return this.http
       .post<EmployeeListItemDto>(`${this.API_BASE}/employees`, data)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
-  suspendEmployee(userId: number): Observable<string> {
+  suspendEmployee(userId: number): Observable<void> {
     return this.http
-      .put(`${this.API_BASE}/employees/${userId}/suspend`, null, { responseType: 'text' })
-      .pipe(catchError(this.handleError));
+      .put<void>(`${this.API_BASE}/employees/${userId}/suspend`, null)
+      .pipe(catchError(handleHttpError));
   }
 
-  activateEmployee(userId: number): Observable<string> {
+  activateEmployee(userId: number): Observable<void> {
     return this.http
-      .put(`${this.API_BASE}/employees/${userId}/activate`, null, { responseType: 'text' })
-      .pipe(catchError(this.handleError));
+      .put<void>(`${this.API_BASE}/employees/${userId}/activate`, null)
+      .pipe(catchError(handleHttpError));
   }
 
-  getAuditLogs(params?: { action?: string; recentDays?: number }): Observable<AuditLogDto[]> {
-    const queryParams: Record<string, string> = {};
+  getAuditLogs(params?: { action?: string; recentDays?: number }): Observable<PageResponseDto<AuditLogDto>> {
+    const queryParams: Record<string, string> = { size: '1000' };
     if (params?.action) queryParams['action'] = params.action;
     if (params?.recentDays) queryParams['recentDays'] = params.recentDays.toString();
 
     return this.http
-      .get<AuditLogDto[]>(`${this.API_BASE}/audit-logs`, { params: queryParams })
-      .pipe(catchError(this.handleError));
+      .get<PageResponseDto<AuditLogDto>>(`${this.API_BASE}/audit-logs`, { params: queryParams })
+      .pipe(catchError(handleHttpError));
   }
 
   getEmployeeDetail(userId: number): Observable<EmployeeDetailDto> {
     return this.http
       .get<EmployeeDetailDto>(`${this.API_BASE}/employees/${userId}`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
-  getCustomers(): Observable<AdminCustomerListItemDto[]> {
+  getCustomers(page?: number, size?: number): Observable<PageResponseDto<AdminCustomerListItemDto>> {
+    const params: Record<string, string> = {};
+    if (page !== undefined) params['page'] = page.toString();
+    if (size !== undefined) params['size'] = size.toString();
     return this.http
-      .get<AdminCustomerListItemDto[]>(`${this.API_BASE}/customers`)
-      .pipe(catchError(this.handleError));
+      .get<PageResponseDto<AdminCustomerListItemDto>>(`${this.API_BASE}/customers`, { params })
+      .pipe(catchError(handleHttpError));
   }
 
   getCustomerDetail(userId: number): Observable<AdminCustomerDetailDto> {
     return this.http
       .get<AdminCustomerDetailDto>(`${this.API_BASE}/customers/${userId}`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
-  getAdminAccounts(statusId?: number): Observable<AdminAccountListItemDto[]> {
-    const params: Record<string, string> = {};
+  getAdminAccounts(statusId?: number): Observable<PageResponseDto<AdminAccountListItemDto>> {
+    const params: Record<string, string> = { size: '1000' };
     if (statusId != null) params['statusId'] = statusId.toString();
     return this.http
-      .get<AdminAccountListItemDto[]>(`${this.API_BASE}/accounts`, { params })
-      .pipe(catchError(this.handleError));
+      .get<PageResponseDto<AdminAccountListItemDto>>(`${this.API_BASE}/accounts`, { params })
+      .pipe(catchError(handleHttpError));
   }
 
   getAdminTransactions(recentDays?: number, typeId?: number): Observable<AdminTransactionListItemDto[]> {
@@ -189,20 +199,6 @@ export class AdminService {
     if (typeId != null) params['typeId'] = typeId.toString();
     return this.http
       .get<AdminTransactionListItemDto[]>(`${this.API_BASE}/transactions`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Unknown error. Please try again later.';
-    let body = error.error;
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch { /* not JSON */ }
-    }
-    if (body && typeof body === 'object' && (body as ErrorResponseDto).message) {
-      errorMessage = (body as ErrorResponseDto).message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-    return throwError(() => new Error(errorMessage));
+      .pipe(catchError(handleHttpError));
   }
 }

@@ -1,21 +1,25 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
 import { ToastService } from '../../core/services/toast.service';
+import { ScheduledCancelModalComponent } from '../../shared/scheduled-cancel-modal/scheduled-cancel-modal.component';
 
 @Component({
   selector: 'app-customer-transactions',
-  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, ScheduledCancelModalComponent],
   templateUrl: './customer-transactions.html',
   styleUrl: './customer-transactions.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerTransactionsComponent implements OnInit {
   allTransactions = signal<TransactionResponseDto[]>([]);
   loading = signal(true);
   accountNumbers = signal<Set<string>>(new Set());
+  cancelTarget = signal<TransactionResponseDto | null>(null);
+  cancellingId = signal<number | null>(null);
 
   startDate = '';
   endDate = '';
@@ -55,12 +59,12 @@ export class CustomerTransactionsComponent implements OnInit {
   }
 
   private extractError(err: any): string {
-    return err?.error?.message || err?.message || 'An error occurred. Please try again later.';
+    return err?.error?.message || err?.message || '';
   }
 
   loadHistory(): void {
     if (!this.startDate || !this.endDate) {
-      this.toastService.error(this.translate.instant('TRANSACTIONS.select_dates'));
+      this.toastService.i18nError('TRANSACTIONS.select_dates');
       return;
     }
 
@@ -105,18 +109,71 @@ export class CustomerTransactionsComponent implements OnInit {
 
   getStatusLabel(statusName: string | undefined): string {
     const map: Record<string, string> = {
-      'PENDING': 'TX_STATUS.PENDING', 'COMPLETED': 'TX_STATUS.COMPLETED',
-      'FAILED': 'TX_STATUS.FAILED', 'REJECTED': 'TX_STATUS.REJECTED',
+      'PENDING': 'TRANSACTIONS.STATUS.PENDING',
+      'COMPLETED': 'TRANSACTIONS.STATUS.COMPLETED',
+      'FAILED': 'TRANSACTIONS.STATUS.FAILED',
+      'REJECTED': 'TRANSACTIONS.STATUS.REJECTED',
+      'CANCELLED': 'TRANSACTIONS.STATUS.CANCELLED',
     };
-    return statusName ? this.translate.instant(map[statusName] ?? statusName) : this.translate.instant('TX_STATUS.UNKNOWN');
+    return statusName ? this.translate.instant(map[statusName] ?? statusName) : this.translate.instant('TRANSACTIONS.STATUS.PENDING');
   }
 
   getStatusClass(statusName: string | undefined): string {
     const map: Record<string, string> = {
       'COMPLETED': 'status-completed', 'PENDING': 'status-pending',
       'FAILED': 'status-failed', 'REJECTED': 'status-rejected',
+      'CANCELLED': 'status-cancelled',
     };
     return map[statusName ?? ''] ?? 'status-pending';
+  }
+
+  getDescription(tx: TransactionResponseDto): string {
+    const desc = tx.description ?? '';
+    const markers = ['TRANSACTION_CANCELLED_BY_USER', 'Cancelled by user'];
+    for (const marker of markers) {
+      if (desc.includes(marker)) {
+        return desc.replace(marker, this.translate.instant('TRANSACTIONS.cancelled_by_user'));
+      }
+    }
+    return desc;
+  }
+
+  isScheduled(tx: TransactionResponseDto): boolean {
+    return tx.statusName === 'PENDING';
+  }
+
+  isCancelling(tx: TransactionResponseDto): boolean {
+    return this.cancellingId() === tx.id;
+  }
+
+  requestCancel(tx: TransactionResponseDto): void {
+    this.cancelTarget.set(tx);
+  }
+
+  dismissCancel(): void {
+    if (this.cancellingId() !== null) return;
+    this.cancelTarget.set(null);
+  }
+
+  confirmCancel(): void {
+    const tx = this.cancelTarget();
+    if (!tx) return;
+    this.cancellingId.set(tx.id);
+    this.customerService.cancelTransaction(tx.id).subscribe({
+      next: () => {
+        this.allTransactions.update(list =>
+          list.map(t => t.id === tx.id ? { ...t, statusId: 5, statusName: 'CANCELLED' } : t)
+        );
+        this.toastService.i18nSuccess('TRANSACTIONS.cancel_success');
+        this.cancellingId.set(null);
+        this.cancelTarget.set(null);
+      },
+      error: (err) => {
+        this.cancellingId.set(null);
+        this.cancelTarget.set(null);
+        this.toastService.error(err?.message || this.translate.instant('TRANSACTIONS.cancel_error'));
+      },
+    });
   }
 
   maskAccount(account: string | null): string {

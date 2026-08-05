@@ -80,8 +80,8 @@
                           <input class="limit-input" type="number" [(ngModel)]="editAmount" [min]="meta.minValue" step="0.01" [placeholder]="'LIMITS.importo' | translate" />
                         </div>
                         <div class="limit-range">{{ 'LIMITS.range' | translate }}: {{ meta.minValue | currency:'EUR':'symbol':'1.2-2' }} — {{ meta.maxValue | currency:'EUR':'symbol':'1.2-2' }}</div>
-                        @if (editingError()) {
-                          <div class="limit-error">{{ editingError() }}</div>
+                        @if (editingErrorKey()) {
+                          <div class="limit-error">{{ editingErrorKey() | translate: editingErrorParams() }}</div>
                         }
                         <div class="limit-edit-actions">
                           <button class="limit-btn limit-btn-save" (click)="saveLimit(meta.type)">
@@ -245,8 +245,8 @@
               }
             </div>
           }
-          @if (requestError()) {
-            <div class="alert alert-danger">{{ requestError() }}</div>
+          @if (requestErrorKey()) {
+            <div class="alert alert-danger">{{ requestErrorKey() | translate: requestErrorParams() }}</div>
           }
         </div>
         <div class="modal-footer">

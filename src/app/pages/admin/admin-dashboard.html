@@ -6,10 +6,10 @@
         <p class="text-muted mt-3">{{ 'ADMIN.dashboard.loading' | translate }}</p>
       </div>
     </div>
-  } @else if (error()) {
+  } @else if (errorKey()) {
     <div class="alert alert-danger d-flex align-items-center" role="alert">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      <div>{{ error() }}</div>
+      <div>{{ errorKey() | translate }}</div>
       <button class="btn btn-outline-danger btn-sm ms-auto" (click)="loadDashboard()">
         <i class="bi bi-arrow-clockwise me-1"></i>{{ 'ADMIN.dashboard.retry' | translate }}
       </button>
@@ -221,27 +221,6 @@
                 </div>
               </div>
             }
-          </div>
-        </div>
-
-        <!-- Stats summary -->
-        <div class="sidebar-card mb-3">
-          <div class="sidebar-card-header">
-            <i class="bi bi-graph-up me-2"></i>{{ 'ADMIN.dashboard.statistics' | translate }}
-          </div>
-          <div class="sidebar-card-body">
-            <div class="stat-row">
-              <span class="stat-label-side">{{ 'ADMIN.dashboard.active_rate' | translate }}</span>
-              <span class="stat-value-side">{{ activeRate() }}%</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label-side">{{ 'ADMIN.dashboard.avg_balance' | translate }}</span>
-              <span class="stat-value-side">{{ avgBalance() }}</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-label-side">{{ 'ADMIN.dashboard.tx_per_account' | translate }}</span>
-              <span class="stat-value-side">{{ txPerAccount() }}</span>
-            </div>
           </div>
         </div>
 

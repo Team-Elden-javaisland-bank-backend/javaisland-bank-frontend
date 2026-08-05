@@ -1,30 +1,39 @@
-import { Component, signal, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService, NotificationDto } from '../core/services/notification.service';
+import { CustomerService } from '../core/services/customer.service';
+import { AccountResponseDto } from '../core/models/account/account-response.dto';
+import { AccountLimitsModalComponent } from '../shared/account-limits-modal/account-limits-modal.component';
 import { Router } from '@angular/router';
 import { ToastComponent } from '../core/components/toast/toast.component';
+import { ToastService } from '../core/services/toast.service';
 import { routeAnimation } from '../core/animations/route.animations';
 import { Subscription, interval } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { TranslateService, TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent, TranslatePipe, TranslateDirective],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent, TranslatePipe, TranslateDirective, AccountLimitsModalComponent],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
   animations: [routeAnimation],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   mobileMenuOpen = signal(false);
   showUploadModal = signal(false);
   uploading = signal(false);
-  uploadError = signal<string | null>(null);
+  uploadErrorKey = signal<string | null>(null);
   unreadCount = signal(0);
   showNotifications = signal(false);
   notifications = signal<NotificationDto[]>([]);
+  limitsModalAccount = signal<AccountResponseDto | null>(null);
   private pollSub: Subscription | null = null;
+  private navSub: Subscription | null = null;
 
   private fileInput: HTMLInputElement | null = null;
 
@@ -34,7 +43,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     private router: Router,
     private notificationService: NotificationService,
+    private customerService: CustomerService,
     public translate: TranslateService,
+    private toastService: ToastService,
     private elRef: ElementRef,
   ) {}
 
@@ -42,11 +53,16 @@ export class LayoutComponent implements OnInit, OnDestroy {
     if (this.isCustomer) {
       this.loadUnreadCount();
       this.pollSub = interval(10000).subscribe(() => this.loadUnreadCount());
+      this.navSub = this.router.events
+        .pipe(filter(e => e instanceof NavigationEnd))
+        .subscribe(() => this.checkLimitsSetup());
+      this.checkLimitsSetup();
     }
   }
 
   ngOnDestroy(): void {
     this.pollSub?.unsubscribe();
+    this.navSub?.unsubscribe();
   }
 
   @HostListener('document:click', ['$event'])
@@ -62,6 +78,24 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.notificationService.getUnreadCount().subscribe({
       next: (res) => this.unreadCount.set(res.count),
     });
+  }
+
+  checkLimitsSetup(): void {
+    if (!this.isCustomer || this.limitsModalAccount()) return;
+    this.customerService.getAccounts().subscribe({
+      next: (accounts) => {
+        const pending = accounts.find(a => a.statusId === 2 && !a.isLimitsConfigured);
+        if (pending) {
+          this.limitsModalAccount.set(pending);
+        }
+      },
+      error: () => {},
+    });
+  }
+
+  onLimitsModalCompleted(): void {
+    this.limitsModalAccount.set(null);
+    this.checkLimitsSetup();
   }
 
   toggleNotifications(): void {
@@ -85,6 +119,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this.notifications.update(list => list.map(n => n.id === id ? { ...n, read: true } : n));
         this.loadUnreadCount();
       },
+      error: () => {},
     });
   }
 
@@ -94,6 +129,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this.notifications.update(list => list.map(n => ({ ...n, read: true })));
         this.loadUnreadCount();
       },
+      error: () => {},
     });
   }
 
@@ -136,7 +172,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   get baseUrl(): string {
-    return 'http://localhost:8081';
+    return environment.apiUrl;
   }
 
   getRouteAnimationData(outlet: RouterOutlet): string {
@@ -157,13 +193,13 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   openUploadDialog(): void {
-    this.uploadError.set(null);
+    this.uploadErrorKey.set(null);
     this.showUploadModal.set(true);
   }
 
   closeUploadModal(): void {
     this.showUploadModal.set(false);
-    this.uploadError.set(null);
+    this.uploadErrorKey.set(null);
   }
 
   triggerFileInput(): void {
@@ -183,24 +219,32 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
     const file = input.files[0];
     this.uploading.set(true);
-    this.uploadError.set(null);
+    this.uploadErrorKey.set(null);
 
     this.authService.uploadProfilePicture(file).subscribe({
       next: () => {
         this.uploading.set(false);
         this.closeUploadModal();
+        this.toastService.i18nSuccess('PROFILE.picture_uploaded');
       },
       error: (err: Error) => {
         this.uploading.set(false);
-        this.uploadError.set(err.message);
+        this.uploadErrorKey.set(err.message);
+        this.toastService.error(err.message || '');
       },
     });
   }
 
   removePicture(): void {
     this.authService.deleteProfilePicture().subscribe({
-      next: () => this.closeUploadModal(),
-      error: (err: Error) => this.uploadError.set(err.message),
+      next: () => {
+        this.closeUploadModal();
+        this.toastService.i18nSuccess('PROFILE.picture_removed');
+      },
+      error: (err: Error) => {
+        this.uploadErrorKey.set(err.message);
+        this.toastService.error(err.message || '');
+      },
     });
   }
 }

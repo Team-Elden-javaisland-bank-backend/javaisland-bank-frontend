@@ -8,8 +8,8 @@
     <div class="d-flex justify-content-center py-5">
       <div class="spinner-border" role="status" style="color: var(--bi-gold) !important;"></div>
     </div>
-  } @else if (error()) {
-    <div class="alert alert-danger">{{ error() }}</div>
+  } @else if (errorKey()) {
+    <div class="alert alert-danger">{{ errorKey() | translate }}</div>
   } @else {
     <!-- Filters -->
     <div class="card mb-4">
@@ -50,12 +50,12 @@
                 <tr>
                   <td class="text-muted mono">{{ t.id }}</td>
                   <td class="text-muted">{{ formatDate(t.createdAt) }}</td>
-                  <td>{{ getTypeLabel(t.typeId) }}</td>
+                  <td>{{ getTypeLabel(t) }}</td>
                   <td><span class="mono">{{ t.sourceAccountNumber || '-' }}</span></td>
                   <td><span class="mono">{{ t.destinationAccountNumber || '-' }}</span></td>
-                  <td class="text-muted">{{ t.description }}</td>
+                  <td class="text-muted">{{ getDescription(t) }}</td>
                   <td class="text-end fw-bold">{{ formatCurrency(t.amount) }}</td>
-                  <td><span class="badge" [ngClass]="getStatusClass(t.statusId)">{{ getStatusLabel(t.statusId) }}</span></td>
+                  <td><span class="badge" [ngClass]="getStatusClass(t.statusName)">{{ getStatusLabel(t) }}</span></td>
                 </tr>
               }
             </tbody>

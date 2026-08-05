@@ -12,10 +12,6 @@
       <p class="auth-subtitle">{{ 'AUTH.create_account' | translate }}</p>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-danger mx-3">{{ error() }}</div>
-    }
-
     <form (ngSubmit)="onSubmit()" class="px-3 px-sm-4">
 
       <!-- ═══ ANAGRAFICA ═══ -->
@@ -114,10 +110,13 @@
 
       <div class="mb-3">
         <label for="phone" class="form-label fw-semibold">{{ 'AUTH.phone' | translate }}</label>
-        <div class="phone-row">
+        <div class="phone-row" [class.is-invalid]="phoneError()">
           <span class="phone-prefix">+39</span>
-          <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="form-control" placeholder="333 1234567" maxlength="12" />
+          <input id="phone" type="tel" [(ngModel)]="phone" name="phone" class="form-control" placeholder="333 1234567" maxlength="10" (input)="sanitizePhone(); phoneError.set(null)" (blur)="validatePhoneOnBlur()" />
         </div>
+        @if (phoneError()) {
+          <div class="invalid-feedback d-block">{{ phoneError() | translate }}</div>
+        }
       </div>
 
       <div class="mb-3">
@@ -216,6 +215,7 @@
       <p>{{ 'AUTH.has_account' | translate }} <a routerLink="/login" class="text-decoration-none fw-semibold" style="color: var(--bi-gold);">{{ 'AUTH.login' | translate }}</a></p>
     </div>
   </div>
+  <app-toast />
 </div>
 
 @if (showSuccessModal()) {

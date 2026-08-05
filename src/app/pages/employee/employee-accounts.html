@@ -92,7 +92,7 @@
                   <div class="d-flex align-items-center gap-2">
                     <div class="avatar-sm">
                       @if (account.profilePictureUrl) {
-                        <img [src]="'http://localhost:8081' + account.profilePictureUrl" alt="" class="avatar-img">
+                        <img [src]="account.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                       } @else {
                         {{ account.profileFirstName?.charAt(0) }}{{ account.profileLastName?.charAt(0) }}
                       }

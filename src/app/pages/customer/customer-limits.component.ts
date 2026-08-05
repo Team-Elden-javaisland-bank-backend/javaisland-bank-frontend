@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
@@ -21,6 +21,7 @@ interface LimitMeta {
   imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-limits.html',
   styleUrl: './customer-limits.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerLimitsComponent {
   accounts = signal<AccountResponseDto[]>([]);
@@ -30,14 +31,16 @@ export class CustomerLimitsComponent {
   limitsLoading = signal(false);
 
   editingType = signal('');
-  editingError = signal('');
+  editingErrorKey = signal<string | null>(null);
+  editingErrorParams = signal<Record<string, any>>({});
   editAmount = 0;
 
   // Request modal
   showRequestModal = signal(false);
   requestLimitType = signal('');
   requestAmount: number | null = null;
-  requestError = signal('');
+  requestErrorKey = signal<string | null>(null);
+  requestErrorParams = signal<Record<string, any>>({});
   requestLoading = signal(false);
 
   // Success animation
@@ -135,36 +138,40 @@ export class CustomerLimitsComponent {
   startEdit(type: string, currentAmount: number): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     this.editingType.set(type);
-    this.editingError.set('');
+    this.editingErrorKey.set(null);
     this.editAmount = currentAmount || meta?.defaultValue || 0;
   }
 
-  cancelEdit(): void { this.editingType.set(''); this.editingError.set(''); }
+  cancelEdit(): void { this.editingType.set(''); this.editingErrorKey.set(null); this.editingErrorParams.set({}); }
 
   saveLimit(type: string): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     if (this.editAmount < (meta?.minValue ?? 0)) {
-      this.editingError.set(this.translate.instant('LIMITS.error_min', { value: meta?.minValue ?? 0 }));
+      this.editingErrorKey.set('LIMITS.error_min');
+      this.editingErrorParams.set({ value: meta?.minValue ?? 0 });
       return;
     }
 
     if (meta && this.editAmount > meta.maxValue) {
-      this.editingError.set(this.translate.instant('LIMITS.error_max', { value: meta.maxValue.toLocaleString('it-IT') }));
+      this.editingErrorKey.set('LIMITS.error_max');
+      this.editingErrorParams.set({ value: meta.maxValue });
       return;
     }
 
     const current = this.getLimitForType(type);
     if (current && !this.canIncrease(type) && this.editAmount > current.maxAmount) {
-      this.editingError.set(this.translate.instant('LIMITS.error_decrease_only'));
+      this.editingErrorKey.set('LIMITS.error_decrease_only');
+      this.editingErrorParams.set({});
       return;
     }
 
-    this.editingError.set('');
+    this.editingErrorKey.set(null);
+    this.editingErrorParams.set({});
     this.customerService.setAccountLimit(this.selectedAccount(), type, {
       maxAmount: this.editAmount,
     }).subscribe({
       next: () => {
-        this.toastService.success(this.translate.instant('LIMITS.success_updated'));
+        this.toastService.i18nSuccess('LIMITS.success_updated');
         this.editingType.set('');
         this.onAccountChange(this.selectedAccount());
       },
@@ -175,7 +182,8 @@ export class CustomerLimitsComponent {
   openRequestModal(type: string): void {
     this.requestLimitType.set(type);
     this.requestAmount = null;
-    this.requestError.set('');
+    this.requestErrorKey.set(null);
+    this.requestErrorParams.set({});
     this.showRequestModal.set(true);
   }
 
@@ -183,7 +191,8 @@ export class CustomerLimitsComponent {
     this.showRequestModal.set(false);
     this.requestLimitType.set('');
     this.requestAmount = null;
-    this.requestError.set('');
+    this.requestErrorKey.set(null);
+    this.requestErrorParams.set({});
     this.requestLoading.set(false);
   }
 
@@ -207,29 +216,34 @@ export class CustomerLimitsComponent {
     const amount = this.requestAmount;
 
     if (!type || !amount || !this.selectedAccount()) {
-      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_required'));
+      this.requestErrorKey.set('LIMITS.request_modal.error_required');
+      this.requestErrorParams.set({});
       return;
     }
 
     if (amount <= 0) {
-      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_invalid_amount'));
+      this.requestErrorKey.set('LIMITS.request_modal.error_invalid_amount');
+      this.requestErrorParams.set({});
       return;
     }
 
     const meta = this.allLimitTypes.find(m => m.type === type);
     if (meta && amount > meta.maxValue) {
-      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_exceeds_max', { max: meta.maxValue.toLocaleString('it-IT') }));
+      this.requestErrorKey.set('LIMITS.request_modal.error_exceeds_max');
+      this.requestErrorParams.set({ max: meta.maxValue });
       return;
     }
 
     const policy = this.getRequestLimitPolicy();
     if (policy === 'USER_LOWER_ONLY' && amount <= this.getRequestCurrentAmount()) {
-      this.requestError.set(this.translate.instant('LIMITS.request_modal.error_lower_only'));
+      this.requestErrorKey.set('LIMITS.request_modal.error_lower_only');
+      this.requestErrorParams.set({});
       return;
     }
 
     this.requestLoading.set(true);
-    this.requestError.set('');
+    this.requestErrorKey.set(null);
+    this.requestErrorParams.set({});
 
     this.customerService.requestLimitChange(this.selectedAccount(), type, amount).subscribe({
       next: () => {
@@ -237,16 +251,20 @@ export class CustomerLimitsComponent {
         this.showSuccessAnimation.set(true);
         setTimeout(() => {
           this.showSuccessAnimation.set(false);
-          this.toastService.success(this.translate.instant('LIMITS.request_modal.success'));
+          this.toastService.i18nSuccess('LIMITS.request_modal.success');
           this.onAccountChange(this.selectedAccount());
         }, 2500);
       },
       error: (err) => {
         const msg = err.message || '';
         if (msg.includes('PENDING_REQUEST_EXISTS') || msg.includes('richiesta in corso')) {
-          this.requestError.set(this.translate.instant('LIMITS.request_modal.error_pending_exists'));
+          this.toastService.i18nError('LIMITS.request_modal.error_pending_exists');
+          this.requestErrorKey.set('LIMITS.request_modal.error_pending_exists');
+          this.requestErrorParams.set({});
         } else {
-          this.requestError.set(msg || this.translate.instant('LIMITS.request_modal.error_generic'));
+          this.toastService.error(msg || this.translate.instant('LIMITS.request_modal.error_generic'));
+          this.requestErrorKey.set(msg || 'LIMITS.request_modal.error_generic');
+          this.requestErrorParams.set({});
         }
         this.requestLoading.set(false);
       },

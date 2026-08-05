@@ -184,9 +184,48 @@
 }
 
 .status-completed { background: #d1fae5; color: #065f46; }
-.status-pending { background: #fef3c7; color: #92400e; }
+.status-pending { background: #dbeafe; color: #1d4ed8; }
 .status-failed { background: #fee2e2; color: #991b1b; }
 .status-rejected { background: #fce7f3; color: #9d174d; }
+.status-cancelled { background: #f1f5f9; color: #475569; }
+
+.th-action {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0.75rem 1rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tx-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #b91c1c;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tx-cancel-btn:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
+.tx-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .tx-date-cell { display: flex; flex-direction: column; gap: 1px; }
 .tx-date { font-size: 0.8125rem; color: #475569; font-weight: 500; }

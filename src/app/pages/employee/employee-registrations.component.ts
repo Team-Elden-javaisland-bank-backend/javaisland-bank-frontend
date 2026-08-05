@@ -1,7 +1,8 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { EmployeeService } from '../../core/services/employee.service';
 import { PendingRegistrationDto } from '../../core/models/user/pending-registration.dto';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
@@ -9,9 +10,10 @@ import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-employee-registrations',
-  imports: [FormsModule, DatePipe, TranslatePipe, TranslateDirective],
+  imports: [FormsModule, DatePipe, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './employee-registrations.html',
   styleUrl: './employee-registrations.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeRegistrationsComponent implements OnInit {
   activeTab = signal<'pending' | 'refused'>('pending');
@@ -73,8 +75,8 @@ export class EmployeeRegistrationsComponent implements OnInit {
 
   validate(userId: number): void {
     this.employeeService.validateRegistration(userId).subscribe({
-      next: (res) => {
-        this.toastService.success(res);
+      next: () => {
+        this.toastService.i18nSuccess('EMPLOYEE.registrations.validate_success');
         this.loadRegistrations();
       },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
@@ -85,8 +87,8 @@ export class EmployeeRegistrationsComponent implements OnInit {
     if (!confirm('Vuoi rifiutare questa registrazione?')) return;
 
     this.employeeService.rejectRegistration(userId).subscribe({
-      next: (res) => {
-        this.toastService.success(res);
+      next: () => {
+        this.toastService.i18nSuccess('EMPLOYEE.registrations.reject_success');
         this.loadRegistrations();
         this.loadRefusedRegistrations();
       },
@@ -98,8 +100,8 @@ export class EmployeeRegistrationsComponent implements OnInit {
     if (!confirm('Vuoi riaprire questa registrazione?')) return;
 
     this.employeeService.reopenRegistration(userId).subscribe({
-      next: (res) => {
-        this.toastService.success(res);
+      next: () => {
+        this.toastService.i18nSuccess('EMPLOYEE.registrations.reopen_success');
         this.loadRegistrations();
         this.loadRefusedRegistrations();
       },
@@ -111,8 +113,8 @@ export class EmployeeRegistrationsComponent implements OnInit {
     if (!confirm(this.translate.instant('EMPLOYEE.registrations.confirm_delete'))) return;
 
     this.employeeService.deleteUser(userId).subscribe({
-      next: (res) => {
-        this.toastService.success(res);
+      next: () => {
+        this.toastService.i18nSuccess('EMPLOYEE.registrations.delete_success');
         this.loadRefusedRegistrations();
       },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),

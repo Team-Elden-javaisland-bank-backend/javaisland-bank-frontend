@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, roleGuard, limitsSetupGuard, limitsSetupPageGuard, pinSetupPageGuard, pinVerifyPageGuard, loginRedirectGuard } from './core/guards/auth.guard';
+import { roleGuard, customerSetupGuard, setupPageGuard, loginRedirectGuard } from './core/guards/auth.guard';
 import { LayoutComponent } from './layout/layout.component';
 import { LoginComponent } from './pages/auth/login.component';
 import { RegisterComponent } from './pages/auth/register.component';
@@ -39,7 +39,7 @@ export const routes: Routes = [
   {
     path: 'customer',
     component: LayoutComponent,
-    canActivate: [roleGuard('C'), limitsSetupGuard],
+    canActivate: [roleGuard('C'), customerSetupGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: CustomerDashboardComponent },
@@ -58,17 +58,17 @@ export const routes: Routes = [
   {
     path: 'customer/limits-setup',
     component: CustomerLimitsSetupComponent,
-    canActivate: [limitsSetupPageGuard],
+    canActivate: [setupPageGuard('limits-setup')],
   },
   {
     path: 'customer/pin-setup',
     component: PinSetupComponent,
-    canActivate: [pinSetupPageGuard],
+    canActivate: [setupPageGuard('pin-setup')],
   },
   {
     path: 'customer/pin-verify',
     component: PinVerifyComponent,
-    canActivate: [pinVerifyPageGuard],
+    canActivate: [setupPageGuard('pin-verify')],
   },
   {
     path: 'employee',

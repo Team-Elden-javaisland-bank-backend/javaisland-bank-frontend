@@ -1,4 +1,4 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -9,12 +9,13 @@ import { AdminService, AdminTransactionListItemDto } from '../../core/services/a
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './admin-transactions.html',
-  styleUrls: ['./admin-transactions.css']
+  styleUrls: ['./admin-transactions.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminTransactionsComponent implements OnInit {
   transactions = signal<AdminTransactionListItemDto[]>([]);
   loading = signal(true);
-  error = signal<string | null>(null);
+  errorKey = signal<string | null>(null);
   searchQuery = signal('');
   filterDays = signal<number>(30);
 
@@ -39,7 +40,7 @@ export class AdminTransactionsComponent implements OnInit {
     this.loading.set(true);
     this.adminService.getAdminTransactions(this.filterDays()).subscribe({
       next: (data) => { this.transactions.set(data); this.loading.set(false); },
-      error: () => { this.loading.set(false); this.error.set(this.translate.instant('ADMIN.transactions.error_load')); }
+      error: () => { this.loading.set(false); this.errorKey.set('ADMIN.transactions.error_load'); }
     });
   }
 
@@ -48,19 +49,46 @@ export class AdminTransactionsComponent implements OnInit {
     this.loadTransactions();
   }
 
-  getTypeLabel(typeId: number): string {
-    const labels: Record<number, string> = { 1: 'ADMIN.transactions.type_transfer', 2: 'ADMIN.transactions.type_payment', 3: 'ADMIN.transactions.type_withdrawal' };
-    return this.translate.instant(labels[typeId] || 'ADMIN.transactions.type_unknown');
+  getTypeLabel(t: AdminTransactionListItemDto): string {
+    const labels: Record<string, string> = {
+      'DEPOSIT': 'ADMIN.transactions.type_deposit',
+      'WITHDRAWAL': 'ADMIN.transactions.type_withdrawal',
+      'TRANSFER': 'ADMIN.transactions.type_transfer',
+      'INITIAL_TRANSFER': 'ADMIN.transactions.type_initial_transfer',
+      'INSTANT_TRANSFER': 'ADMIN.transactions.type_instant_transfer',
+    };
+    return this.translate.instant(labels[t.typeName] || 'ADMIN.transactions.type_unknown');
   }
 
-  getStatusLabel(statusId: number): string {
-    const labels: Record<number, string> = { 1: 'ADMIN.transactions.status_pending', 2: 'ADMIN.transactions.status_completed', 3: 'ADMIN.transactions.status_failed' };
-    return this.translate.instant(labels[statusId] || 'ADMIN.transactions.status_unknown');
+  getStatusLabel(t: AdminTransactionListItemDto): string {
+    const labels: Record<string, string> = {
+      'PENDING': 'ADMIN.transactions.status_pending',
+      'COMPLETED': 'ADMIN.transactions.status_completed',
+      'FAILED': 'ADMIN.transactions.status_failed',
+      'REJECTED': 'ADMIN.transactions.status_rejected',
+      'CANCELLED': 'ADMIN.transactions.status_cancelled',
+    };
+    return this.translate.instant(labels[t.statusName] || 'ADMIN.transactions.status_unknown');
   }
 
-  getStatusClass(statusId: number): string {
-    const classes: Record<number, string> = { 1: 'bg-warning text-dark', 2: 'bg-success', 3: 'bg-danger' };
-    return classes[statusId] || 'bg-secondary';
+  getStatusClass(statusName: string): string {
+    const classes: Record<string, string> = {
+      'PENDING': 'bg-warning text-dark',
+      'COMPLETED': 'bg-success',
+      'FAILED': 'bg-danger',
+      'REJECTED': 'bg-secondary',
+      'CANCELLED': 'bg-dark',
+    };
+    return classes[statusName] || 'bg-secondary';
+  }
+
+  getDescription(t: AdminTransactionListItemDto): string {
+    if (!t.description) return '-';
+    const desc = t.description;
+    if (desc === 'Internal transfer') {
+      return this.translate.instant('ADMIN.transactions.desc_internal_transfer');
+    }
+    return desc;
   }
 
   formatDate(dateStr: string): string {

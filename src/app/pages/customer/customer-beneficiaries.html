@@ -28,11 +28,6 @@
           <input class="form-input-custom" type="text" [(ngModel)]="nickname" [placeholder]="'BENEFICIARIES.nickname_placeholder' | translate" />
         </div>
         <div class="form-group">
-          <label class="form-label-sm">{{ 'BENEFICIARIES.beneficiary_name' | translate }}</label>
-          <input class="form-input-custom" type="text" [(ngModel)]="beneficiaryName" [placeholder]="'BENEFICIARIES.beneficiary_name_placeholder' | translate" />
-          <small class="form-hint">{{ 'BENEFICIARIES.beneficiary_name_hint' | translate }}</small>
-        </div>
-        <div class="form-group">
           <label class="form-label-sm">{{ 'BENEFICIARIES.iban_dest' | translate }}</label>
           <input class="form-input-custom" type="text" [(ngModel)]="destinationAccountNumber" placeholder="IT..." />
         </div>
@@ -63,7 +58,7 @@
           <div class="beneficiary-card-header">
             <div class="beneficiary-avatar">
               @if (b.profilePictureUrl) {
-                <img [src]="'http://localhost:8081' + b.profilePictureUrl" alt="" class="avatar-img">
+                <img [src]="b.profilePictureUrl | apiUrl" alt="" class="avatar-img">
               } @else {
                 {{ b.nickname.charAt(0).toUpperCase() }}
               }

@@ -7,4 +7,5 @@ export interface CardResponseDto {
   status: string;
   accountId: number;
   accountNumber: string;
+  accountStatus: string;
 }

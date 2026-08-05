@@ -1,34 +1,35 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, firstValueFrom, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { RegisterRequestDto } from '../models/auth/register-request.dto';
 import { LoginRequestDto } from '../models/auth/login-request.dto';
 import { LoginResponseDto } from '../models/auth/login-response.dto';
-import { ErrorResponseDto } from '../models/common/error-response.dto';
+import { handleHttpError } from '../interceptors/error.interceptor';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_BASE = 'http://localhost:8081/api/v1/auth';
-  private readonly PROFILE_PICTURE_API = 'http://localhost:8081/api/v1/profile-picture';
+  private readonly API_BASE = `${environment.apiUrl}/api/v1/auth`;
+  private readonly PROFILE_PICTURE_API = `${environment.apiUrl}/api/v1/profile-picture`;
 
-  private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
+  private static readonly PIN_VERIFY_TTL_MS = 10 * 60 * 1000;
 
   constructor(private http: HttpClient) {}
 
   register(data: RegisterRequestDto): Observable<unknown> {
     return this.http
       .post(`${this.API_BASE}/register`, data)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   login(data: LoginRequestDto): Observable<LoginResponseDto> {
     return this.http
       .post<LoginResponseDto>(`${this.API_BASE}/keycloak-login`, data)
       .pipe(
-        catchError(this.handleError),
+        catchError(handleHttpError),
       );
   }
 
@@ -45,7 +46,7 @@ export class AuthService {
             localStorage.setItem(this.USER_KEY, JSON.stringify(user));
           }
         }),
-        catchError(this.handleError),
+        catchError(handleHttpError),
       );
   }
 
@@ -60,22 +61,38 @@ export class AuthService {
             localStorage.setItem(this.USER_KEY, JSON.stringify(user));
           }
         }),
-        catchError(this.handleError),
+        catchError(handleHttpError),
       );
   }
 
   saveSession(response: LoginResponseDto): void {
-    localStorage.setItem(this.TOKEN_KEY, response.token);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(response));
+    localStorage.setItem(this.USER_KEY, JSON.stringify({ ...response, token: '' }));
+  }
+
+  restoreSession(): Promise<void> {
+    return firstValueFrom(
+      this.http.get<LoginResponseDto>(`${this.API_BASE}/me`).pipe(
+        tap((user) => localStorage.setItem(this.USER_KEY, JSON.stringify({ ...user, token: '' }))),
+        catchError(() => {
+          localStorage.removeItem(this.USER_KEY);
+          return of(undefined);
+        }),
+      ),
+    ).then(() => undefined);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return null;
   }
 
   getUser(): LoginResponseDto | null {
     const raw = localStorage.getItem(this.USER_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as LoginResponseDto;
+    } catch {
+      return null;
+    }
   }
 
   getProfilePictureUrl(): string | null {
@@ -89,78 +106,66 @@ export class AuthService {
     return (user.firstName?.[0] ?? '') + (user.lastName?.[0] ?? '');
   }
 
+  private readonly PIN_API = `${environment.apiUrl}/api/v1/user/pin`;
+
   setupPin(pin: string): Observable<{ pinSetupComplete: boolean }> {
-    const user = this.getUser();
     return this.http.post<{ pinSetupComplete: boolean }>(
-      'http://localhost:8081/pin/setup',
-      { pin },
-      { headers: { 'X-User-Id': String(user?.userId) } }
-    ).pipe(catchError(this.handleError));
+      `${this.PIN_API}/setup`,
+      { pin }
+    ).pipe(catchError(handleHttpError));
   }
 
   verifyPin(pin: string): Observable<{ pinSetupComplete: boolean }> {
-    const user = this.getUser();
     return this.http.post<{ pinSetupComplete: boolean }>(
-      'http://localhost:8081/pin/verify',
-      { pin },
-      { headers: { 'X-User-Id': String(user?.userId) } }
-    ).pipe(catchError(this.handleError));
+      `${this.PIN_API}/verify`,
+      { pin }
+    ).pipe(catchError(handleHttpError));
   }
 
   getPinStatus(): Observable<{ pinSetupComplete: boolean }> {
-    const user = this.getUser();
     return this.http.get<{ pinSetupComplete: boolean }>(
-      'http://localhost:8081/pin/status',
-      { headers: { 'X-User-Id': String(user?.userId) } }
-    ).pipe(catchError(this.handleError));
+      `${this.PIN_API}/status`
+    ).pipe(catchError(handleHttpError));
   }
 
   isPinVerified(): boolean {
-    return localStorage.getItem('pin_verified') === 'true';
+    const raw = localStorage.getItem('pin_verified_at');
+    if (!raw) return false;
+    const at = Number(raw);
+    if (Number.isNaN(at)) return false;
+    return Date.now() - at < AuthService.PIN_VERIFY_TTL_MS;
   }
 
   setPinVerified(verified: boolean): void {
-    localStorage.setItem('pin_verified', String(verified));
+    if (verified) {
+      localStorage.setItem('pin_verified_at', String(Date.now()));
+    } else {
+      localStorage.removeItem('pin_verified_at');
+    }
   }
 
   clearPinVerified(): void {
-    localStorage.removeItem('pin_verified');
+    localStorage.removeItem('pin_verified_at');
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    this.http.post<void>(`${this.API_BASE}/logout`, null).pipe(catchError(handleHttpError)).subscribe({
+      complete: () => localStorage.removeItem(this.USER_KEY),
+    });
     localStorage.removeItem(this.USER_KEY);
     this.clearPinVerified();
+    this.clearSessionData();
+  }
+
+  private clearSessionData(): void {
+    sessionStorage.clear();
+    document.cookie.split(';').forEach((cookie) => {
+      const name = cookie.split('=')[0].trim();
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    });
   }
 
   isLoggedIn(): boolean {
-    const token = this.getToken();
-    return !!token && !this.isTokenExpired(token);
-  }
-
-  isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp * 1000 < Date.now();
-    } catch {
-      return true;
-    }
-  }
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Unknown error. Please try again later.';
-
-    let body = error.error;
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch { /* not JSON */ }
-    }
-
-    if (body && typeof body === 'object' && (body as ErrorResponseDto).message) {
-      errorMessage = (body as ErrorResponseDto).message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-
-    return throwError(() => new Error(errorMessage));
+    return !!this.getUser();
   }
 }

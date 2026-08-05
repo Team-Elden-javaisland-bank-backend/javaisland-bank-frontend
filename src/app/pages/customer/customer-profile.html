@@ -11,10 +11,10 @@
   }
 
   <!-- Error Message -->
-  @if (errorMessage()) {
+  @if (errorMessageKey()) {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ errorMessage() }}
-      <button type="button" class="btn-close" (click)="errorMessage.set(null)"></button>
+      {{ errorMessageKey() | translate }}
+      <button type="button" class="btn-close" (click)="errorMessageKey.set(null)"></button>
     </div>
   }
 
@@ -27,7 +27,7 @@
             <div class="col-auto">
               <div class="avatar-circle">
                 @if (profile()?.profilePictureUrl) {
-                  <img [src]="'http://localhost:8081' + profile()!.profilePictureUrl" alt="" class="avatar-img">
+                  <img [src]="profile()!.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                 } @else {
                   <span class="avatar-initials">{{ getInitials() }}</span>
                 }
@@ -197,9 +197,73 @@
             <h5 class="modal-title"><i class="bi bi-key me-2"></i>{{ 'PROFILE.change_password' | translate }}</h5>
             <button type="button" class="btn-close btn-close-white" (click)="closePasswordModal()"></button>
           </div>
-          <div class="modal-body text-center py-4">
-            <i class="bi bi-shield-check" style="font-size: 3rem; color: var(--bi-gold);"></i>
-            <p class="mt-3 mb-0">{{ 'PROFILE.password_change_confirm' | translate }}</p>
+          <div class="modal-body">
+            @if (passwordFormError()) {
+              <div class="alert alert-danger py-2 d-flex align-items-center gap-2">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>{{ passwordFormError() | translate }}</span>
+              </div>
+            }
+
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label">{{ 'PROFILE.current_password' | translate }}</label>
+              <input
+                type="password"
+                id="currentPassword"
+                class="form-control form-control-dark"
+                [(ngModel)]="currentPassword"
+                autocomplete="current-password"
+                (input)="onPasswordFormInput()"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">{{ 'PROFILE.new_password' | translate }}</label>
+              <input
+                type="password"
+                id="newPassword"
+                class="form-control form-control-dark"
+                [(ngModel)]="newPassword"
+                autocomplete="new-password"
+                (input)="onPasswordFormInput()"
+              />
+              @if (newPassword()) {
+                <div class="password-criteria">
+                  <span class="criteria-item" [class.met]="hasMinLength">
+                    <i class="bi" [class.bi-check-circle-fill]="hasMinLength" [class.bi-circle]="!hasMinLength"></i>
+                    {{ 'AUTH.min_8_chars' | translate }}
+                  </span>
+                  <span class="criteria-item" [class.met]="hasUppercase">
+                    <i class="bi" [class.bi-check-circle-fill]="hasUppercase" [class.bi-circle]="!hasUppercase"></i>
+                    {{ 'AUTH.uppercase' | translate }}
+                  </span>
+                  <span class="criteria-item" [class.met]="hasLowercase">
+                    <i class="bi" [class.bi-check-circle-fill]="hasLowercase" [class.bi-circle]="!hasLowercase"></i>
+                    {{ 'AUTH.lowercase' | translate }}
+                  </span>
+                  <span class="criteria-item" [class.met]="hasNumber">
+                    <i class="bi" [class.bi-check-circle-fill]="hasNumber" [class.bi-circle]="!hasNumber"></i>
+                    {{ 'AUTH.number' | translate }}
+                  </span>
+                  <span class="criteria-item" [class.met]="hasSpecialChar">
+                    <i class="bi" [class.bi-check-circle-fill]="hasSpecialChar" [class.bi-circle]="!hasSpecialChar"></i>
+                    {{ 'AUTH.special_char' | translate }}
+                  </span>
+                </div>
+              }
+            </div>
+            <div class="mb-3">
+              <label for="pin" class="form-label">{{ 'PROFILE.pin' | translate }}</label>
+              <input
+                type="password"
+                id="pin"
+                class="form-control form-control-dark"
+                [(ngModel)]="pin"
+                inputmode="numeric"
+                maxlength="4"
+                autocomplete="off"
+                (input)="onPinInput()"
+              />
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closePasswordModal()">{{ 'PROFILE.cancel' | translate }}</button>

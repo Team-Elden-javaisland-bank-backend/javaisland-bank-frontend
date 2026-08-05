@@ -1,7 +1,8 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -9,9 +10,10 @@ import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-employee-accounts',
-  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './employee-accounts.html',
   styleUrl: './employee-accounts.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeAccountsComponent implements OnInit {
   accounts = signal<AccountResponseDto[]>([]);
@@ -76,7 +78,7 @@ export class EmployeeAccountsComponent implements OnInit {
 
   activate(accountNumber: string): void {
     this.employeeService.activateAccount(accountNumber).subscribe({
-      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      next: () => { this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.activated'); this.loadAccounts(); },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
@@ -84,35 +86,35 @@ export class EmployeeAccountsComponent implements OnInit {
   reject(accountNumber: string): void {
     if (!confirm('Rifiutare questo conto?')) return;
     this.employeeService.rejectAccount(accountNumber).subscribe({
-      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      next: () => { this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.rejected'); this.loadAccounts(); },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   freeze(accountNumber: string): void {
     this.employeeService.freezeAccount(accountNumber).subscribe({
-      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      next: () => { this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.frozen'); this.loadAccounts(); },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   unfreeze(accountNumber: string): void {
     this.employeeService.unfreezeAccount(accountNumber).subscribe({
-      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      next: () => { this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.unfrozen'); this.loadAccounts(); },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   validateClosure(accountNumber: string): void {
     this.employeeService.validateClosure(accountNumber).subscribe({
-      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      next: () => { this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.closure_validated'); this.loadAccounts(); },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
 
   rejectClosure(accountNumber: string): void {
     this.employeeService.rejectClosure(accountNumber).subscribe({
-      next: (res) => { this.toastService.success(res); this.loadAccounts(); },
+      next: () => { this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.closure_rejected'); this.loadAccounts(); },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
     });
   }
@@ -129,18 +131,18 @@ export class EmployeeAccountsComponent implements OnInit {
 
   setLimit(): void {
     if (!this.limitType || this.limitAmount < 0.01) {
-      this.toastService.error(this.translate.instant('EMPLOYEE.accounts.toast.fill_fields'));
+      this.toastService.i18nError('EMPLOYEE.accounts.toast.fill_fields');
       return;
     }
 
     const limits = this.LIMITS[this.limitType];
     if (limits) {
       if (this.limitAmount < limits.min) {
-        this.toastService.error(this.translate.instant('EMPLOYEE.accounts.toast.min_amount', { min: limits.min }));
+        this.toastService.i18nError('EMPLOYEE.accounts.toast.min_amount', { min: limits.min });
         return;
       }
       if (this.limitAmount > limits.max) {
-        this.toastService.error(this.translate.instant('EMPLOYEE.accounts.toast.max_amount', { max: limits.max.toLocaleString('it-IT') }));
+        this.toastService.i18nError('EMPLOYEE.accounts.toast.max_amount', { max: limits.max });
         return;
       }
     }
@@ -149,7 +151,7 @@ export class EmployeeAccountsComponent implements OnInit {
       maxAmount: this.limitAmount,
     }).subscribe({
       next: () => {
-        this.toastService.success(this.translate.instant('EMPLOYEE.accounts.toast.limit_updated'));
+        this.toastService.i18nSuccess('EMPLOYEE.accounts.toast.limit_updated');
         this.limitAmount = 0;
         this.viewLimits(this.selectedAccount());
       },

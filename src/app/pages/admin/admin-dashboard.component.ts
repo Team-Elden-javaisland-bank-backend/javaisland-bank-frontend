@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
@@ -20,31 +20,14 @@ interface DashboardStats {
   standalone: true,
   imports: [CommonModule, RouterLink, TranslatePipe, TranslateDirective],
   templateUrl: './admin-dashboard.html',
-  styleUrls: ['./admin-dashboard.css']
+  styleUrls: ['./admin-dashboard.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent implements OnInit {
   stats = signal<DashboardStats | null>(null);
   loading = signal<boolean>(true);
-  error = signal<string | null>(null);
+  errorKey = signal<string | null>(null);
   today = new Date();
-
-  activeRate = computed(() => {
-    const s = this.stats();
-    if (!s || s.totalAccounts === 0) return '0';
-    return ((s.activeAccounts / s.totalAccounts) * 100).toFixed(1);
-  });
-
-  avgBalance = computed(() => {
-    const s = this.stats();
-    if (!s || s.totalAccounts === 0) return this.formatCurrency(0);
-    return this.formatCurrency(s.totalBalance / s.totalAccounts);
-  });
-
-  txPerAccount = computed(() => {
-    const s = this.stats();
-    if (!s || s.totalAccounts === 0) return '0';
-    return (s.totalTransactions / s.totalAccounts).toFixed(1);
-  });
 
   constructor(private adminService: AdminService, private translate: TranslateService) {}
 
@@ -54,7 +37,7 @@ export class AdminDashboardComponent implements OnInit {
 
   loadDashboard(): void {
     this.loading.set(true);
-    this.error.set(null);
+    this.errorKey.set(null);
 
     this.adminService.getDashboard().subscribe({
       next: (data) => {
@@ -62,7 +45,7 @@ export class AdminDashboardComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(this.translate.instant('ADMIN.dashboard.error_load'));
+        this.errorKey.set('ADMIN.dashboard.error_load');
         this.loading.set(false);
         console.error('Dashboard error:', err);
       }

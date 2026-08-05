@@ -92,6 +92,8 @@
   font-size: 0.875rem; font-weight: 600; color: #333; white-space: nowrap; user-select: none;
 }
 .phone-row .form-control { border-radius: 0 0.75rem 0.75rem 0; }
+.phone-row.is-invalid .phone-prefix,
+.phone-row.is-invalid .form-control { border-color: #dc3545; }
 
 /* ═══ GENERATE BTN ═══ */
 .btn-generate {

@@ -1,4 +1,4 @@
-import { Component, input, output, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { EmployeeDetailDto } from '../../core/services/admin.service';
 
@@ -6,6 +6,7 @@ import { EmployeeDetailDto } from '../../core/services/admin.service';
   selector: 'app-employee-detail-modal',
   standalone: true,
   imports: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (visible()) {
       <div class="modal-backdrop-custom" (click)="onClose.emit()"></div>

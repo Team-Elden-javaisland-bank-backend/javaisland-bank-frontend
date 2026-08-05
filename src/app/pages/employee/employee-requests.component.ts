@@ -1,7 +1,8 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { EmployeeService } from '../../core/services/employee.service';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
 import { ToastService } from '../../core/services/toast.service';
@@ -28,9 +29,10 @@ type StatusTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 @Component({
   selector: 'app-employee-requests',
-  imports: [FormsModule, DatePipe, CurrencyPipe, TranslatePipe, TranslateDirective],
+  imports: [FormsModule, DatePipe, CurrencyPipe, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './employee-requests.html',
   styleUrls: ['./employee-requests.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeRequestsComponent implements OnInit {
   allRequests = signal<EmployeeRequestDto[]>([]);
@@ -159,30 +161,31 @@ export class EmployeeRequestsComponent implements OnInit {
   }
 
   approve(req: EmployeeRequestDto): void {
-    if (!confirm('Confermare approvazione?')) return;
+    if (!confirm(this.translate.instant('EMPLOYEE.requests.confirm_approve'))) return;
 
     switch (req.type) {
-      case 'PASSWORD_CHANGE':
+      case 'PASSWORD_CHANGE': {
         this.employeeService.approvePasswordRequest(req.id).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.approve_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
+      }
       case 'ACCOUNT_OPENING':
         this.employeeService.activateAccount(req.accountNumber).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.approve_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_CLOSURE':
         this.employeeService.validateClosure(req.accountNumber).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.approve_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'LIMIT_CHANGE':
         this.employeeService.approveLimitRequest(req.id).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.approve_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
@@ -190,30 +193,30 @@ export class EmployeeRequestsComponent implements OnInit {
   }
 
   reject(req: EmployeeRequestDto): void {
-    if (!confirm('Confermare rifiuto?')) return;
+    if (!confirm(this.translate.instant('EMPLOYEE.requests.confirm_reject'))) return;
 
     switch (req.type) {
       case 'PASSWORD_CHANGE':
         this.employeeService.rejectPasswordRequest(req.id).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.reject_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_OPENING':
         this.employeeService.rejectAccount(req.accountNumber).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.reject_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'ACCOUNT_CLOSURE':
         this.employeeService.rejectClosure(req.accountNumber).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.reject_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
       case 'LIMIT_CHANGE':
         this.employeeService.rejectLimitRequest(req.id).subscribe({
-          next: (res) => { this.toastService.success(res); this.loadRequests(); },
+          next: () => { this.toastService.i18nSuccess('EMPLOYEE.requests.reject_success'); this.loadRequests(); },
           error: (err) => this.toastService.error(err?.error?.message || err?.message),
         });
         break;
@@ -247,15 +250,22 @@ export class EmployeeRequestsComponent implements OnInit {
   }
 
   getRequestDescription(req: EmployeeRequestDto): string {
-    if (req.type === 'LIMIT_CHANGE' && req.limitTypeName) {
-      const label = this.getLimitTypeLabel(req.limitTypeName);
-      const amount = req.requestedAmount != null ? req.requestedAmount.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0';
-      return label + ' — €' + amount;
+    switch (req.type) {
+      case 'PASSWORD_CHANGE':
+        return this.translate.instant('REQUEST_TYPE.PASSWORD_CHANGE_MSG');
+      case 'ACCOUNT_OPENING':
+        return this.translate.instant('REQUEST_TYPE.ACCOUNT_OPENING_MSG') + ' — IBAN: ' + req.accountNumber;
+      case 'ACCOUNT_CLOSURE':
+        return this.translate.instant('REQUEST_TYPE.ACCOUNT_CLOSURE_MSG') + ' — IBAN: ' + req.accountNumber;
+      case 'LIMIT_CHANGE':
+        if (req.limitTypeName) {
+          const label = this.getLimitTypeLabel(req.limitTypeName);
+          const amount = req.requestedAmount != null ? req.requestedAmount.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : '0';
+          return label + ' — €' + amount;
+        }
+        return this.translate.instant('REQUEST_TYPE.LIMIT_CHANGE_MSG');
+      default:
+        return req.description;
     }
-    if (req.type === 'ACCOUNT_OPENING' && req.requestedAmount != null) {
-      const amount = req.requestedAmount.toLocaleString('it-IT', { minimumFractionDigits: 2 });
-      return req.description + ' — Importo: €' + amount;
-    }
-    return req.description;
   }
 }

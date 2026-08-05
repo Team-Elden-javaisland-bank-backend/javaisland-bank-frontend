@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { CustomerService } from '../../core/services/customer.service';
 import { CustomerProfileDto } from '../../core/models/user/customer-profile.dto';
 import { jsPDF } from 'jspdf';
@@ -11,16 +12,28 @@ import { ToastService } from '../../core/services/toast.service';
 @Component({
   selector: 'app-customer-profile',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CommonModule, CurrencyPipe, FormsModule, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './customer-profile.html',
-  styleUrls: ['./customer-profile.css']
+  styleUrls: ['./customer-profile.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerProfileComponent implements OnInit {
   profile = signal<CustomerProfileDto | null>(null);
   isLoading = signal<boolean>(true);
+  errorMessageKey = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
 
   isSubmittingPassword = signal<boolean>(false);
+  currentPassword = signal<string>('');
+  newPassword = signal<string>('');
+  pin = signal<string>('');
+  passwordFormError = signal<string | null>(null);
+
+  get hasMinLength(): boolean { return this.newPassword().length >= 8; }
+  get hasUppercase(): boolean { return /[A-Z]/.test(this.newPassword()); }
+  get hasLowercase(): boolean { return /[a-z]/.test(this.newPassword()); }
+  get hasNumber(): boolean { return /\d/.test(this.newPassword()); }
+  get hasSpecialChar(): boolean { return /[^a-zA-Z0-9]/.test(this.newPassword()); }
 
   isGeneratingPdf = signal<boolean>(false);
   selectedAccountForPdf = signal<string | null>(null);
@@ -31,7 +44,7 @@ export class CustomerProfileComponent implements OnInit {
   transactions = signal<any[]>([]);
 
   accounts = computed(() => this.profile()?.accounts ?? []);
-  cards = computed(() => this.profile()?.cards ?? []);
+  cards = computed(() => (this.profile()?.cards ?? []).filter((card) => card.cardStatus !== 'CLOSED'));
 
   constructor(private customerService: CustomerService, private translate: TranslateService, private toastService: ToastService) {}
 
@@ -49,7 +62,7 @@ export class CustomerProfileComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set(this.translate.instant('PROFILE.error_loading'));
+        this.errorMessageKey.set('PROFILE.error_loading');
         this.isLoading.set(false);
       }
     });
@@ -136,27 +149,100 @@ export class CustomerProfileComponent implements OnInit {
   }
 
   openPasswordModal(): void {
-    this.showPasswordModal.set(true);
+    this.customerService.getMyRequests().subscribe({
+      next: (requests: any[]) => {
+        const pending = requests.some(
+          (r: any) => r.type === 'PASSWORD_CHANGE' && r.status === 'PENDING'
+        );
+        if (pending) {
+          this.toastService.i18nError('PROFILE.error_pending_request');
+          return;
+        }
+        this.currentPassword.set('');
+        this.newPassword.set('');
+        this.pin.set('');
+        this.passwordFormError.set(null);
+        this.showPasswordModal.set(true);
+      },
+      error: () => {
+        this.currentPassword.set('');
+        this.newPassword.set('');
+        this.pin.set('');
+        this.passwordFormError.set(null);
+        this.showPasswordModal.set(true);
+      }
+    });
   }
 
   closePasswordModal(): void {
     this.showPasswordModal.set(false);
+    this.currentPassword.set('');
+    this.newPassword.set('');
+    this.pin.set('');
+    this.passwordFormError.set(null);
+  }
+
+  onPasswordFormInput(): void {
+    this.passwordFormError.set(null);
+  }
+
+  onPinInput(): void {
+    this.pin.set(this.pin().replace(/\D/g, '').slice(0, 4));
+    this.passwordFormError.set(null);
   }
 
   submitPasswordChange(): void {
+    this.passwordFormError.set(null);
+
+    if (!this.currentPassword().trim()) {
+      this.passwordFormError.set('PROFILE.error_current_password_required');
+      return;
+    }
+    if (!this.newPassword()) {
+      this.passwordFormError.set('PROFILE.error_new_password_required');
+      return;
+    }
+    if (this.currentPassword() === this.newPassword()) {
+      this.passwordFormError.set('PROFILE.error_password_same');
+      return;
+    }
+    if (!this.hasMinLength || !this.hasUppercase || !this.hasLowercase || !this.hasNumber || !this.hasSpecialChar) {
+      this.passwordFormError.set('PROFILE.error_password_criteria');
+      return;
+    }
+    if (!/^\d{4}$/.test(this.pin())) {
+      this.passwordFormError.set('PROFILE.error_invalid_pin_format');
+      return;
+    }
+
     this.isSubmittingPassword.set(true);
 
-    this.customerService.requestPasswordChange().subscribe({
+    this.customerService.requestPasswordChange({
+      currentPassword: this.currentPassword(),
+      newPassword: this.newPassword(),
+      pin: this.pin(),
+    }).subscribe({
       next: () => {
         this.isSubmittingPassword.set(false);
         this.closePasswordModal();
-        this.toastService.success(this.translate.instant('PROFILE.password_change_requested'));
+        this.toastService.i18nSuccess('PROFILE.password_change_requested');
       },
       error: (err: any) => {
         this.isSubmittingPassword.set(false);
-        this.toastService.error(err.error?.message || this.translate.instant('PROFILE.error_password'));
+        this.passwordFormError.set(this.mapPasswordError(err?.errorCode));
       }
     });
+  }
+
+  private mapPasswordError(code?: string): string {
+    switch (code) {
+      case 'CURRENT_PASSWORD_INCORRECT': return 'PROFILE.error_current_password';
+      case 'NEW_PASSWORD_SAME_AS_CURRENT': return 'PROFILE.error_password_same';
+      case 'INVALID_PIN': return 'PROFILE.error_invalid_pin';
+      case 'PENDING_REQUEST_EXISTS': return 'PROFILE.error_pending_request';
+      case 'VALIDATION_ERROR': return 'PROFILE.error_password_criteria';
+      default: return 'PROFILE.error_password';
+    }
   }
 
   private translateTxStatus(statusName: string | null): string {

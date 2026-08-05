@@ -202,7 +202,10 @@
                         <td class="d-none d-md-table-cell text-muted">{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
                         <td>
                           <span [class]="'tx-status-badge ' + getStatusNameClass(tx.statusName)">
-                            {{ tx.statusName === 'COMPLETED' ? ('DASHBOARD.completed' | translate) : tx.statusName === 'PENDING' ? ('DASHBOARD.pending' | translate) : tx.statusName === 'FAILED' ? ('DASHBOARD.failed' | translate) : ('DASHBOARD.rejected' | translate) }}
+                            @if (tx.statusName === 'PENDING') {
+                              <i class="bi bi-clock me-1"></i>
+                            }
+                            {{ tx.statusName === 'COMPLETED' ? ('DASHBOARD.completed' | translate) : tx.statusName === 'PENDING' ? ('DASHBOARD.pending' | translate) : tx.statusName === 'FAILED' ? ('DASHBOARD.failed' | translate) : tx.statusName === 'CANCELLED' ? ('DASHBOARD.cancelled' | translate) : ('DASHBOARD.rejected' | translate) }}
                           </span>
                         </td>
                       </tr>
@@ -274,5 +277,78 @@
         }
       </div>
     </div>
+
+    <!-- ═══ ROW 3: Scheduled payments ═══ -->
+    <div class="dash-left dash-row-3 dash-full">
+      <div class="section-header mb-3">
+        <h5 class="section-title"><i class="bi bi-calendar-event me-2"></i>{{ 'DASHBOARD.scheduled_title' | translate }}</h5>
+      </div>
+
+      @if (scheduledTransfers().length > 0) {
+        <div class="card shadow-sm rounded-3 border-0">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th class="table-header">{{ 'DASHBOARD.scheduled_dest' | translate }}</th>
+                    <th class="table-header">{{ 'DASHBOARD.amount' | translate }}</th>
+                    <th class="table-header">{{ 'DASHBOARD.scheduled_date' | translate }}</th>
+                    <th class="table-header">{{ 'DASHBOARD.scheduled_status' | translate }}</th>
+                    <th class="table-header text-end">{{ 'DASHBOARD.scheduled_action' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tx of scheduledTransfers(); track tx.id) {
+                    <tr class="table-row-hover">
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="tx-icon tx-icon-3">
+                            <i class="bi bi-clock-history"></i>
+                          </div>
+                          <span class="fw-semibold">{{ scheduledDestination(tx) }}</span>
+                        </div>
+                      </td>
+                      <td class="fw-bold amount-negative">{{ tx.amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+                      <td class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i>{{ tx.scheduledDate | date:'dd/MM/yyyy' }}
+                      </td>
+                      <td>
+                        <span class="tx-status-badge scheduled">
+                          <i class="bi bi-clock me-1"></i>{{ 'DASHBOARD.pending' | translate }}
+                        </span>
+                      </td>
+                      <td class="text-end">
+                        <button class="btn-cancel-sched" [disabled]="isScheduledCancelling(tx)" (click)="requestCancelScheduled(tx)">
+                          <i class="bi bi-x-circle me-1"></i>{{ 'DASHBOARD.scheduled_cancel' | translate }}
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state-card">
+          <div class="empty-state-icon">
+            <i class="bi bi-calendar-event"></i>
+          </div>
+          <h6 class="empty-state-title">{{ 'DASHBOARD.scheduled_none' | translate }}</h6>
+          <p class="empty-state-text">{{ 'DASHBOARD.scheduled_none_desc' | translate }}</p>
+        </div>
+      }
+    </div>
   }
 </div>
+
+@if (cancelTarget(); as target) {
+  <app-scheduled-cancel-modal
+    [amount]="target.amount"
+    [scheduledDate]="target.scheduledDate"
+    [loading]="cancellingId() === target.id"
+    (confirmed)="confirmCancelScheduled()"
+    (cancelled)="dismissCancelScheduled()"
+  />
+}

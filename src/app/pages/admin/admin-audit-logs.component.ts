@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AdminService, AuditLogDto, EmployeeDetailDto } from '../../core/services/admin.service';
@@ -8,20 +8,22 @@ import { AdminService, AuditLogDto, EmployeeDetailDto } from '../../core/service
   standalone: true,
   imports: [CommonModule, TranslatePipe, TranslateDirective],
   templateUrl: './admin-audit-logs.html',
-  styleUrls: ['./admin-audit-logs.css']
+  styleUrls: ['./admin-audit-logs.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminAuditLogsComponent implements OnInit {
   logs = signal<AuditLogDto[]>([]);
   loading = signal<boolean>(true);
-  error = signal<string | null>(null);
+  errorKey = signal<string | null>(null);
 
   selectedAction = signal<string>('');
   selectedDays = signal<number>(7);
 
   showModal = signal<boolean>(false);
   modalLoading = signal<boolean>(false);
-  modalError = signal<string | null>(null);
+  modalErrorKey = signal<string | null>(null);
   selectedEmployee = signal<EmployeeDetailDto | null>(null);
+
 
   actionTypes = computed(() => [
     { value: '', label: this.translate.instant('ADMIN.audit.filter_all') },
@@ -58,15 +60,15 @@ export class AdminAuditLogsComponent implements OnInit {
 
   loadLogs(): void {
     this.loading.set(true);
-    this.error.set(null);
+    this.errorKey.set(null);
 
     this.adminService.getAuditLogs({ recentDays: this.selectedDays() }).subscribe({
       next: (data) => {
-        this.logs.set(data);
+        this.logs.set(data.content);
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(this.translate.instant('ADMIN.audit.error_load'));
+        this.errorKey.set('ADMIN.audit.error_load');
         this.loading.set(false);
         console.error('Audit logs error:', err);
       }
@@ -87,7 +89,7 @@ export class AdminAuditLogsComponent implements OnInit {
 
     this.showModal.set(true);
     this.modalLoading.set(true);
-    this.modalError.set(null);
+    this.modalErrorKey.set(null);
     this.selectedEmployee.set(null);
 
     this.adminService.getEmployeeDetail(log.performedByUserId).subscribe({
@@ -96,7 +98,8 @@ export class AdminAuditLogsComponent implements OnInit {
         this.modalLoading.set(false);
       },
       error: (err) => {
-        this.modalError.set(this.translate.instant('ADMIN.audit.error_employee_load'));
+        this.modalErrorKey.set('ADMIN.audit.error_employee_load');
+
         this.modalLoading.set(false);
         console.error('Employee detail error:', err);
       }
@@ -106,7 +109,7 @@ export class AdminAuditLogsComponent implements OnInit {
   closeModal(): void {
     this.showModal.set(false);
     this.selectedEmployee.set(null);
-    this.modalError.set(null);
+    this.modalErrorKey.set(null);
   }
 
   getActionBadgeClass(action: string): string {

@@ -598,6 +598,7 @@
 .status-2 { background: rgba(229, 169, 60, 0.25); color: #f0c264; border: 1px solid rgba(229, 169, 60, 0.35); }
 .status-1 { background: rgba(255, 255, 255, 0.2); color: #fde68a; border: 1px solid rgba(255, 255, 255, 0.25); }
 .status-3 { background: rgba(255, 255, 255, 0.2); color: #fca5a5; border: 1px solid rgba(255, 255, 255, 0.25); }
+.status-3.closure-pending { background: rgba(229, 169, 60, 0.25); color: #f0c264; border: 1px solid rgba(229, 169, 60, 0.35); }
 .status-4 { background: rgba(255, 255, 255, 0.15); color: #d1d5db; border: 1px solid rgba(255, 255, 255, 0.2); }
 
 /* ── Card body ── */

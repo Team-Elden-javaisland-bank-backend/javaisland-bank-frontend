@@ -8,6 +8,8 @@ export interface AccountResponseDto {
   profilePictureUrl?: string;
   userStatusId: number;
   initialAmount: number | null;
+  isLimitsConfigured?: boolean;
   createdAt: string;
   closedAt: string | null;
+  closureRequestedAt?: string | null;
 }

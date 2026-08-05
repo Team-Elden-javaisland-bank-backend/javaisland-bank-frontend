@@ -77,7 +77,7 @@
               <div class="reg-card-header">
                 <div class="reg-avatar reg-avatar-clickable" [class.reg-avatar-refused]="activeTab() === 'refused'" (click)="openUserDetail(reg.userId)" title="{{ 'EMPLOYEE.registrations.view_detail' | translate }}">
                   @if (reg.profilePictureUrl) {
-                    <img [src]="'http://localhost:8081' + reg.profilePictureUrl" alt="" class="avatar-img">
+                    <img [src]="reg.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                   } @else {
                     {{ reg.firstName.charAt(0) }}{{ reg.lastName.charAt(0) }}
                   }

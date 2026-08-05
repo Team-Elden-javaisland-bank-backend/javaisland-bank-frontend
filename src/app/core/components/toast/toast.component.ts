@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, inject } from '@angular/core';
 import { ToastService } from '../../../core/services/toast.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-toast',
@@ -107,8 +109,20 @@ import { ToastService } from '../../../core/services/toast.service';
         width: auto;
       }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToastComponent {
-  constructor(public toastService: ToastService) {}
+export class ToastComponent implements OnDestroy {
+  private translate = inject(TranslateService);
+  private langSub: Subscription;
+
+  constructor(public toastService: ToastService) {
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.toastService.retranslateToasts();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
+  }
 }

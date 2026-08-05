@@ -291,6 +291,31 @@
   z-index: 1;
 }
 
+/* ── Support float ── */
+.support-float {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 40px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  z-index: 100;
+  pointer-events: auto;
+  user-select: none;
+}
+.support-float i {
+  font-size: 1.1rem;
+  color: var(--bi-gold);
+}
+
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 479.98px) {
   .auth-page { padding: 1rem; }

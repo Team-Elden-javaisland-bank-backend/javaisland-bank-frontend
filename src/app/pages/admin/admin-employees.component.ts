@@ -1,21 +1,23 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { AdminService, EmployeeListItemDto, CreateEmployeeRequestDto, EmployeeDetailDto } from '../../core/services/admin.service';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-employees',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CommonModule, FormsModule, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './admin-employees.html',
-  styleUrls: ['./admin-employees.css']
+  styleUrls: ['./admin-employees.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminEmployeesComponent implements OnInit {
   employees = signal<EmployeeListItemDto[]>([]);
   loading = signal(true);
-  error = signal<string | null>(null);
+  errorKey = signal<string | null>(null);
 
   searchQuery = signal('');
   filterStatus = signal<string>('ALL');
@@ -76,15 +78,15 @@ export class AdminEmployeesComponent implements OnInit {
 
   loadEmployees(): void {
     this.loading.set(true);
-    this.error.set(null);
+    this.errorKey.set(null);
 
     this.adminService.getEmployees().subscribe({
       next: (data) => {
-        this.employees.set(data);
+        this.employees.set(data.content);
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(this.translate.instant('ADMIN.employees.error_load'));
+        this.errorKey.set('ADMIN.employees.error_load');
         this.loading.set(false);
         console.error('Employees error:', err);
       }
@@ -118,7 +120,12 @@ export class AdminEmployeesComponent implements OnInit {
   createEmployee(): void {
     const emp = this.newEmployee();
     if (!emp.firstName || !emp.lastName || !emp.email || !emp.password) {
-      this.toastService.error(this.translate.instant('ADMIN.employees.error_required'));
+      this.toastService.i18nError('ADMIN.employees.error_required');
+      return;
+    }
+
+    if (emp.password.length < 8) {
+      this.toastService.i18nError('ADMIN.employees.error_password_min_length');
       return;
     }
 
@@ -126,13 +133,18 @@ export class AdminEmployeesComponent implements OnInit {
     this.adminService.createEmployee(emp).subscribe({
       next: (created) => {
         this.employees.update((list) => [...list, created]);
-        this.toastService.success(this.translate.instant('ADMIN.employees.success_created'));
+        this.toastService.i18nSuccess('ADMIN.employees.success_created');
         this.showCreateForm.set(false);
         this.resetForm();
         this.creating.set(false);
       },
       error: (err) => {
-        this.toastService.error(err?.error?.message || err?.message || this.translate.instant('ADMIN.employees.error_create'));
+        const msg = err?.error?.message || err?.message || '';
+        if (/password.*at least 8/i.test(msg)) {
+          this.toastService.i18nError('ADMIN.employees.error_password_min_length');
+        } else {
+          this.toastService.error(msg || this.translate.instant('ADMIN.employees.error_create'));
+        }
         this.creating.set(false);
       }
     });
@@ -145,7 +157,7 @@ export class AdminEmployeesComponent implements OnInit {
         this.employees.update((list) =>
           list.map((e) => (e.userId === userId ? { ...e, status: 'SUSPENDED' } : e))
         );
-        this.toastService.success(this.translate.instant('ADMIN.employees.success_suspend'));
+        this.toastService.i18nSuccess('ADMIN.employees.success_suspend');
         this.actingEmployeeId.set(null);
       },
       error: (err) => {
@@ -162,7 +174,7 @@ export class AdminEmployeesComponent implements OnInit {
         this.employees.update((list) =>
           list.map((e) => (e.userId === userId ? { ...e, status: 'ACTIVE' } : e))
         );
-        this.toastService.success(this.translate.instant('ADMIN.employees.success_activate'));
+        this.toastService.i18nSuccess('ADMIN.employees.success_activate');
         this.actingEmployeeId.set(null);
       },
       error: (err) => {

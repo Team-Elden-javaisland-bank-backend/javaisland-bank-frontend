@@ -1,17 +1,20 @@
-import { Component, signal, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
+import { ToastService } from '../../core/services/toast.service';
+import { ScheduledCancelModalComponent } from '../../shared/scheduled-cancel-modal/scheduled-cancel-modal.component';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
 
 @Component({
   selector: 'app-customer-account-detail',
-  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, ScheduledCancelModalComponent],
   templateUrl: './customer-account-detail.html',
   styleUrl: './customer-account-detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
   account = signal<AccountResponseDto | null>(null);
@@ -20,8 +23,7 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
   loadingMore = signal(false);
   expandedTxId = signal<number | null>(null);
   cancellingId = signal<number | null>(null);
-  txMessage = signal('');
-  txMessageType = signal<'success' | 'error'>('success');
+  cancelTarget = signal<TransactionResponseDto | null>(null);
 
   accountNumber = '';
   startDate = '';
@@ -38,6 +40,7 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
     public router: Router,
     private customerService: CustomerService,
     private translate: TranslateService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -121,23 +124,32 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
     this.expandedTxId.update(current => current === id ? null : id);
   }
 
-  cancelTx(tx: TransactionResponseDto, event: Event): void {
-    event.stopPropagation();
-    this.txMessage.set('');
+  requestCancel(tx: TransactionResponseDto): void {
+    this.cancelTarget.set(tx);
+  }
+
+  dismissCancel(): void {
+    if (this.cancellingId() !== null) return;
+    this.cancelTarget.set(null);
+  }
+
+  confirmCancel(): void {
+    const tx = this.cancelTarget();
+    if (!tx) return;
     this.cancellingId.set(tx.id);
     this.customerService.cancelTransaction(tx.id).subscribe({
       next: () => {
         this.transactions.update(list =>
           list.map(t => t.id === tx.id ? { ...t, statusId: 5, statusName: 'CANCELLED' } : t)
         );
+        this.toastService.i18nSuccess('ACCOUNT_DETAIL.messages.cancel_success');
         this.cancellingId.set(null);
-        this.txMessage.set(this.translate.instant('ACCOUNT_DETAIL.messages.cancel_success'));
-        this.txMessageType.set('success');
+        this.cancelTarget.set(null);
       },
       error: (err) => {
         this.cancellingId.set(null);
-        this.txMessage.set(err?.message || this.translate.instant('ACCOUNT_DETAIL.messages.cancel_error'));
-        this.txMessageType.set('error');
+        this.cancelTarget.set(null);
+        this.toastService.error(err?.message || this.translate.instant('ACCOUNT_DETAIL.messages.cancel_error'));
       },
     });
   }
@@ -172,6 +184,17 @@ export class CustomerAccountDetailComponent implements OnInit, OnDestroy {
 
   isCancelled(tx: TransactionResponseDto): boolean {
     return tx.statusName === 'CANCELLED';
+  }
+
+  getDescription(tx: TransactionResponseDto): string {
+    const desc = tx.description ?? '';
+    const markers = ['TRANSACTION_CANCELLED_BY_USER', 'Cancelled by user'];
+    for (const marker of markers) {
+      if (desc.includes(marker)) {
+        return desc.replace(marker, this.translate.instant('TRANSACTIONS.cancelled_by_user'));
+      }
+    }
+    return desc;
   }
 
   private setupInfiniteScroll(): void {

@@ -39,6 +39,7 @@
               <th class="th-from">{{ 'TRANSACTIONS.table_sender' | translate }}</th>
               <th class="th-to">{{ 'TRANSACTIONS.table_recipient' | translate }}</th>
               <th class="th-date">{{ 'TRANSACTIONS.table_date' | translate }}</th>
+              <th class="th-action">{{ 'TRANSACTIONS.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -53,7 +54,7 @@
                   </div>
                 </td>
                 <td>
-                  <span class="tx-desc">{{ tx.description || '—' }}</span>
+                  <span class="tx-desc">{{ getDescription(tx) || '—' }}</span>
                 </td>
                 <td>
                   <span [class]="'tx-amount tx-amount-' + tx.typeId + ' tx-amount-' + getTxDirection(tx)">
@@ -66,6 +67,9 @@
                 </td>
                 <td>
                   <span [class]="'status-badge ' + getStatusClass(tx.statusName)">
+                    @if (isScheduled(tx)) {
+                      <i class="bi bi-clock me-1"></i>
+                    }
                     {{ getStatusLabel(tx.statusName) }}
                   </span>
                 </td>
@@ -73,9 +77,24 @@
                 <td><span class="mono text-muted">{{ maskAccount(tx.destinationAccountNumber) }}</span></td>
                 <td>
                   <div class="tx-date-cell">
-                    <span class="tx-date">{{ tx.createdAt | date:'dd/MM/yyyy' }}</span>
-                    <span class="tx-time">{{ tx.createdAt | date:'HH:mm' }}</span>
+                    <span class="tx-date">{{ (isScheduled(tx) ? tx.scheduledDate : tx.createdAt) | date:'dd/MM/yyyy' }}</span>
+                    <span class="tx-time">
+                      @if (isScheduled(tx)) {
+                        <i class="bi bi-calendar-event"></i>
+                      } @else {
+                        {{ tx.createdAt | date:'HH:mm' }}
+                      }
+                    </span>
                   </div>
+                </td>
+                <td>
+                  @if (isScheduled(tx)) {
+                    <button class="tx-cancel-btn" [disabled]="isCancelling(tx)" (click)="requestCancel(tx)">
+                      <i class="bi bi-x-circle me-1"></i>{{ 'TRANSACTIONS.cancel_scheduled' | translate }}
+                    </button>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
                 </td>
               </tr>
             }
@@ -96,6 +115,9 @@
               <span class="tx-type-label">{{ getTypeLabel(tx) }}</span>
             </div>
             <span [class]="'status-badge ' + getStatusClass(tx.statusName)">
+              @if (isScheduled(tx)) {
+                <i class="bi bi-clock me-1"></i>
+              }
               {{ getStatusLabel(tx.statusName) }}
             </span>
           </div>
@@ -113,7 +135,7 @@
             @if (tx.description) {
               <div class="tx-card-row">
                 <span class="tx-card-label">{{ 'TRANSACTIONS.table_description' | translate }}</span>
-                <span class="tx-desc">{{ tx.description }}</span>
+                <span class="tx-desc">{{ getDescription(tx) }}</span>
               </div>
             }
             <div class="tx-card-row">
@@ -126,8 +148,18 @@
             </div>
           </div>
           <div class="tx-card-footer">
-            <i class="bi bi-clock me-1"></i>
-            {{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            @if (isScheduled(tx)) {
+              <i class="bi bi-calendar-event me-1"></i>
+              {{ 'TRANSACTIONS.exec_date' | translate }}: {{ tx.scheduledDate | date:'dd/MM/yyyy' }}
+            } @else {
+              <i class="bi bi-clock me-1"></i>
+              {{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            }
+            @if (isScheduled(tx)) {
+              <button class="tx-cancel-btn" [disabled]="isCancelling(tx)" (click)="requestCancel(tx)">
+                <i class="bi bi-x-circle me-1"></i>{{ 'TRANSACTIONS.cancel_scheduled' | translate }}
+              </button>
+            }
           </div>
         </div>
       }
@@ -150,3 +182,13 @@
     </div>
   }
 </div>
+
+@if (cancelTarget(); as target) {
+  <app-scheduled-cancel-modal
+    [amount]="target.amount"
+    [scheduledDate]="target.scheduledDate"
+    [loading]="cancellingId() === target.id"
+    (confirmed)="confirmCancel()"
+    (cancelled)="dismissCancel()"
+  />
+}

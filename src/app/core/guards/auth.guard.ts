@@ -1,149 +1,81 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { LoginResponseDto } from '../models/auth/login-response.dto';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+type CustomerSetupState = 'limits-setup' | 'pin-setup' | 'pin-verify' | 'dashboard';
 
-  if (authService.isLoggedIn()) {
-    return true;
-  }
+function resolveCustomerState(user: LoginResponseDto | null, pinVerified: boolean): CustomerSetupState {
+  if (user?.limitsSetupComplete === false) return 'limits-setup';
+  if (user?.pinSetupComplete === false) return 'pin-setup';
+  if (!pinVerified) return 'pin-verify';
+  return 'dashboard';
+}
 
-  router.navigate(['/login']);
+function redirectTo(target: string | null, router: Router): boolean {
+  router.navigate([target ?? '/login']);
   return false;
-};
+}
 
 export const roleGuard = (requiredRole: string): CanActivateFn => {
   return () => {
     const authService = inject(AuthService);
     const router = inject(Router);
-    const user = authService.getUser();
 
     if (!authService.isLoggedIn()) {
-      router.navigate(['/login']);
-      return false;
+      return redirectTo('/login', router);
     }
 
-    if (user?.role !== requiredRole) {
-      router.navigate(['/']);
-      return false;
+    if (authService.getUser()?.role !== requiredRole) {
+      return redirectTo('/', router);
     }
 
     return true;
   };
 };
 
-export const limitsSetupGuard: CanActivateFn = () => {
+export const customerSetupGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  const user = authService.getUser();
 
   if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
+    return redirectTo('/login', router);
   }
 
-  if (user?.role === 'C' && user?.limitsSetupComplete === false) {
-    router.navigate(['/customer/limits-setup']);
-    return false;
+  const user = authService.getUser();
+  if (user?.role !== 'C') {
+    return redirectTo('/', router);
   }
 
-  if (user?.role === 'C' && user?.limitsSetupComplete === true && user?.pinSetupComplete === false) {
-    router.navigate(['/customer/pin-setup']);
-    return false;
-  }
-
-  if (user?.role === 'C' && user?.limitsSetupComplete === true && user?.pinSetupComplete === true && !authService.isPinVerified()) {
-    router.navigate(['/customer/pin-verify']);
-    return false;
+  const state = resolveCustomerState(user, authService.isPinVerified());
+  if (state !== 'dashboard') {
+    return redirectTo(`/customer/${state}`, router);
   }
 
   return true;
 };
 
-export const limitsSetupPageGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const user = authService.getUser();
+export const setupPageGuard = (page: Exclude<CustomerSetupState, 'dashboard'>): CanActivateFn => {
+  return () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
 
-  if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
-  }
+    if (!authService.isLoggedIn()) {
+      return redirectTo('/login', router);
+    }
 
-  if (user?.role !== 'C') {
-    router.navigate(['/']);
-    return false;
-  }
+    const user = authService.getUser();
+    if (user?.role !== 'C') {
+      return redirectTo('/', router);
+    }
 
-  if (user?.limitsSetupComplete === true) {
-    router.navigate(['/customer/dashboard']);
-    return false;
-  }
+    const state = resolveCustomerState(user, authService.isPinVerified());
+    if (state !== page) {
+      return redirectTo(`/customer/${state}`, router);
+    }
 
-  return true;
-};
-
-export const pinSetupPageGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const user = authService.getUser();
-
-  if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
-  }
-
-  if (user?.role !== 'C') {
-    router.navigate(['/']);
-    return false;
-  }
-
-  if (user?.limitsSetupComplete === false) {
-    router.navigate(['/customer/limits-setup']);
-    return false;
-  }
-
-  if (user?.pinSetupComplete === true) {
-    router.navigate(['/customer/pin-verify']);
-    return false;
-  }
-
-  return true;
-};
-
-export const pinVerifyPageGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const user = authService.getUser();
-
-  if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
-  }
-
-  if (user?.role !== 'C') {
-    router.navigate(['/']);
-    return false;
-  }
-
-  if (user?.limitsSetupComplete === false) {
-    router.navigate(['/customer/limits-setup']);
-    return false;
-  }
-
-  if (user?.pinSetupComplete === false) {
-    router.navigate(['/customer/pin-setup']);
-    return false;
-  }
-
-  if (authService.isPinVerified()) {
-    router.navigate(['/customer/dashboard']);
-    return false;
-  }
-
-  return true;
+    return true;
+  };
 };
 
 export const loginRedirectGuard: CanActivateFn = () => {
@@ -156,21 +88,14 @@ export const loginRedirectGuard: CanActivateFn = () => {
 
   const user = authService.getUser();
   if (user?.role === 'C') {
-    if (user?.limitsSetupComplete === false) {
-      router.navigate(['/customer/limits-setup']);
-    } else if (user?.pinSetupComplete === false) {
-      router.navigate(['/customer/pin-setup']);
-    } else if (!authService.isPinVerified()) {
-      router.navigate(['/customer/pin-verify']);
-    } else {
-      router.navigate(['/customer/dashboard']);
-    }
+    const state = resolveCustomerState(user, authService.isPinVerified());
+    redirectTo(`/customer/${state}`, router);
   } else if (user?.role === 'D') {
-    router.navigate(['/employee/dashboard']);
+    redirectTo('/employee/dashboard', router);
   } else if (user?.role === 'A') {
-    router.navigate(['/admin/dashboard']);
+    redirectTo('/admin/dashboard', router);
   } else {
-    router.navigate(['/login']);
+    redirectTo('/login', router);
   }
 
   return false;

@@ -252,6 +252,11 @@
   <!-- Toast notifications -->
   <app-toast />
 
+  <!-- Blocking limits-setup modal for newly activated accounts -->
+  @if (limitsModalAccount(); as pendingAccount) {
+    <app-account-limits-modal [account]="pendingAccount" (completed)="onLimitsModalCompleted()" />
+  }
+
   <!-- Mobile bottom nav -->
   <nav class="bottom-nav d-flex d-md-none align-items-center justify-content-around" [attr.aria-label]="'LAYOUT.mobile_nav' | translate">
     @if (isCustomer) {
@@ -337,8 +342,8 @@
             }
           </div>
 
-          @if (uploadError()) {
-            <div class="alert alert-danger mt-3">{{ uploadError() }}</div>
+          @if (uploadErrorKey()) {
+            <div class="alert alert-danger mt-3">{{ uploadErrorKey() }}</div>
           }
 
           <div class="modal-actions">

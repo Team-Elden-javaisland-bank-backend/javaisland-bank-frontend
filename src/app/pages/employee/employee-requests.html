@@ -131,7 +131,7 @@
                     <div class="d-flex align-items-center gap-2">
                       <div class="avatar-sm">
                         @if (req.profilePictureUrl) {
-                          <img [src]="'http://localhost:8081' + req.profilePictureUrl" alt="" class="avatar-img">
+                          <img [src]="req.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                         } @else {
                           {{ req.userFirstName?.charAt(0) }}{{ req.userLastName?.charAt(0) }}
                         }
@@ -195,7 +195,7 @@
             <div class="user-detail-header">
               <div class="user-detail-avatar">
                 @if (userDetail()!.profilePictureUrl) {
-                  <img [src]="'http://localhost:8081' + userDetail()!.profilePictureUrl" alt="" class="avatar-img">
+                  <img [src]="userDetail()!.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                 } @else {
                   {{ userDetail()!.firstName?.charAt(0) }}{{ userDetail()!.lastName?.charAt(0) }}
                 }

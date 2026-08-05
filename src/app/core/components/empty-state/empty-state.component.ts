@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-empty-state',
@@ -44,7 +44,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       transition: all 0.2s;
     }
     .empty-state-btn:hover { background: #0f2744; }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStateComponent {
   @Input() icon = 'bi bi-inbox';

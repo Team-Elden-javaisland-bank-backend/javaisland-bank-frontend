@@ -26,13 +26,6 @@
       <h1 class="auth-title">{{ 'AUTH.welcome_back' | translate }}</h1>
       <p class="auth-subtitle">{{ 'AUTH.login_subtitle' | translate }}</p>
 
-      @if (error()) {
-        <div class="auth-alert auth-alert-error" role="alert">
-          <i class="bi bi-exclamation-circle-fill"></i>
-          <span>{{ error() }}</span>
-        </div>
-      }
-
       <form (ngSubmit)="onSubmit()" [attr.aria-label]="'AUTH.login_aria' | translate">
         <div class="auth-field">
           <label for="username" class="auth-label">
@@ -87,4 +80,8 @@
   </div>
 
   <p class="auth-copyright">&copy; {{ 'AUTH.copyright' | translate }}</p>
+  <div class="support-float">
+    <i class="bi bi-headset"></i> 800 123 456
+  </div>
+  <app-toast />
 </div>

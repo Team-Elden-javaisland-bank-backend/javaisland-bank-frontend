@@ -1,0 +1,96 @@
+.sched-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.sched-modal-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem 1.75rem 1.5rem;
+  animation: schedModalIn 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes schedModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sched-header {
+  text-align: center;
+}
+
+.sched-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1rem;
+}
+
+.sched-header h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.sched-message {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.sched-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 1.5rem;
+}
+
+.sched-actions .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.625rem 1rem;
+}
+
+.sched-actions .btn-danger {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.sched-actions .btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.sched-actions .btn-cancel {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.sched-actions .btn-cancel:hover:not(:disabled) {
+  background: #e2e8f0;
+}

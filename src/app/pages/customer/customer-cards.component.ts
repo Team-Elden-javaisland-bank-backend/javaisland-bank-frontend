@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { CardResponseDto } from '../../core/models/card/card-response.dto';
@@ -10,6 +10,7 @@ import { ToastService } from '../../core/services/toast.service';
   imports: [TranslatePipe, TranslateDirective],
   templateUrl: './customer-cards.html',
   styleUrl: './customer-cards.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerCardsComponent {
   cards = signal<CardResponseDto[]>([]);
@@ -56,6 +57,7 @@ export class CustomerCardsComponent {
         this.revealedId.set(cardId);
       },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),
+
     });
   }
 

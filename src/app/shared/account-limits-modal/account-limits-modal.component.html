@@ -1,0 +1,19 @@
+<div class="limits-modal-overlay">
+  <div class="limits-modal-card">
+    <div class="limits-modal-header">
+      <div class="limits-modal-icon">
+        <i class="bi bi-speedometer2"></i>
+      </div>
+      <h2 class="limits-modal-title">{{ 'ACCOUNT_LIMITS_MODAL.title' | translate }}</h2>
+      <p class="limits-modal-message">{{ 'ACCOUNT_LIMITS_MODAL.message' | translate }}</p>
+    </div>
+
+    <app-account-limits-form
+      [account]="account"
+      confirmLabelKey="ACCOUNT_LIMITS_MODAL.confirm_button"
+      [submitting]="submitting"
+      [isInitialSetup]="true"
+      (confirmed)="onConfirmed()"
+    />
+  </div>
+</div>

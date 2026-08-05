@@ -1,21 +1,30 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { AdminService, AdminCustomerListItemDto, AdminCustomerDetailDto } from '../../core/services/admin.service';
 
 @Component({
   selector: 'app-admin-customers',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CommonModule, FormsModule, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './admin-customers.html',
-  styleUrls: ['./admin-customers.css']
+  styleUrls: ['./admin-customers.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminCustomersComponent implements OnInit {
   customers = signal<AdminCustomerListItemDto[]>([]);
   loading = signal(true);
-  error = signal<string | null>(null);
+  errorKey = signal<string | null>(null);
   searchQuery = signal('');
+  page = signal(0);
+  pageSize = signal(20);
+  totalElements = signal(0);
+  totalPages = signal(1);
+
+  hasPrev = computed(() => this.page() > 0);
+  hasNext = computed(() => this.page() + 1 < this.totalPages());
 
   showModal = signal(false);
   modalLoading = signal(false);
@@ -40,10 +49,29 @@ export class AdminCustomersComponent implements OnInit {
 
   loadCustomers(): void {
     this.loading.set(true);
-    this.adminService.getCustomers().subscribe({
-      next: (data) => { this.customers.set(data); this.loading.set(false); },
-      error: () => { this.loading.set(false); this.error.set(this.translate.instant('ADMIN.customers.error_load')); }
+    this.adminService.getCustomers(this.page(), this.pageSize()).subscribe({
+      next: (data) => {
+        this.customers.set(data.content);
+        this.totalElements.set(data.totalElements);
+        this.totalPages.set(data.totalPages || 1);
+        this.loading.set(false);
+      },
+      error: () => { this.loading.set(false); this.errorKey.set('ADMIN.customers.error_load'); }
     });
+  }
+
+  goToPage(target: number): void {
+    if (target < 0 || target >= this.totalPages()) return;
+    this.page.set(target);
+    this.loadCustomers();
+  }
+
+  prevPage(): void {
+    this.goToPage(this.page() - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.page() + 1);
   }
 
   openDetail(userId: number): void {

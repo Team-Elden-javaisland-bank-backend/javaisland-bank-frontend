@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { NotificationService, NotificationDto } from '../../core/services/notification.service';
@@ -9,7 +9,8 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, TranslatePipe, TranslateDirective],
   templateUrl: './customer-notifications.html',
-  styleUrls: ['./customer-notifications.css']
+  styleUrls: ['./customer-notifications.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerNotificationsComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);

@@ -47,6 +47,7 @@
     "password": "Password",
     "enter_username": "Inserisci username",
     "enter_password": "Inserisci password",
+    "session_expired": "Sessione scaduta. Effettua nuovamente il login.",
     "required_credentials": "Inserisci username e password",
     "logging_in": "Accesso in corso...",
     "login": "Accedi",
@@ -127,9 +128,10 @@
     "date": "Data",
     "status": "Stato",
     "completed": "Completato",
-    "pending": "In sospeso",
+    "pending": "Programmato",
     "failed": "Fallito",
     "rejected": "Rifiutato",
+    "cancelled": "Annullato",
     "quick_actions": "Azioni Rapide",
     "deposit": "Deposito",
     "deposit_desc": "Versa sul tuo conto",
@@ -155,7 +157,17 @@
     "greeting_afternoon": "Buon pomeriggio",
     "greeting_evening": "Buonasera",
     "monthly_expenses": "Spese Mensili",
-    "vs_last_month": "vs mese scorso"
+    "vs_last_month": "vs mese scorso",
+    "scheduled_title": "Prossimi Pagamenti",
+    "scheduled_subtitle": "I tuoi bonifici programmati in scadenza",
+    "scheduled_dest": "Destinatario",
+    "scheduled_date": "Data esecuzione",
+    "scheduled_status": "Stato",
+    "scheduled_action": "Azione",
+    "scheduled_none": "Nessun bonifico programmato",
+    "scheduled_none_desc": "I bonifici pianificati appariranno qui.",
+    "scheduled_cancel": "Annulla",
+    "scheduled_days_left": "tra {{days}} gg"
   },
   "ACCOUNTS": {
     "page_title": "I miei Conti",
@@ -197,7 +209,6 @@
     "transfer_from": "Da conto",
     "transfer_to": "A conto",
     "transfer_amount": "Importo",
-    "transfer_min": "Minimo €1,00",
     "transfer_description": "Descrizione",
     "transfer_description_placeholder": "es. Trasferimento interno",
     "internal_transfer": "Trasferimento interno",
@@ -207,6 +218,8 @@
     "close_error_msg": "Non puoi chiudere il tuo unico conto attivo. Il tuo profilo deve avere almeno un conto associato. Se desideri chiudere definitivamente il tuo profilo Elden Bank, contatta l'assistenza.",
     "close_error_got_it": "Ho capito",
     "close_error_contact": "Contatta assistenza",
+    "CLOSE_REQUEST_SUCCESS": "Richiesta di chiusura del conto inviata con successo. Sarà presa in carico da un operatore.",
+    "closure_requested_badge": "Chiusura in corso",
     "toast": {
       "fill_fields": "Compila tutti i campi correttamente",
       "select_account": "Seleziona un conto",
@@ -216,7 +229,6 @@
       "generic_error": "Si è verificato un errore. Riprova più tardi.",
       "transfer_select_accounts": "Seleziona sia il conto origine che il conto destinazione",
       "transfer_same_account": "I conti di origine e destinazione devono essere diversi",
-      "transfer_min_amount": "L'importo minimo di trasferimento è €1,00",
       "transfer_success": "Trasferimento completato con successo"
     }
   },
@@ -234,10 +246,10 @@
     "no_movements_desc": "Nessun movimento trovato per il periodo selezionato.",
     "in_attesa": "In attesa",
     "completed": "Completato",
-    "pending": "In sospeso",
+    "pending": "Programmato",
     "cancelled": "Annullato",
     "statuses": {
-      "PENDING": "In attesa",
+      "PENDING": "Programmato",
       "COMPLETED": "Completato",
       "CANCELLED": "Annullato"
     },
@@ -256,8 +268,8 @@
     "loading": "Caricamento...",
     "end_of_list": "Fine movimenti",
     "messages": {
-      "cancel_success": "Bonifico annullato con successo.",
-      "cancel_error": "Impossibile annullare il bonifico."
+      "cancel_success": "Bonifico programmato annullato con successo.",
+      "cancel_error": "Impossibile annullare il bonifico programmato."
     }
   },
   "TRANSACTIONS": {
@@ -309,6 +321,8 @@
     "next": "Successiva",
     "no_transactions": "Nessuna transazione",
     "no_transactions_desc": "Nessuna transazione trovata per il periodo selezionato.",
+    "deposit_success": "Deposito di €{{amount}} effettuato con successo!",
+    "withdraw_success": "Prelevati €{{amount}} con successo. Preleva le tue banconote.",
     "instant_sent": "Bonifico istantaneo inviato!",
     "scheduled_sent": "Bonifico pianificato con successo!",
     "insert_amount": "Inserisci l'importo",
@@ -320,8 +334,23 @@
     "date_must_be_tomorrow": "La data deve essere almeno domani",
     "date_max_30_days": "La data non può essere oltre 30 giorni da oggi",
     "transfer_limit_exceeded": "Importo supera il limite {{label}} di €{{value}}",
+    "atm_invalid_amount": "L'importo del prelievo deve essere di almeno 10 € e in multipli di 10 € (es. 10, 20, 50, 100).",
     "select_dates": "Seleziona le date",
-    "own_account_error": "Impossibile effettuare un bonifico a un conto proprio. Utilizzare la sezione Trasferisci nella schermata Conti."
+    "own_account_error": "Impossibile effettuare un bonifico a un conto proprio. Utilizzare la sezione Trasferisci nella schermata Conti.",
+    "actions": "Azioni",
+    "exec_date": "Esecuzione",
+    "cancel_scheduled": "Annulla",
+    "cancel_success": "Bonifico programmato annullato con successo",
+    "cancel_error": "Impossibile annullare il bonifico programmato",
+    "cancelled_by_user": "Annullato dall'utente",
+    "STATUS": {
+      "PENDING": "In attesa",
+      "SCHEDULED": "Programmato",
+      "COMPLETED": "Eseguito",
+      "CANCELLED": "Annullato",
+      "REJECTED": "Rifiutato",
+      "FAILED": "Fallito"
+    }
   },
   "OPERATIONS": {
     "page_title": "Operazioni",
@@ -333,13 +362,10 @@
     "add": "Aggiungi",
     "new_beneficiary": "Nuovo Beneficiario",
     "new_beneficiary_desc": "Aggiungi un nuovo beneficiario per i tuoi bonifici",
-    "nickname": "Nickname",
-    "nickname_placeholder": "Es. Mario Rossi",
-    "beneficiary_name": "Nome beneficiario (opzionale)",
-    "beneficiary_name_placeholder": "Es. Mario Rossi",
-    "beneficiary_name_hint": "Obbligatorio per IBAN esterni (nessuna validazione conto)",
-    "iban_dest": "IBAN Destinazione",
-    "save": "Salva Beneficiario",
+"nickname": "Nickname",
+      "nickname_placeholder": "Es. Mario Rossi",
+      "iban_dest": "IBAN Destinazione",
+      "save": "Salva Beneficiario",
     "no_beneficiaries": "Nessun beneficiario",
     "add_first_desc": "Aggiungi un beneficiario per velocizzare i tuoi bonifici.",
     "add_first": "Aggiungi il primo",
@@ -347,10 +373,11 @@
     "cancel": "Annulla",
     "delete": "Elimina",
     "toast": {
-      "fill_fields": "Compila tutti i campi",
-      "added": "Beneficiario aggiunto",
-      "removed": "Beneficiario eliminato",
-      "confirm_delete": "Eliminare questo beneficiario?"
+        "fill_fields": "Compila tutti i campi",
+        "added": "Beneficiario aggiunto",
+        "removed": "Beneficiario eliminato",
+        "confirm_delete": "Eliminare questo beneficiario?",
+        "account_not_found": "L'IBAN inserito non è stato trovato nel sistema bancario e non può essere salvato."
     }
   },
   "CARDS": {
@@ -450,14 +477,22 @@
     "bank_only": "Solo banca",
     "bank_only_desc": "Questo limite può essere modificato solo da un impiegato. Contattaci per richiedere variazioni",
     "account": "Conto",
+    "balance": "Saldo",
     "loading_accounts": "Caricamento conti...",
     "no_accounts": "Nessun conto attivo trovato.",
     "loading_limits": "Caricamento limiti...",
     "missing_warning": "limiti ancora da impostare. Imposta tutti i limiti prima di procedere.",
+    "daily_exceeds_monthly": "Il limite giornaliero non può superare quello mensile.",
     "confirm": "Conferma e continua",
     "toast": {
       "saved": "Limite salvato!"
     }
+  },
+  "ACCOUNT_LIMITS_MODAL": {
+    "title": "Imposta i limiti del tuo nuovo conto",
+    "message": "Il nuovo conto è stato attivato. Prima di poterlo utilizzare, devi definire i limiti operativi.",
+    "confirm_button": "Conferma e Attiva Conto",
+    "success": "Limiti del conto impostati con successo"
   },
   "NOTIFICATIONS": {
     "page_title": "Le Mie Notifiche",
@@ -489,6 +524,15 @@
     "repeat_new_password": "Ripeti la nuova password",
     "passwords_mismatch": "Le password non coincidono",
     "confirm_btn": "Conferma",
+    "pin": "PIN (4 cifre)",
+    "error_current_password": "La password attuale non è corretta.",
+    "error_current_password_required": "Inserisci la password attuale.",
+    "error_new_password_required": "Inserisci la nuova password.",
+    "error_password_criteria": "La nuova password non rispetta i criteri richiesti.",
+    "error_password_same": "La nuova password non può essere uguale alla password attuale.",
+    "error_invalid_pin": "PIN non valido.",
+    "error_invalid_pin_format": "Il PIN deve essere di 4 cifre.",
+    "error_pending_request": "Hai già una richiesta di cambio password in attesa di approvazione.",
     "select_account_pdf": "Seleziona il conto per generare l'estratto conto:",
     "all_accounts": "Tutti i conti",
     "transactions_count": "transazioni",
@@ -518,7 +562,9 @@
     "pdf_status": "Stato",
     "pdf_page": "Pagina",
     "pdf_of": "di",
-    "pdf_filename": "estratto_conto"
+    "pdf_filename": "estratto_conto",
+    "picture_uploaded": "Immagine profilo caricata con successo!",
+    "picture_removed": "Immagine profilo rimossa con successo!"
   },
   "REQUESTS": {
     "page_title": "Le Mie Richieste",
@@ -629,7 +675,13 @@
         "fill_fields": "Compila tipo e importo",
         "min_amount": "L'importo minimo è €{{min}}",
         "max_amount": "L'importo massimo è €{{max}}",
-        "limit_updated": "Limite aggiornato!"
+        "limit_updated": "Limite aggiornato!",
+        "activated": "Conto attivato con successo.",
+        "rejected": "Conto rifiutato con successo.",
+        "frozen": "Conto congelato con successo.",
+        "unfrozen": "Conto scongelato con successo.",
+        "closure_validated": "Chiusura conto approvata con successo.",
+        "closure_rejected": "Chiusura conto rifiutata con successo."
       }
     },
     "cards": {
@@ -647,7 +699,15 @@
       "type": "Tipo",
       "expires": "Scadenza",
       "status": "Stato",
-      "account": "Conto"
+      "account": "Conto",
+      "actions": "Azioni",
+      "block": "Blocca",
+      "unblock": "Sblocca",
+      "confirm_block": "Bloccare la carta {{card}}?",
+      "confirm_unblock": "Sbloccare la carta {{card}}?",
+      "block_success": "Carta bloccata con successo.",
+      "unblock_success": "Carta sbloccata con successo.",
+      "unblock_error_account_blocked": "Impossibile sbloccare la carta: il conto associato è attualmente bloccato. Sbloccare prima il conto bancario dell'utente."
     },
     "customers": {
       "page_title": "Gestione Clienti",
@@ -696,7 +756,16 @@
       "pdf_col_surname": "Cognome",
       "pdf_col_email": "Email",
       "pdf_col_status": "Stato",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "filter_label": "Stato",
+      "filter_all": "Tutti",
+      "filter_active": "Attivi",
+      "filter_pending": "In attesa",
+      "filter_annulled": "Annullati",
+      "filter_suspended": "Sospesi",
+      "pagination_page": "Pagina",
+      "pagination_of": "di",
+      "pagination_total": "clienti totali"
     },
     "limits": {
       "page_title": "Gestione Limiti",
@@ -757,7 +826,11 @@
       "phone": "Telefono",
       "residence": "Residenza",
       "cannot_load": "Impossibile caricare i dettagli dell'utente.",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "validate_success": "Registrazione approvata con successo.",
+      "reject_success": "Registrazione rifiutata con successo.",
+      "reopen_success": "Registrazione riaperta con successo.",
+      "delete_success": "Utente eliminato con successo."
     },
     "requests": {
       "page_title": "Gestione Richieste",
@@ -794,7 +867,11 @@
       "balance": "Saldo",
       "user_status": "Stato Utente",
       "account_status": "Stato Account",
-      "cannot_load": "Impossibile caricare i dettagli utente."
+      "cannot_load": "Impossibile caricare i dettagli utente.",
+      "approve_success": "Richiesta approvata con successo.",
+      "reject_success": "Richiesta rifiutata con successo.",
+      "confirm_approve": "Confermare approvazione?",
+      "confirm_reject": "Confermare rifiuto?"
     }
   },
   "ADMIN": {
@@ -873,7 +950,10 @@
       "residence": "Residenza",
       "account_details": "Conti",
       "close": "Chiudi",
-      "error_load": "Errore nel caricamento dei clienti"
+      "error_load": "Errore nel caricamento dei clienti",
+      "pagination_page": "Pagina",
+      "pagination_of": "di",
+      "pagination_total": "clienti totali"
     },
     "accounts": {
       "title": "Gestione Conti",
@@ -913,11 +993,17 @@
       "type_transfer": "Bonifico",
       "type_payment": "Pagamento",
       "type_withdrawal": "Prelievo",
+      "type_deposit": "Deposito",
+      "type_initial_transfer": "Trasferimento iniziale",
+      "type_instant_transfer": "Bonifico Istantaneo",
       "type_unknown": "Sconosciuto",
       "status_pending": "In sospeso",
       "status_completed": "Completato",
       "status_failed": "Fallito",
+      "status_rejected": "Rifiutato",
+      "status_cancelled": "Annullato",
       "status_unknown": "Sconosciuto",
+      "desc_internal_transfer": "Trasferimento interno",
       "error_load": "Errore nel caricamento delle transazioni"
     },
     "employees": {
@@ -953,6 +1039,7 @@
       "suspend": "Sospendi",
       "activate": "Attiva",
       "password_placeholder": "Inserisci password",
+      "error_password_min_length": "La password deve contenere almeno 8 caratteri",
       "username": "Username",
       "error_load": "Errore nel caricamento dei dipendenti",
       "error_required": "Compilare tutti i campi obbligatori",
@@ -1014,7 +1101,7 @@
     "UNKNOWN": "Sconosciuto"
   },
   "TX_STATUS": {
-    "PENDING": "In sospeso",
+    "PENDING": "Programmato",
     "COMPLETED": "Completato",
     "FAILED": "Fallito",
     "REJECTED": "Rifiutato",
@@ -1068,10 +1155,18 @@
     "ACCOUNT_CLOSURE_DESC": "Chiusura conto richiesta",
     "ACCOUNT_FROZEN_DESC": "Congelamento conto richiesto",
     "CARD_BLOCKED_DESC": "Blocco carta richiesto",
-    "LIMIT_CHANGE_DESC": "Modifica limite richiesta"
+    "LIMIT_CHANGE_DESC": "Modifica limite richiesta",
+    "PASSWORD_CHANGE_MSG": "Richiesta di cambio password",
+    "ACCOUNT_OPENING_MSG": "Richiesta di apertura conto",
+    "ACCOUNT_CLOSURE_MSG": "Richiesta di chiusura conto",
+    "LIMIT_CHANGE_MSG": "Richiesta di modifica limite"
   },
   "CARD_TYPE": {
     "DEBIT": "Debito"
+  },
+  "VALIDATION": {
+    "INVALID_ITALIAN_PHONE": "Inserisci un numero di cellulare italiano valido (10 cifre che iniziano per 3).",
+    "LIMIT_EXCEEDS_MAXIMUM": "L'importo inserito supera il limite massimo consentito dalla banca di € {{value}}."
   },
   "STATUS": {
     "ACTIVE": "Attivo",
@@ -1080,6 +1175,7 @@
     "CLOSED": "Chiuso",
     "INACTIVE": "Inattivo",
     "PENDING": "In attesa",
+    "APPROVED": "Approvata",
     "ANNULLED": "Annullato",
     "REJECTED": "Rifiutato",
     "BLOCKED": "Bloccato",
@@ -1087,5 +1183,11 @@
     "INACTIVE_F": "Inattiva",
     "BLOCKED_F": "Bloccata",
     "UNKNOWN": "Sconosciuto"
+  },
+  "SCHEDULED_CANCEL": {
+    "title": "Annulla Bonifico Programmato",
+    "message": "Sei sicuro di voler annullare il bonifico programmato di <b>{{amount}}</b> del {{date}}?",
+    "confirm": "Conferma",
+    "back": "Torna indietro"
   }
 }

@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, OnInit, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed, OnInit, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-detail.dto';
 
@@ -449,7 +449,8 @@ import { EmployeeUserDetailDto } from '../../core/models/user/employee-user-deta
         grid-template-columns: 1fr;
       }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDetailModalComponent {
   detail = input<EmployeeUserDetailDto | null>(null);

@@ -1,7 +1,8 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { EmployeeService } from '../../core/services/employee.service';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { AccountLimitResponseDto } from '../../core/models/account/account-limit-response.dto';
@@ -18,9 +19,10 @@ interface LimitMeta {
 
 @Component({
   selector: 'app-employee-limits',
-  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [CurrencyPipe, DatePipe, FormsModule, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './employee-limits.html',
   styleUrl: './employee-limits.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeLimitsComponent {
   accounts = signal<AccountResponseDto[]>([]);
@@ -54,7 +56,8 @@ export class EmployeeLimitsComponent {
   }
 
   editingType = signal('');
-  editingError = signal('');
+  editingErrorKey = signal<string | null>(null);
+  editingErrorParams = signal<Record<string, any>>({});
   editAmount = 0;
 
   allLimitTypes: LimitMeta[] = [
@@ -97,13 +100,14 @@ export class EmployeeLimitsComponent {
   startEdit(type: string, currentAmount: number): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     this.editingType.set(type);
-    this.editingError.set('');
+    this.editingErrorKey.set(null);
     this.editAmount = currentAmount || meta?.defaultValue || 0;
   }
 
   cancelEdit(): void {
     this.editingType.set('');
-    this.editingError.set('');
+    this.editingErrorKey.set(null);
+    this.editingErrorParams.set({});
   }
 
   getLimitIcon(type: string): string {
@@ -121,21 +125,24 @@ export class EmployeeLimitsComponent {
   saveLimit(type: string): void {
     const meta = this.allLimitTypes.find(m => m.type === type);
     if (this.editAmount < (meta?.minValue ?? 0)) {
-      this.editingError.set(this.translate.instant('EMPLOYEE.limits.error_min', { min: meta?.minValue ?? 0 }));
+      this.editingErrorKey.set('LIMITS.error_min');
+      this.editingErrorParams.set({ value: meta?.minValue ?? 0 });
       return;
     }
 
     if (meta && this.editAmount > meta.maxValue) {
-      this.editingError.set(this.translate.instant('EMPLOYEE.limits.error_max', { max: meta.maxValue.toLocaleString('it-IT') }));
+      this.editingErrorKey.set('LIMITS.error_max');
+      this.editingErrorParams.set({ value: meta.maxValue });
       return;
     }
 
-    this.editingError.set('');
+    this.editingErrorKey.set(null);
+    this.editingErrorParams.set({});
     this.employeeService.setAccountLimit(this.selectedAccount(), type, {
       maxAmount: this.editAmount,
     }).subscribe({
       next: () => {
-        this.toastService.success(this.translate.instant('EMPLOYEE.limits.success_updated'));
+        this.toastService.i18nSuccess('EMPLOYEE.limits.success_updated');
         this.editingType.set('');
         this.onAccountChange(this.selectedAccount());
       },

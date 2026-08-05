@@ -1,6 +1,7 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { EmployeeService } from '../../core/services/employee.service';
 import { CustomerListItemDto } from '../../core/models/user/customer-list-item.dto';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
@@ -10,14 +11,23 @@ import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-employee-customers',
-  imports: [DatePipe, CurrencyPipe, TranslatePipe, TranslateDirective],
+  imports: [DatePipe, CurrencyPipe, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './employee-customers.html',
   styleUrls: ['./employee-customers.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeCustomersComponent {
   customers = signal<CustomerListItemDto[]>([]);
   loading = signal(true);
   searchQuery = signal('');
+  statusFilter = signal('ACTIVE');
+  page = signal(0);
+  pageSize = signal(20);
+  totalElements = signal(0);
+  totalPages = signal(1);
+
+  hasPrev = computed(() => this.page() > 0);
+  hasNext = computed(() => this.page() + 1 < this.totalPages());
 
   expandedCustomerId = signal<number | null>(null);
   customerAccounts = signal<Map<number, AccountResponseDto[]>>(new Map());
@@ -47,13 +57,35 @@ export class EmployeeCustomersComponent {
 
   loadCustomers(): void {
     this.loading.set(true);
-    this.employeeService.getCustomers().subscribe({
+    this.employeeService.getCustomers(this.statusFilter(), this.page(), this.pageSize()).subscribe({
       next: (data) => {
-        this.customers.set(data);
+        this.customers.set(data.content);
+        this.totalElements.set(data.totalElements);
+        this.totalPages.set(data.totalPages || 1);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  onStatusChange(event: Event): void {
+    this.statusFilter.set((event.target as HTMLSelectElement).value);
+    this.page.set(0);
+    this.loadCustomers();
+  }
+
+  goToPage(target: number): void {
+    if (target < 0 || target >= this.totalPages()) return;
+    this.page.set(target);
+    this.loadCustomers();
+  }
+
+  prevPage(): void {
+    this.goToPage(this.page() - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.page() + 1);
   }
 
   onSearchInput(event: Event): void {

@@ -1,28 +1,34 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CustomerService } from '../../core/services/customer.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
+import { ScheduledCancelModalComponent } from '../../shared/scheduled-cancel-modal/scheduled-cancel-modal.component';
 import { AccountResponseDto } from '../../core/models/account/account-response.dto';
 import { TransactionResponseDto } from '../../core/models/transaction/transaction-response.dto';
 import { DashboardSummaryDto } from '../../core/models/account/dashboard-summary.dto';
 
 @Component({
   selector: 'app-customer-dashboard',
-  imports: [CurrencyPipe, DatePipe, RouterLink, TranslatePipe],
+  imports: [CurrencyPipe, DatePipe, RouterLink, TranslatePipe, ScheduledCancelModalComponent],
   templateUrl: './customer-dashboard.html',
   styleUrl: './customer-dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerDashboardComponent implements OnInit {
   accounts = signal<AccountResponseDto[]>([]);
   recentTransactions = signal<TransactionResponseDto[]>([]);
+  scheduledTransfers = signal<TransactionResponseDto[]>([]);
   dashboardSummary = signal<DashboardSummaryDto | null>(null);
   loading = signal(true);
   selectedAccount = signal<string>('');
   accountNumbers = signal<Set<string>>(new Set());
   transactionsLoading = signal(false);
   currentCardIndex = signal(0);
+  cancelTarget = signal<TransactionResponseDto | null>(null);
+  cancellingId = signal<number | null>(null);
 
   today = new Date();
 
@@ -31,6 +37,7 @@ export class CustomerDashboardComponent implements OnInit {
     public authService: AuthService,
     private router: Router,
     private translate: TranslateService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -66,8 +73,59 @@ export class CustomerDashboardComponent implements OnInit {
         } else {
           this.loading.set(false);
         }
+        this.loadScheduledTransfers();
       },
       error: () => this.loading.set(false),
+    });
+  }
+
+  loadScheduledTransfers(): void {
+    this.customerService.getScheduledTransfers().subscribe({
+      next: (data) => this.scheduledTransfers.set(data),
+      error: () => {},
+    });
+  }
+
+  isScheduled(tx: TransactionResponseDto): boolean {
+    return tx.statusName === 'PENDING';
+  }
+
+  isScheduledCancelling(tx: TransactionResponseDto): boolean {
+    return this.cancellingId() === tx.id;
+  }
+
+  scheduledDestination(tx: TransactionResponseDto): string {
+    return tx.destinationUserName || tx.destinationAccountNumber || '—';
+  }
+
+  requestCancelScheduled(tx: TransactionResponseDto): void {
+    this.cancelTarget.set(tx);
+  }
+
+  dismissCancelScheduled(): void {
+    if (this.cancellingId() !== null) return;
+    this.cancelTarget.set(null);
+  }
+
+  confirmCancelScheduled(): void {
+    const tx = this.cancelTarget();
+    if (!tx) return;
+    this.cancellingId.set(tx.id);
+    this.customerService.cancelTransaction(tx.id).subscribe({
+      next: () => {
+        this.scheduledTransfers.update(list => list.filter(t => t.id !== tx.id));
+        this.recentTransactions.update(list =>
+          list.map(t => t.id === tx.id ? { ...t, statusId: 5, statusName: 'CANCELLED' } : t)
+        );
+        this.toastService.i18nSuccess('TRANSACTIONS.cancel_success');
+        this.cancellingId.set(null);
+        this.cancelTarget.set(null);
+      },
+      error: (err) => {
+        this.cancellingId.set(null);
+        this.cancelTarget.set(null);
+        this.toastService.error(err?.message || this.translate.instant('TRANSACTIONS.cancel_error'));
+      },
     });
   }
 
@@ -149,10 +207,11 @@ export class CustomerDashboardComponent implements OnInit {
 
   getStatusNameClass(statusName: string | undefined): string {
     const map: Record<string, string> = {
-      'PENDING': 'pending',
+      'PENDING': 'scheduled',
       'COMPLETED': 'completed',
       'FAILED': 'failed',
       'REJECTED': 'rejected',
+      'CANCELLED': 'cancelled',
     };
     return statusName ? (map[statusName] ?? '') : '';
   }

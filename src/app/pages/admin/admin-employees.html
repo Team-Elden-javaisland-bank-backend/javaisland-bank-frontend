@@ -148,11 +148,11 @@
         <span class="visually-hidden">{{ 'LAYOUT.loading' | translate }}</span>
       </div>
     </div>
-  } @else if (error()) {
+  } @else if (errorKey()) {
     <!-- Error -->
     <div class="alert alert-danger d-flex align-items-center" role="alert">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      <div>{{ error() }}</div>
+      <div>{{ errorKey() | translate }}</div>
       <button class="btn btn-outline-danger btn-sm ms-auto" (click)="loadEmployees()">
         <i class="bi bi-arrow-clockwise me-1"></i>{{ 'ADMIN.dashboard.retry' | translate }}
       </button>
@@ -192,7 +192,7 @@
                     <div class="d-flex align-items-center">
                       <div class="employee-avatar me-3">
                         @if (emp.profilePictureUrl) {
-                          <img [src]="'http://localhost:8081' + emp.profilePictureUrl" alt="" class="avatar-img">
+                          <img [src]="emp.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                         } @else {
                           {{ emp.firstName.charAt(0) }}{{ emp.lastName.charAt(0) }}
                         }
@@ -281,7 +281,7 @@
                 <div class="text-center mb-4">
                   <div class="detail-avatar mx-auto">
                     @if (employeeDetail()!.profilePictureUrl) {
-                      <img [src]="'http://localhost:8081' + employeeDetail()!.profilePictureUrl" alt="" class="avatar-img">
+                      <img [src]="employeeDetail()!.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                     } @else {
                       {{ employeeDetail()!.firstName.charAt(0) }}{{ employeeDetail()!.lastName.charAt(0) }}
                     }

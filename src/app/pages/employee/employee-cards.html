@@ -59,6 +59,7 @@
               <th>{{ 'EMPLOYEE.cards.expires' | translate }}</th>
               <th>{{ 'EMPLOYEE.cards.status' | translate }}</th>
               <th>{{ 'EMPLOYEE.cards.account' | translate }}</th>
+              <th class="text-end">{{ 'EMPLOYEE.cards.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -88,7 +89,41 @@
                     {{ ('STATUS.' + card.status) | translate }}
                   </span>
                 </td>
-                <td><span class="mono text-muted">#{{ card.accountId }}</span></td>
+                <td><span class="mono text-muted">{{ card.accountNumber || ('#' + card.accountId) }}</span></td>
+                <td class="text-end">
+                  <div class="d-flex gap-1 justify-content-end">
+                    @if (card.status === 'ACTIVE') {
+                      <button
+                        class="btn-card-action btn-card-block"
+                        (click)="blockCard(card)"
+                        [disabled]="isProcessing(card.id)"
+                        [title]="'EMPLOYEE.cards.block' | translate"
+                      >
+                        @if (isProcessing(card.id)) {
+                          <span class="spinner-border spinner-border-sm"></span>
+                        } @else {
+                          <i class="bi bi-lock-fill"></i>
+                        }
+                        <span class="d-none d-sm-inline">{{ 'EMPLOYEE.cards.block' | translate }}</span>
+                      </button>
+                    }
+                    @if (card.status === 'BLOCKED') {
+                      <button
+                        class="btn-card-action btn-card-unblock"
+                        (click)="unblockCard(card)"
+                        [disabled]="isProcessing(card.id) || isAccountBlocked(card)"
+                        [title]="isAccountBlocked(card) ? ('EMPLOYEE.cards.unblock_error_account_blocked' | translate) : ('EMPLOYEE.cards.unblock' | translate)"
+                      >
+                        @if (isProcessing(card.id)) {
+                          <span class="spinner-border spinner-border-sm"></span>
+                        } @else {
+                          <i class="bi bi-unlock-fill"></i>
+                        }
+                        <span class="d-none d-sm-inline">{{ 'EMPLOYEE.cards.unblock' | translate }}</span>
+                      </button>
+                    }
+                  </div>
+                </td>
               </tr>
             }
           </tbody>

@@ -47,6 +47,7 @@
     "password": "Password",
     "enter_username": "Enter username",
     "enter_password": "Enter password",
+    "session_expired": "Session expired. Please log in again.",
     "required_credentials": "Enter username and password",
     "logging_in": "Signing in...",
     "login": "Sign in",
@@ -127,9 +128,10 @@
     "date": "Date",
     "status": "Status",
     "completed": "Completed",
-    "pending": "Pending",
+    "pending": "Scheduled",
     "failed": "Failed",
     "rejected": "Rejected",
+    "cancelled": "Cancelled",
     "quick_actions": "Quick Actions",
     "deposit": "Deposit",
     "deposit_desc": "Deposit into your account",
@@ -155,7 +157,17 @@
     "greeting_afternoon": "Good afternoon",
     "greeting_evening": "Good evening",
     "monthly_expenses": "Monthly Expenses",
-    "vs_last_month": "vs last month"
+    "vs_last_month": "vs last month",
+    "scheduled_title": "Upcoming Payments",
+    "scheduled_subtitle": "Your scheduled transfers coming due",
+    "scheduled_dest": "Recipient",
+    "scheduled_date": "Execution date",
+    "scheduled_status": "Status",
+    "scheduled_action": "Action",
+    "scheduled_none": "No scheduled transfers",
+    "scheduled_none_desc": "Your scheduled transfers will appear here.",
+    "scheduled_cancel": "Cancel",
+    "scheduled_days_left": "in {{days}} days"
   },
   "ACCOUNTS": {
     "page_title": "My Accounts",
@@ -197,7 +209,6 @@
     "transfer_from": "From account",
     "transfer_to": "To account",
     "transfer_amount": "Amount",
-    "transfer_min": "Minimum €1.00",
     "transfer_description": "Description",
     "transfer_description_placeholder": "e.g. Internal transfer",
     "internal_transfer": "Internal transfer",
@@ -207,6 +218,8 @@
     "close_error_msg": "You cannot close your only active account. Your profile must have at least one associated account. If you wish to permanently close your Elden Bank profile, please contact support.",
     "close_error_got_it": "Got it",
     "close_error_contact": "Contact support",
+    "CLOSE_REQUEST_SUCCESS": "Account closure request submitted successfully. It will be processed by an operator.",
+    "closure_requested_badge": "Closure pending",
     "toast": {
       "fill_fields": "Fill in all fields correctly",
       "select_account": "Select an account",
@@ -216,7 +229,6 @@
       "generic_error": "An error occurred. Please try again later.",
       "transfer_select_accounts": "Select both source and destination accounts",
       "transfer_same_account": "Source and destination accounts must be different",
-      "transfer_min_amount": "Minimum transfer amount is €1.00",
       "transfer_success": "Transfer completed successfully"
     }
   },
@@ -234,10 +246,10 @@
     "no_movements_desc": "No transactions found for the selected period.",
     "in_attesa": "Pending",
     "completed": "Completed",
-    "pending": "Pending",
+    "pending": "Scheduled",
     "cancelled": "Cancelled",
     "statuses": {
-      "PENDING": "Pending",
+      "PENDING": "Scheduled",
       "COMPLETED": "Completed",
       "CANCELLED": "Cancelled"
     },
@@ -256,8 +268,8 @@
     "loading": "Loading...",
     "end_of_list": "End of transactions",
     "messages": {
-      "cancel_success": "Transfer cancelled successfully.",
-      "cancel_error": "Unable to cancel the transfer."
+      "cancel_success": "Scheduled transfer cancelled successfully.",
+      "cancel_error": "Unable to cancel the scheduled transfer."
     }
   },
   "TRANSACTIONS": {
@@ -309,6 +321,8 @@
     "next": "Next",
     "no_transactions": "No transactions",
     "no_transactions_desc": "No transactions found for the selected period.",
+    "deposit_success": "Deposit of €{{amount}} completed successfully!",
+    "withdraw_success": "€{{amount}} withdrawn successfully. Please take your cash.",
     "instant_sent": "Instant transfer sent!",
     "scheduled_sent": "Scheduled transfer sent successfully!",
     "insert_amount": "Enter the amount",
@@ -320,8 +334,23 @@
     "date_must_be_tomorrow": "Date must be at least tomorrow",
     "date_max_30_days": "Date cannot be more than 30 days from today",
     "transfer_limit_exceeded": "Amount exceeds {{label}} limit of €{{value}}",
+    "atm_invalid_amount": "Withdrawal amount must be at least 10 € and in multiples of 10 € (e.g., 10, 20, 50, 100).",
     "select_dates": "Select dates",
-    "own_account_error": "Cannot transfer to your own account. Use the Transfer section on the Accounts page."
+    "own_account_error": "Cannot transfer to your own account. Use the Transfer section on the Accounts page.",
+    "actions": "Actions",
+    "exec_date": "Execution date",
+    "cancel_scheduled": "Cancel",
+    "cancel_success": "Scheduled transfer cancelled successfully",
+    "cancel_error": "Unable to cancel the scheduled transfer",
+    "cancelled_by_user": "Cancelled by user",
+    "STATUS": {
+      "PENDING": "Pending",
+      "SCHEDULED": "Scheduled",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "REJECTED": "Rejected",
+      "FAILED": "Failed"
+    }
   },
   "OPERATIONS": {
     "page_title": "Operations",
@@ -333,13 +362,10 @@
     "add": "Add",
     "new_beneficiary": "New Beneficiary",
     "new_beneficiary_desc": "Add a new beneficiary for your transfers",
-    "nickname": "Nickname",
-    "nickname_placeholder": "e.g. John Smith",
-    "beneficiary_name": "Beneficiary name (optional)",
-    "beneficiary_name_placeholder": "e.g. John Smith",
-    "beneficiary_name_hint": "Required for external IBANs (no account validation)",
-    "iban_dest": "Destination IBAN",
-    "save": "Save Beneficiary",
+"nickname": "Nickname",
+      "nickname_placeholder": "e.g. John Smith",
+      "iban_dest": "Destination IBAN",
+      "save": "Save Beneficiary",
     "no_beneficiaries": "No beneficiaries",
     "add_first_desc": "Add a beneficiary to speed up your transfers.",
     "add_first": "Add the first one",
@@ -347,10 +373,11 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "toast": {
-      "fill_fields": "Fill in all fields correctly",
-      "added": "Beneficiary added",
-      "removed": "Beneficiary removed",
-      "confirm_delete": "Delete this beneficiary?"
+        "fill_fields": "Fill in all fields correctly",
+        "added": "Beneficiary added",
+        "removed": "Beneficiary removed",
+        "confirm_delete": "Delete this beneficiary?",
+        "account_not_found": "The entered IBAN was not found in the banking system and cannot be saved."
     }
   },
   "CARDS": {
@@ -450,14 +477,22 @@
     "bank_only": "Bank only",
     "bank_only_desc": "This limit can only be modified by an employee. Contact us to request changes",
     "account": "Account",
+    "balance": "Balance",
     "loading_accounts": "Loading accounts...",
     "no_accounts": "No active accounts found.",
     "loading_limits": "Loading limits...",
     "missing_warning": "limits still need to be set. Set all limits before proceeding.",
+    "daily_exceeds_monthly": "The daily limit cannot exceed the monthly limit.",
     "confirm": "Confirm and continue",
     "toast": {
       "saved": "Limit saved!"
     }
+  },
+  "ACCOUNT_LIMITS_MODAL": {
+    "title": "Set your new account limits",
+    "message": "Your new account has been activated. Before you can use it, you must set the operating limits.",
+    "confirm_button": "Confirm and Activate Account",
+    "success": "Account limits set successfully"
   },
   "NOTIFICATIONS": {
     "page_title": "My Notifications",
@@ -489,6 +524,15 @@
     "repeat_new_password": "Repeat the new password",
     "passwords_mismatch": "Passwords do not match",
     "confirm_btn": "Confirm",
+    "pin": "PIN (4 digits)",
+    "error_current_password": "The current password is incorrect.",
+    "error_current_password_required": "Enter your current password.",
+    "error_new_password_required": "Enter the new password.",
+    "error_password_criteria": "The new password does not meet the required criteria.",
+    "error_password_same": "The new password cannot be the same as the current password.",
+    "error_invalid_pin": "Invalid PIN.",
+    "error_invalid_pin_format": "The PIN must be 4 digits.",
+    "error_pending_request": "You already have a password change request awaiting approval.",
     "select_account_pdf": "Select the account to generate the statement:",
     "all_accounts": "All accounts",
     "transactions_count": "transactions",
@@ -518,7 +562,9 @@
     "pdf_status": "Status",
     "pdf_page": "Page",
     "pdf_of": "of",
-    "pdf_filename": "account_statement"
+    "pdf_filename": "account_statement",
+    "picture_uploaded": "Profile picture uploaded successfully!",
+    "picture_removed": "Profile picture removed successfully!"
   },
   "REQUESTS": {
     "page_title": "My Requests",
@@ -629,7 +675,13 @@
         "fill_fields": "Fill in type and amount",
         "min_amount": "Minimum amount is €{{min}}",
         "max_amount": "Maximum amount is €{{max}}",
-        "limit_updated": "Limit updated!"
+        "limit_updated": "Limit updated!",
+        "activated": "Account activated successfully.",
+        "rejected": "Account rejected successfully.",
+        "frozen": "Account frozen successfully.",
+        "unfrozen": "Account unfrozen successfully.",
+        "closure_validated": "Account closure approved successfully.",
+        "closure_rejected": "Account closure rejected successfully."
       }
     },
     "cards": {
@@ -647,7 +699,15 @@
       "type": "Type",
       "expires": "Expires",
       "status": "Status",
-      "account": "Account"
+      "account": "Account",
+      "actions": "Actions",
+      "block": "Block",
+      "unblock": "Unblock",
+      "confirm_block": "Block card {{card}}?",
+      "confirm_unblock": "Unblock card {{card}}?",
+      "block_success": "Card blocked successfully.",
+      "unblock_success": "Card unblocked successfully.",
+      "unblock_error_account_blocked": "Cannot unblock the card: the associated account is currently blocked. Please unblock the user's bank account first."
     },
     "customers": {
       "page_title": "Customer Management",
@@ -696,7 +756,16 @@
       "pdf_col_surname": "Last Name",
       "pdf_col_email": "Email",
       "pdf_col_status": "Status",
-      "close": "Close"
+      "close": "Close",
+      "filter_label": "Status",
+      "filter_all": "All",
+      "filter_active": "Active",
+      "filter_pending": "Pending",
+      "filter_annulled": "Annulled",
+      "filter_suspended": "Suspended",
+      "pagination_page": "Page",
+      "pagination_of": "of",
+      "pagination_total": "total customers"
     },
     "limits": {
       "page_title": "Limit Management",
@@ -757,7 +826,11 @@
       "phone": "Phone",
       "residence": "Residence",
       "cannot_load": "Unable to load user details.",
-      "close": "Close"
+      "close": "Close",
+      "validate_success": "Registration approved successfully.",
+      "reject_success": "Registration rejected successfully.",
+      "reopen_success": "Registration reopened successfully.",
+      "delete_success": "User deleted successfully."
     },
     "requests": {
       "page_title": "Request Management",
@@ -794,7 +867,11 @@
       "balance": "Balance",
       "user_status": "User Status",
       "account_status": "Account Status",
-      "cannot_load": "Unable to load user details."
+      "cannot_load": "Unable to load user details.",
+      "approve_success": "Request approved successfully.",
+      "reject_success": "Request rejected successfully.",
+      "confirm_approve": "Confirm approval?",
+      "confirm_reject": "Confirm rejection?"
     }
   },
   "ADMIN": {
@@ -873,7 +950,10 @@
       "residence": "Residence",
       "account_details": "Accounts",
       "close": "Close",
-      "error_load": "Error loading customers"
+      "error_load": "Error loading customers",
+      "pagination_page": "Page",
+      "pagination_of": "of",
+      "pagination_total": "total customers"
     },
     "accounts": {
       "title": "Account Management",
@@ -913,11 +993,17 @@
       "type_transfer": "Transfer",
       "type_payment": "Payment",
       "type_withdrawal": "Withdrawal",
+      "type_deposit": "Deposit",
+      "type_initial_transfer": "Initial Transfer",
+      "type_instant_transfer": "Instant Transfer",
       "type_unknown": "Unknown",
       "status_pending": "Pending",
       "status_completed": "Completed",
       "status_failed": "Failed",
+      "status_rejected": "Rejected",
+      "status_cancelled": "Cancelled",
       "status_unknown": "Unknown",
+      "desc_internal_transfer": "Internal transfer",
       "error_load": "Error loading transactions"
     },
     "employees": {
@@ -953,6 +1039,7 @@
       "suspend": "Suspend",
       "activate": "Activate",
       "password_placeholder": "Enter password",
+      "error_password_min_length": "Password must be at least 8 characters",
       "username": "Username",
       "error_load": "Error loading employees",
       "error_required": "All fields are required",
@@ -1014,7 +1101,7 @@
     "UNKNOWN": "Unknown"
   },
   "TX_STATUS": {
-    "PENDING": "Pending",
+    "PENDING": "Scheduled",
     "COMPLETED": "Completed",
     "FAILED": "Failed",
     "REJECTED": "Rejected",
@@ -1068,10 +1155,18 @@
     "ACCOUNT_CLOSURE_DESC": "Account closure requested",
     "ACCOUNT_FROZEN_DESC": "Account freeze requested",
     "CARD_BLOCKED_DESC": "Card block requested",
-    "LIMIT_CHANGE_DESC": "Limit change requested"
+    "LIMIT_CHANGE_DESC": "Limit change requested",
+    "PASSWORD_CHANGE_MSG": "Password change request",
+    "ACCOUNT_OPENING_MSG": "Account opening request",
+    "ACCOUNT_CLOSURE_MSG": "Account closure request",
+    "LIMIT_CHANGE_MSG": "Limit change request"
   },
   "CARD_TYPE": {
     "DEBIT": "Debit"
+  },
+  "VALIDATION": {
+    "INVALID_ITALIAN_PHONE": "Please enter a valid Italian mobile number (10 digits starting with 3).",
+    "LIMIT_EXCEEDS_MAXIMUM": "The entered amount exceeds the bank's maximum allowed limit of € {{value}}."
   },
   "STATUS": {
     "ACTIVE": "Active",
@@ -1080,6 +1175,7 @@
     "CLOSED": "Closed",
     "INACTIVE": "Inactive",
     "PENDING": "Pending",
+    "APPROVED": "Approved",
     "ANNULLED": "Annulled",
     "REJECTED": "Rejected",
     "BLOCKED": "Blocked",
@@ -1087,5 +1183,11 @@
     "INACTIVE_F": "Inactive",
     "BLOCKED_F": "Blocked",
     "UNKNOWN": "Unknown"
+  },
+  "SCHEDULED_CANCEL": {
+    "title": "Cancel Scheduled Transfer",
+    "message": "Are you sure you want to cancel the scheduled transfer of <b>{{amount}}</b> on {{date}}?",
+    "confirm": "Confirm",
+    "back": "Go back"
   }
 }

@@ -1,9 +1,13 @@
-import { Component, ElementRef, HostListener, inject, OnDestroy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, HostListener, inject, OnDestroy, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
+import { ToastComponent } from '../../core/components/toast/toast.component';
+import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { environment } from '../../../environments/environment';
 
 interface ComuneDto {
   nome: string;
@@ -34,12 +38,14 @@ interface AddressSuggestion {
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, ToastComponent],
   templateUrl: './register.html',
   styleUrl: './register.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent implements OnDestroy {
   private translate = inject(TranslateService);
+  private toastService = inject(ToastService);
   currentLang = localStorage.getItem('lang') || 'it';
   firstName = '';
   lastName = '';
@@ -54,6 +60,7 @@ export class RegisterComponent implements OnDestroy {
   filteredAddresses: AddressSuggestion[] = [];
   fiscalCode = '';
   phone = '';
+  phoneError = signal<string | null>(null);
   profession = '';
   gender = '';
   residence = '';
@@ -62,7 +69,6 @@ export class RegisterComponent implements OnDestroy {
   email = '';
   password = '';
   confirmPassword = '';
-  error = signal('');
   showSuccessModal = signal(false);
   loading = signal(false);
 
@@ -139,7 +145,7 @@ export class RegisterComponent implements OnDestroy {
     }
     if (this.searchTimeout) clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
-      this.http.get<ComuneDto[]>(`http://localhost:8081/api/v1/comuni?search=${encodeURIComponent(q)}`)
+      this.http.get<ComuneDto[]>(`${environment.apiUrl}/api/v1/comuni?search=${encodeURIComponent(q)}`)
         .subscribe({
           next: (results) => {
             this.filteredCities = results;
@@ -309,21 +315,35 @@ export class RegisterComponent implements OnDestroy {
     return String.fromCharCode(65 + (sum % 26));
   }
 
+  sanitizePhone(): void {
+    let raw = this.phone.replace(/[^0-9]/g, '');
+    raw = raw.replace(/^(?:0039|\+?39)/, '');
+    this.phone = raw;
+  }
+
+  validatePhoneOnBlur(): void {
+    this.sanitizePhone();
+    if (!this.phone) { this.phoneError.set(null); return; }
+    const valid = /^(3\d{8,9}|0\d{7,10})$/.test(this.phone);
+    this.phoneError.set(valid ? null : 'VALIDATION.INVALID_ITALIAN_PHONE');
+  }
+
   onSubmit(): void {
-    this.error.set('');
-
+    this.sanitizePhone();
+    this.validatePhoneOnBlur();
+    if (this.phoneError()) { this.focusField('phone'); return; }
     const invalidField = this.findFirstInvalidField();
-    if (invalidField) { this.focusField(invalidField); return; }
+    if (invalidField) { this.toastService.i18nError('AUTH.error_required'); this.focusField(invalidField); return; }
 
-    if (this.password !== this.confirmPassword) { this.focusField('confirmPassword'); return; }
+    if (this.password !== this.confirmPassword) { this.toastService.i18nError('AUTH.error_password_mismatch'); this.focusField('confirmPassword'); return; }
 
     if (!this.hasMinLength || !this.hasUppercase || !this.hasLowercase || !this.hasNumber || !this.hasSpecialChar) {
-      this.focusField('password'); return;
+      this.toastService.i18nError('AUTH.error_password_length'); this.focusField('password'); return;
     }
 
     const birthDateObj = new Date(this.birthDate);
     const age = Math.floor((Date.now() - birthDateObj.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-    if (age < 18) { this.focusField('birthDate'); return; }
+    if (age < 18) { this.toastService.i18nError('AUTH.error_age'); this.focusField('birthDate'); return; }
 
     this.loading.set(true);
 
@@ -341,7 +361,7 @@ export class RegisterComponent implements OnDestroy {
       profession: this.profession,
       gender: this.gender,
       fiscalCode: this.fiscalCode.toUpperCase(),
-      phone: '+39' + this.phone.replace(/[\s\-.]/g, ''),
+      phone: '+39' + this.phone,
       residence: fullResidence,
       birthPlace: this.birthPlace,
       birthProvince: this.birthProvince.toUpperCase(),
@@ -353,7 +373,7 @@ export class RegisterComponent implements OnDestroy {
       },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err.message);
+        this.toastService.error(err.message || '');
       },
     });
   }
@@ -365,8 +385,7 @@ export class RegisterComponent implements OnDestroy {
     if (!this.gender) return 'gender';
     if (!this.birthPlace) return 'birthPlaceSearch';
     if (!this.fiscalCode || this.fiscalCode.length !== 16) return 'fiscalCode';
-    const phoneClean = this.phone.replace(/[\s\-.]/g, '');
-    if (!phoneClean || !/^[03]\d{8,11}$/.test(phoneClean)) return 'phone';
+    if (!this.phone || !/^(3\d{8,9}|0\d{7,10})$/.test(this.phone)) return 'phone';
     if (!this.profession) return 'profession';
     if (!this.residence) return 'residenceSearch';
     if (!this.email) return 'email';

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { AccountResponseDto } from '../models/account/account-response.dto';
+import { AccountActionResponseDto } from '../models/account/account-action-response.dto';
 import { AccountLimitResponseDto } from '../models/account/account-limit-response.dto';
 import { SetLimitRequestDto } from '../models/account/set-limit-request.dto';
 import { OpenAccountRequestDto } from '../models/account/open-account-request.dto';
@@ -18,11 +19,12 @@ import { BeneficiaryRequestDto } from '../models/beneficiary/beneficiary-request
 import { BeneficiaryResponseDto } from '../models/beneficiary/beneficiary-response.dto';
 import { CustomerProfileDto } from '../models/user/customer-profile.dto';
 import { PageResponseDto } from '../models/common/page-response.dto';
-import { ErrorResponseDto } from '../models/common/error-response.dto';
+import { handleHttpError } from '../interceptors/error.interceptor';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
-  private readonly API_BASE = 'http://localhost:8081/api/v1/customer';
+  private readonly API_BASE = `${environment.apiUrl}/api/v1/customer`;
 
   constructor(private http: HttpClient) {}
 
@@ -31,63 +33,67 @@ export class CustomerService {
   getAccounts(): Observable<AccountResponseDto[]> {
     return this.http
       .get<AccountResponseDto[]>(`${this.API_BASE}/accounts`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getDashboardSummary(): Observable<DashboardSummaryDto> {
     return this.http
       .get<DashboardSummaryDto>(`${this.API_BASE}/accounts/dashboard-summary`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getAccountDetail(accountNumber: string): Observable<AccountResponseDto> {
     return this.http
       .get<AccountResponseDto>(`${this.API_BASE}/accounts/${accountNumber}`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   openAccount(data: OpenAccountRequestDto): Observable<AccountResponseDto> {
     return this.http
       .post<AccountResponseDto>(`${this.API_BASE}/accounts/open`, data)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
-  closureRequest(data: CloseAccountRequestDto): Observable<string> {
+  closureRequest(data: CloseAccountRequestDto): Observable<AccountActionResponseDto> {
     return this.http
-      .post(`${this.API_BASE}/accounts/closure-request`, data, {
-        responseType: 'text',
-      })
-      .pipe(catchError(this.handleError));
+      .post<AccountActionResponseDto>(`${this.API_BASE}/accounts/closure-request`, data)
+      .pipe(catchError(handleHttpError));
   }
 
   getAccountLimits(accountNumber: string): Observable<AccountLimitResponseDto[]> {
     return this.http
       .get<AccountLimitResponseDto[]>(`${this.API_BASE}/accounts/${accountNumber}/limits`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   setAccountLimit(accountNumber: string, limitType: string, data: SetLimitRequestDto): Observable<AccountLimitResponseDto> {
     return this.http
       .put<AccountLimitResponseDto>(`${this.API_BASE}/accounts/${accountNumber}/limits/${limitType}`, data)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   completeLimitsSetup(): Observable<string> {
     return this.http
       .put(`${this.API_BASE}/accounts/limits-setup-complete`, null, { responseType: 'text' })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
+  }
+
+  completeAccountLimitsConfig(accountNumber: string): Observable<string> {
+    return this.http
+      .put(`${this.API_BASE}/accounts/${accountNumber}/limits-config-complete`, null, { responseType: 'text' })
+      .pipe(catchError(handleHttpError));
   }
 
   isLastActiveAccount(): Observable<boolean> {
     return this.http
       .get<boolean>(`${this.API_BASE}/accounts/last-active-check`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getAccountHolderInfo(accountNumber: string): Observable<{ holderName: string }> {
     return this.http
       .get<{ holderName: string }>(`${this.API_BASE}/accounts/${accountNumber}/holder-info`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getMonthlySummary(accountNumber: string): Observable<{
@@ -99,7 +105,7 @@ export class CustomerService {
   }> {
     return this.http
       .get<any>(`${this.API_BASE}/accounts/${accountNumber}/monthly-summary`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   // ── Profilo ──────────────────────────────────────────────────────
@@ -107,45 +113,45 @@ export class CustomerService {
   getProfile(): Observable<CustomerProfileDto> {
     return this.http
       .get<CustomerProfileDto>(`${this.API_BASE}/profile`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
-  requestPasswordChange(): Observable<string> {
+  requestPasswordChange(data: { currentPassword: string; newPassword: string; pin: string }): Observable<string> {
     return this.http
-      .post(`${this.API_BASE}/password-change`, null, { responseType: 'text' })
-      .pipe(catchError(this.handleError));
+      .post(`${this.API_BASE}/password-change`, data, { responseType: 'text' })
+      .pipe(catchError(handleHttpError));
   }
 
   requestLimitChange(accountNumber: string, limitType: string, requestedAmount: number): Observable<string> {
     return this.http
       .post(`${this.API_BASE}/limit-change`, { accountNumber, limitType, requestedAmount }, { responseType: 'text' })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getMyRequests(): Observable<any[]> {
     return this.http
       .get<any[]>(`${this.API_BASE}/requests`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   // ── Transazioni ──────────────────────────────────────────────────
 
-  deposit(data: TransactionRequestDto): Observable<{message: string}> {
+  deposit(data: TransactionRequestDto): Observable<TransactionResponseDto> {
     return this.http
-      .post<{message: string}>(`${this.API_BASE}/transactions/deposit`, data)
-      .pipe(catchError(this.handleError));
+      .post<TransactionResponseDto>(`${this.API_BASE}/transactions/deposit`, data)
+      .pipe(catchError(handleHttpError));
   }
 
-  withdraw(data: TransactionRequestDto): Observable<{message: string}> {
+  withdraw(data: TransactionRequestDto): Observable<TransactionResponseDto> {
     return this.http
-      .post<{message: string}>(`${this.API_BASE}/transactions/withdraw`, data)
-      .pipe(catchError(this.handleError));
+      .post<TransactionResponseDto>(`${this.API_BASE}/transactions/withdraw`, data)
+      .pipe(catchError(handleHttpError));
   }
 
   transfer(data: TransferRequestDto): Observable<TransactionResponseDto> {
     return this.http
       .post<TransactionResponseDto>(`${this.API_BASE}/transactions/transfer`, data)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getRecentTransactions(accountNumber: string): Observable<TransactionResponseDto[]> {
@@ -153,7 +159,13 @@ export class CustomerService {
       .get<TransactionResponseDto[]>(
         `${this.API_BASE}/transactions/recent/${accountNumber}`,
       )
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
+  }
+
+  getScheduledTransfers(): Observable<TransactionResponseDto[]> {
+    return this.http
+      .get<TransactionResponseDto[]>(`${this.API_BASE}/transactions/scheduled`)
+      .pipe(catchError(handleHttpError));
   }
 
   getAllTransactions(
@@ -173,7 +185,7 @@ export class CustomerService {
         `${this.API_BASE}/transactions/all`,
         { params },
       )
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getAccountTransactions(
@@ -186,34 +198,16 @@ export class CustomerService {
     const params = new HttpParams()
       .set('start', start)
       .set('end', end)
+      .set('accountNumber', accountNumber)
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return new Observable<PageResponseDto<TransactionResponseDto>>(observer => {
-      this.http
-        .get<PageResponseDto<TransactionResponseDto>>(
-          `${this.API_BASE}/transactions/all`,
-          { params },
-        )
-        .pipe(catchError(this.handleError))
-        .subscribe({
-          next: (res) => {
-            const filtered = res.content.filter(
-              tx => tx.sourceAccountNumber === accountNumber || tx.destinationAccountNumber === accountNumber
-            );
-            observer.next({
-              content: filtered,
-              page: res.page,
-              size: size,
-              totalElements: filtered.length,
-              totalPages: Math.ceil(filtered.length / size),
-              last: res.last,
-            });
-            observer.complete();
-          },
-          error: (err) => observer.error(err),
-        });
-    });
+    return this.http
+      .get<PageResponseDto<TransactionResponseDto>>(
+        `${this.API_BASE}/transactions/all`,
+        { params },
+      )
+      .pipe(catchError(handleHttpError));
   }
 
   // ── Carte ────────────────────────────────────────────────────────
@@ -221,19 +215,19 @@ export class CustomerService {
   getCards(): Observable<CardResponseDto[]> {
     return this.http
       .get<CardResponseDto[]>(`${this.API_BASE}/cards`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getCardDetail(cardId: number): Observable<CardResponseDto> {
     return this.http
       .get<CardResponseDto>(`${this.API_BASE}/cards/${cardId}`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   getCardSensitive(cardId: number): Observable<CardSensitiveDto> {
     return this.http
       .get<CardSensitiveDto>(`${this.API_BASE}/cards/${cardId}/sensitive`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   // ── Beneficiari ──────────────────────────────────────────────────
@@ -241,13 +235,13 @@ export class CustomerService {
   getBeneficiaries(): Observable<BeneficiaryResponseDto[]> {
     return this.http
       .get<BeneficiaryResponseDto[]>(`${this.API_BASE}/beneficiaries`)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   saveBeneficiary(data: BeneficiaryRequestDto): Observable<BeneficiaryResponseDto> {
     return this.http
       .post<BeneficiaryResponseDto>(`${this.API_BASE}/beneficiaries`, data)
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   deleteBeneficiary(id: number): Observable<string> {
@@ -255,7 +249,7 @@ export class CustomerService {
       .delete(`${this.API_BASE}/beneficiaries/${id}`, {
         responseType: 'text',
       })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   checkBeneficiary(accountNumber: string): Observable<BeneficiaryResponseDto | null> {
@@ -263,37 +257,18 @@ export class CustomerService {
       .get<BeneficiaryResponseDto | null>(`${this.API_BASE}/beneficiaries/check`, {
         params: { accountNumber },
       })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   renameBeneficiary(id: number, nickname: string): Observable<BeneficiaryResponseDto> {
     return this.http
       .put<BeneficiaryResponseDto>(`${this.API_BASE}/beneficiaries/${id}/rename`, { nickname })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleHttpError));
   }
 
   cancelTransaction(transactionId: number): Observable<{message: string}> {
     return this.http
       .delete<{message: string}>(`${this.API_BASE}/transactions/${transactionId}/cancel`)
-      .pipe(catchError(this.handleError));
-  }
-
-  // ── Error handler ────────────────────────────────────────────────
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'An error occurred. Please try again later.';
-
-    let body = error.error;
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch { /* not JSON */ }
-    }
-
-    if (body && typeof body === 'object' && body.message) {
-      errorMessage = body.message;
-    } else if (body && typeof body === 'object' && body.errorCode) {
-      errorMessage = `[${body.errorCode}] An error occurred.`;
-    }
-
-    return throwError(() => new Error(errorMessage));
+      .pipe(catchError(handleHttpError));
   }
 }

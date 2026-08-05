@@ -1,0 +1,26 @@
+<div class="sched-modal-overlay" (click)="onOverlayClick($event)">
+  <div class="sched-modal-card">
+    <div class="sched-header">
+      <div class="sched-icon">
+        <i class="bi bi-calendar-x"></i>
+      </div>
+      <h2>{{ 'SCHEDULED_CANCEL.title' | translate }}</h2>
+      <p
+        class="sched-message"
+        [innerHTML]="'SCHEDULED_CANCEL.message' | translate: { amount: (amount | currency:'EUR':'symbol':'1.2-2'), date: (scheduledDate | date:'dd/MM/yyyy') }"
+      ></p>
+    </div>
+
+    <div class="sched-actions">
+      <button class="btn btn-danger w-100" (click)="confirm()" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        }
+        {{ 'SCHEDULED_CANCEL.confirm' | translate }}
+      </button>
+      <button class="btn btn-cancel w-100" (click)="cancel()" [disabled]="loading">
+        {{ 'SCHEDULED_CANCEL.back' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

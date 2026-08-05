@@ -27,6 +27,16 @@
 
   <!-- Search Bar -->
   <div class="search-bar mb-3">
+    <div class="status-filter-wrapper">
+      <label class="status-filter-label">{{ 'EMPLOYEE.customers.filter_label' | translate }}</label>
+      <select class="form-select status-filter-select" [value]="statusFilter()" (change)="onStatusChange($event)">
+        <option value="ALL">{{ 'EMPLOYEE.customers.filter_all' | translate }}</option>
+        <option value="ACTIVE">{{ 'EMPLOYEE.customers.filter_active' | translate }}</option>
+        <option value="PENDING">{{ 'EMPLOYEE.customers.filter_pending' | translate }}</option>
+        <option value="ANNULLED">{{ 'EMPLOYEE.customers.filter_annulled' | translate }}</option>
+        <option value="SUSPENDED">{{ 'EMPLOYEE.customers.filter_suspended' | translate }}</option>
+      </select>
+    </div>
     <div class="search-input-wrapper">
       <i class="bi bi-search search-icon"></i>
       <input
@@ -71,7 +81,7 @@
             <div class="customer-main-info">
               <div class="customer-avatar customer-avatar-clickable" (click)="viewUserDetail(customer.userId); $event.stopPropagation()" title="{{ 'EMPLOYEE.customers.view_user_detail' | translate }}">
                 @if (customer.profilePictureUrl) {
-                  <img [src]="'http://localhost:8081' + customer.profilePictureUrl" alt="" class="avatar-img">
+                  <img [src]="customer.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                 } @else {
                   {{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}
                 }
@@ -152,6 +162,22 @@
         </div>
       }
     </div>
+
+    @if (totalElements() > 0) {
+      <div class="pagination-bar">
+        <span class="pagination-info">
+          {{ 'EMPLOYEE.customers.pagination_page' | translate }} {{ page() + 1 }} {{ 'EMPLOYEE.customers.pagination_of' | translate }} {{ totalPages() }} · {{ totalElements() }} {{ 'EMPLOYEE.customers.pagination_total' | translate }}
+        </span>
+        <div class="d-flex gap-2">
+          <button class="btn-pagination" (click)="prevPage()" [disabled]="!hasPrev()">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="btn-pagination" (click)="nextPage()" [disabled]="!hasNext()">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    }
   }
 </div>
 
@@ -189,7 +215,7 @@
               </h6>
               <div class="text-center mb-3">
                 @if (detail.profilePictureUrl) {
-                  <img [src]="'http://localhost:8081' + detail.profilePictureUrl" alt="" class="detail-avatar-img">
+                  <img [src]="detail.profilePictureUrl | apiUrl" alt="" class="detail-avatar-img">
                 } @else {
                   <div class="detail-avatar-placeholder">{{ detail.firstName?.charAt(0) }}{{ detail.lastName?.charAt(0) }}</div>
                 }

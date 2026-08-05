@@ -58,7 +58,7 @@
     </div>
   }
 
-  <!-- WITHDRAW -->
+  <!-- WITHDRAW (ATM style) -->
   @if (activeTab() === 'withdraw') {
     <div class="ops-section">
       <div class="ops-section-header ops-section-withdraw">
@@ -79,12 +79,41 @@
             }
           </select>
         </div>
+
+        <!-- ATM quick-select buttons -->
+        <div class="atm-quick-select">
+          @for (amt of atmQuickAmounts; track amt) {
+            <button
+              class="atm-quick-btn"
+              [class.selected]="dwAmount === amt"
+              (click)="selectAtmAmount(amt)"
+              [disabled]="getLimitValue('ATM_WITHDRAWAL') !== null && amt > getLimitValue('ATM_WITHDRAWAL')!"
+            >
+              &euro;{{ amt }}
+            </button>
+          }
+        </div>
+
         <div class="ops-form-group">
           <label class="ops-label">{{ 'TRANSACTIONS.amount' | translate }}</label>
           <div class="ops-amount-input">
             <span class="ops-currency">&euro;</span>
-            <input class="ops-input ops-amount" type="number" [(ngModel)]="dwAmount" min="10" step="0.01" placeholder="0.00" />
+            <input
+              class="ops-input ops-amount"
+              type="number"
+              [(ngModel)]="dwAmount"
+              (input)="onDwAmountChange()"
+              min="10"
+              step="10"
+              placeholder="0.00"
+            />
           </div>
+          @if (dwAmountTouched() && dwAmountError()) {
+            <div class="atm-error">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              {{ dwAmountError() | translate }}
+            </div>
+          }
           <div class="ops-hints">
             <span class="ops-hint"><i class="bi bi-info-circle"></i> {{ 'TRANSACTIONS.min_withdraw' | translate }}</span>
             @if (getLimitValue('ATM_WITHDRAWAL') !== null) {
@@ -92,7 +121,7 @@
             }
           </div>
         </div>
-        <button class="ops-btn ops-btn-withdraw" (click)="withdraw()">
+        <button class="ops-btn ops-btn-withdraw" (click)="withdraw()" [disabled]="!isDwAmountValid()">
           <i class="bi bi-dash-lg"></i>
           {{ 'TRANSACTIONS.withdraw_btn' | translate }}
         </button>
@@ -140,7 +169,7 @@
                 <div class="ops-beneficiary" [class.selected]="txBeneficiaryId === b.id" (click)="toggleBeneficiary(b.id, b.destinationAccountNumber)">
                   <div class="ops-beneficiary-avatar">
                     @if (b.profilePictureUrl) {
-                      <img [src]="'http://localhost:8081' + b.profilePictureUrl" alt="" class="avatar-img">
+                      <img [src]="b.profilePictureUrl | apiUrl" alt="" class="avatar-img">
                     } @else {
                       {{ b.nickname.charAt(0) }}
                     }
@@ -175,15 +204,17 @@
           <label class="ops-label">{{ 'TRANSACTIONS.amount' | translate }}</label>
           <div class="ops-amount-input">
             <span class="ops-currency">&euro;</span>
-            <input class="ops-input ops-amount" type="number" [(ngModel)]="txAmount" min="1" step="0.01" placeholder="0.00" />
+            <input class="ops-input ops-amount" type="number" [(ngModel)]="txAmount" [min]="isInternalTransfer() ? 0.01 : 1" step="0.01" placeholder="0.00" />
           </div>
           <div class="ops-hints">
-            <span class="ops-hint"><i class="bi bi-info-circle"></i> Min: &euro;1.00</span>
-            @if (txTransferType() === 'instant') {
+            @if (!isInternalTransfer()) {
+              <span class="ops-hint"><i class="bi bi-info-circle"></i> Min: &euro;1.00</span>
+            }
+            @if (!isInternalTransfer() && txTransferType() === 'instant') {
               @if (getLimitValue('INSTANT_TRANSFER_SINGLE') !== null) {
                 <span class="ops-hint"><i class="bi bi-arrow-up-circle"></i> {{ 'TRANSACTIONS.max' | translate }}: &euro;{{ getLimitValue('INSTANT_TRANSFER_SINGLE')!.toFixed(2) }}</span>
               }
-            } @else {
+            } @else if (!isInternalTransfer()) {
               @if (getLimitValue('SINGLE_TRANSFER') !== null) {
                 <span class="ops-hint"><i class="bi bi-arrow-up-circle"></i> {{ 'TRANSACTIONS.max' | translate }}: &euro;{{ getLimitValue('SINGLE_TRANSFER')!.toFixed(2) }}</span>
               }
@@ -215,5 +246,5 @@
 
 @if (showPinModal()) {
   <div class="pin-overlay" (click)="onPinCancelled()"></div>
-  <app-pin-confirm-modal (confirmed)="onPinConfirmed()" (cancelled)="onPinCancelled()" />
+  <app-pin-confirm-modal (confirmed)="onPinConfirmed($event)" (cancelled)="onPinCancelled()" />
 }

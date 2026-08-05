@@ -1,15 +1,17 @@
-import { Component, inject, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
+import { ToastComponent } from '../../core/components/toast/toast.component';
 
 @Component({
   selector: 'app-pin-setup',
   standalone: true,
-  imports: [TranslatePipe, TranslateDirective],
+  imports: [TranslatePipe, TranslateDirective, ToastComponent],
   templateUrl: './pin-setup.html',
   styleUrl: './pin-setup.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PinSetupComponent {
   private translate = inject(TranslateService);
@@ -65,6 +67,7 @@ export class PinSetupComponent {
     this.loading.set(true);
     this.authService.setupPin(pin).subscribe({
       next: () => {
+        this.toastService.clearAll();
         const user = this.authService.getUser();
         if (user) {
           user.pinSetupComplete = true;

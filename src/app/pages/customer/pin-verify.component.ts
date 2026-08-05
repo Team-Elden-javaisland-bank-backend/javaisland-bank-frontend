@@ -1,15 +1,17 @@
-import { Component, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
+import { ToastComponent } from '../../core/components/toast/toast.component';
 
 @Component({
   selector: 'app-pin-verify',
   standalone: true,
-  imports: [TranslatePipe, TranslateDirective],
+  imports: [TranslatePipe, TranslateDirective, ToastComponent],
   templateUrl: './pin-verify.html',
   styleUrl: './pin-verify.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PinVerifyComponent {
   digits = signal<string[]>(['', '', '', '']);
@@ -56,6 +58,7 @@ export class PinVerifyComponent {
     this.loading.set(true);
     this.authService.verifyPin(pin).subscribe({
       next: () => {
+        this.toastService.clearAll();
         this.authService.setPinVerified(true);
         this.router.navigate(['/customer/dashboard']);
       },

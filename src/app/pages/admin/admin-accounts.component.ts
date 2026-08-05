@@ -1,20 +1,22 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { AdminService, AdminAccountListItemDto } from '../../core/services/admin.service';
 
 @Component({
   selector: 'app-admin-accounts',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, ApiUrlPipe],
   templateUrl: './admin-accounts.html',
-  styleUrls: ['./admin-accounts.css']
+  styleUrls: ['./admin-accounts.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminAccountsComponent implements OnInit {
   accounts = signal<AdminAccountListItemDto[]>([]);
   loading = signal(true);
-  error = signal<string | null>(null);
+  errorKey = signal<string | null>(null);
   searchQuery = signal('');
   filterStatus = signal<number | null>(null);
 
@@ -39,8 +41,8 @@ export class AdminAccountsComponent implements OnInit {
     this.loading.set(true);
     const statusId = this.filterStatus();
     this.adminService.getAdminAccounts(statusId ?? undefined).subscribe({
-      next: (data) => { this.accounts.set(data); this.loading.set(false); },
-      error: () => { this.loading.set(false); this.error.set(this.translate.instant('ADMIN.accounts.error_load')); }
+      next: (data) => { this.accounts.set(data.content); this.loading.set(false); },
+      error: () => { this.loading.set(false); this.errorKey.set('ADMIN.accounts.error_load'); }
     });
   }
 

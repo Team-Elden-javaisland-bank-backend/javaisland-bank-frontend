@@ -1,16 +1,18 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateDirective, TranslateService } from '@ngx-translate/core';
+import { ApiUrlPipe } from '../../shared/pipes/api-url.pipe';
 import { CustomerService } from '../../core/services/customer.service';
 import { BeneficiaryResponseDto } from '../../core/models/beneficiary/beneficiary-response.dto';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-customer-beneficiaries',
-  imports: [DatePipe, FormsModule, TranslatePipe, TranslateDirective],
+  imports: [DatePipe, FormsModule, TranslatePipe, TranslateDirective, ApiUrlPipe],
   templateUrl: './customer-beneficiaries.html',
   styleUrl: './customer-beneficiaries.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerBeneficiariesComponent implements OnInit {
   beneficiaries = signal<BeneficiaryResponseDto[]>([]);
@@ -18,7 +20,6 @@ export class CustomerBeneficiariesComponent implements OnInit {
   showForm = signal(false);
 
   nickname = '';
-  beneficiaryName = '';
   destinationAccountNumber = '';
 
   constructor(
@@ -43,7 +44,7 @@ export class CustomerBeneficiariesComponent implements OnInit {
 
   addBeneficiary(): void {
     if (!this.nickname || !this.destinationAccountNumber) {
-      this.toastService.error(this.translate.instant('BENEFICIARIES.toast.fill_fields'));
+      this.toastService.i18nError('BENEFICIARIES.toast.fill_fields');
       return;
     }
 
@@ -51,29 +52,32 @@ export class CustomerBeneficiariesComponent implements OnInit {
       nickname: this.nickname,
       destinationAccountNumber: this.destinationAccountNumber,
     };
-    if (this.beneficiaryName) {
-      data.beneficiaryName = this.beneficiaryName;
-    }
 
     this.customerService.saveBeneficiary(data).subscribe({
       next: () => {
-        this.toastService.success(this.translate.instant('BENEFICIARIES.toast.added'));
+        this.toastService.i18nSuccess('BENEFICIARIES.toast.added');
         this.showForm.set(false);
         this.nickname = '';
-        this.beneficiaryName = '';
         this.destinationAccountNumber = '';
         this.loadBeneficiaries();
       },
-      error: (err) => this.toastService.error(err?.error?.message || err?.message),
+      error: (err: any) => {
+        if (err?.errorCode === 'ACCOUNT_NOT_FOUND') {
+          this.toastService.i18nError('BENEFICIARIES.toast.account_not_found');
+        } else {
+          this.toastService.error(err?.message || err?.error?.message);
+        }
+      },
     });
   }
 
   deleteBeneficiary(id: number): void {
     if (!confirm(this.translate.instant('BENEFICIARIES.toast.confirm_delete'))) return;
 
+
     this.customerService.deleteBeneficiary(id).subscribe({
       next: () => {
-        this.toastService.success(this.translate.instant('BENEFICIARIES.toast.removed'));
+        this.toastService.i18nSuccess('BENEFICIARIES.toast.removed');
         this.loadBeneficiaries();
       },
       error: (err) => this.toastService.error(err?.error?.message || err?.message),

@@ -15,9 +15,11 @@ Frontend Angular 22 per la banca digitale **EldenBank**. Mobile-first, collegato
 | RxJS | 7.8 | Gestione asincrona |
 | Angular Signals | 22 | State reattivo |
 | Angular Router | 22 | Navigazione + guard |
-| HttpClient | 22 | Chiamate REST con interceptor JWT |
+| HttpClient | 22 | Chiamate REST con cookie sessione + Accept-Language |
 | @ngx-translate/core | 18 | Internazionalizzazione (i18n) |
 | jsPDF + jspdf-autotable | — | Generazione PDF lato client |
+| Photon API (OpenStreetMap) | — | Geocoding autocompletamento indirizzi di residenza |
+| Dataset ISTAT comuni | — | 7904 comuni (via backend `/api/v1/comuni`) per luogo di nascita |
 | Bootstrap Icons | 1.13 | Iconografia |
 | Bootstrap | 5.3 | CSS framework base |
 
@@ -85,7 +87,6 @@ Il supporto multi-lingua è implementato tramite `@ngx-translate/core`:
 | `CARDS.*` | Gestione carte |
 | `CARD_TYPE.*` | Tipi carta |
 | `BENEFICIARIES.*` | Beneficiari |
-| `SAVED_BENEFICIARIES.*` | Beneficiari salvati |
 | `REGISTER.*` | Registrazione |
 
 ---
@@ -97,14 +98,14 @@ src/app/
 ├── core/
 │   ├── animations/        # Route transition animations
 │   ├── components/        # Shared components (empty-state, skeleton, toast)
-│   ├── guards/            # auth.guard.ts — 7 guard functions
-│   ├── interceptors/      # auth.interceptor.ts — JWT + Accept-Language + 401 force logout
+│   ├── guards/            # auth.guard.ts — roleGuard, customerSetupGuard, setupPageGuard, loginRedirectGuard
+│   ├── interceptors/      # auth.interceptor.ts (Accept-Language + cookie) + error.interceptor.ts (normalizzazione errori)
 │   ├── models/            # DTO interfaces per dominio (account/, auth/, card/, ecc.)
 │   └── services/          # API services (auth, customer, employee, admin, notification, toast)
 ├── layout/                # Shell layout: sidebar + bottom nav + header + notifications dropdown
 ├── pages/
-│   ├── auth/              # Login + Registrazione
-│   ├── customer/          # 15 componenti (dashboard, conti, transazioni, ecc.)
+│   ├── auth/              # 2 componenti (Login + Registrazione)
+│   ├── customer/          # 14 componenti (dashboard, conti, transazioni, ecc.)
 │   ├── employee/          # 7 componenti (dashboard, registrazioni, conti, ecc.)
 │   └── admin/             # 6 componenti (dashboard, dipendenti, conti, ecc.)
 ├── app.routes.ts          # Routing completo con guard chain
@@ -116,34 +117,45 @@ src/app/
 
 #### Guards (`core/guards/auth.guard.ts`)
 
+Il flusso di onboarding utente C è determinato dallo stato di setup:
+
+```
+resolveCustomerState(user, pinVerified):
+  limitsSetupComplete === false → limits-setup
+  pinSetupComplete === false    → pin-setup
+  !pinVerified                  → pin-verify
+  altrimenti                    → dashboard
+```
+
 | Guard | Funzione |
 |---|---|
-| `authGuard` | Blocca route non autenticate |
-| `loginRedirectGuard` | Reindirizza utenti già loggati fuori dal login |
-| `roleGuard('C'\|'D'\|'A')` | Blocca per ruolo |
-| `limitsSetupGuard` | Reindirizza al setup limiti se non completato |
-| `limitsSetupPageGuard` | Permette solo la pagina di setup limiti |
-| `pinSetupGuard` | Reindirizza al setup PIN se non configurato |
-| `pinSetupPageGuard` | Permette solo la pagina di setup PIN |
-| `pinVerifyPageGuard` | Permette solo la pagina di verifica PIN |
+| `roleGuard('C'\|'D'\|'A')` | Blocca la route se non autenticato o ruolo errato |
+| `customerSetupGuard` | Reindirizza il cliente a limits-setup → pin-setup → pin-verify finché il setup non è completo |
+| `setupPageGuard('limits-setup'\|'pin-setup'\|'pin-verify')` | Permette solo la pagina di setup richiesta (e reindirizza altrove) |
+| `loginRedirectGuard` | Reindirizza utenti già loggati al loro dashboard di ruolo |
 
-#### Interceptors (`core/interceptors/auth.interceptor.ts`)
+#### Interceptors (`core/interceptors/`)
 
-- Injection del Bearer token JWT in ogni richiesta
-- Invio header `Accept-Language` per i18n lato server
-- Catch 401 → force logout + redirect login
-- Catch `ACCOUNT_SUSPENDED` → toast con messaggio backend
+`auth.interceptor.ts`:
+- Imposta header `Accept-Language` (`it`/`en`) per i18n lato server
+- Imposta `withCredentials: true` per invio automatico del cookie `bank_token`
+- Catch `401` (fuori dalle route auth pubbliche) → toast "sessione scaduta" + logout + redirect login
+- **Non** inietta alcun Bearer token: il JWT è dentro il cookie (mai in memoria/localStorage)
+
+`error.interceptor.ts`:
+- `normalizeHttpError` estrae `message` + `errorCode` dal body `ErrorResponseDto`
+- `handleHttpError` propaga l'errore normalizzato a servizi/componenti
 
 #### Services (`core/services/`)
 
 | Service | Metodi principali |
 |---|---|
-| `auth.service.ts` | login, register, logout, getToken, getUser, isLoggedIn, hasRole, saveUserToSession |
-| `customer.service.ts` | getAccounts, openAccount, closureRequest, getTransactions, deposit, withdraw, transfer, getCards, getBeneficiaries, getProfile, getNotifications, getLimits, pinSetup, pinStatus, pinVerify, cancelTransaction |
+| `auth.service.ts` | login, register, logout, restoreSession (`/me`), getUser, isLoggedIn, saveSession, uploadProfilePicture, setupPin, getPinStatus, verifyPin, isPinVerified (TTL 10min in `localStorage`) |
+| `customer.service.ts` | getAccounts, openAccount, closureRequest, getTransactions, deposit, withdraw, transfer, getCards, getBeneficiaries, getProfile, getNotifications, getLimits, cancelTransaction |
 | `employee.service.ts` | getPendingRegistrations, validateRegistration, rejectRegistration, getRefusedRegistrations, reopenRegistration, deleteUser, getCustomers, getAccounts, activateAccount, freezeAccount, validateClosure, rejectClosure, getCards, blockCard, unblockCard, getPasswordRequests, approvePasswordRequest, rejectPasswordRequest, getLimitRequests, approveLimitRequest, rejectLimitRequest |
-| `admin.service.ts` | getDashboard, getEmployees, createEmployee, suspendEmployee, activateEmployee, getCustomers, getAccounts, getTransactions, getAuditLogs, getLimits, updateLimit |
+| `admin.service.ts` | getDashboard, getEmployees, createEmployee, suspendEmployee, activateEmployee, getCustomers, getAccounts, getTransactions, getAuditLogs, checkBeneficiary |
 | `notification.service.ts` | getNotifications, getUnreadCount, markAsRead, markAllAsRead |
-| `toast.service.ts` | success, error, info, warning |
+| `toast.service.ts` | show, i18nShow, success, error, info, warning, i18n* (supporto retraduzione) |
 
 ---
 
@@ -156,7 +168,9 @@ Il frontend consuma **60+ endpoint REST** del backend Spring Boot (`http://local
 | Area | Endpoint | Metodo |
 |---|---|---|
 | **Auth** | `POST /api/v1/auth/register` | Registrazione pubblica |
-| | `POST /api/v1/auth/keycloak-login` | Login via Keycloak ROPC |
+| | `POST /api/v1/auth/keycloak-login` | Login via Keycloak ROPC (imposta cookie `bank_token`) |
+| | `GET /api/v1/auth/me` | Restore sessione (profilo dal JWT) |
+| | `POST /api/v1/auth/logout` | Logout (cancella cookie) |
 | **Customer Accounts** | `GET /api/v1/customer/accounts` | Lista conti |
 | | `GET /api/v1/customer/accounts/holder-info` | Info intestatario |
 | | `GET /api/v1/customer/accounts/monthly-summary` | Riepilogo mensile |
@@ -174,7 +188,7 @@ Il frontend consuma **60+ endpoint REST** del backend Spring Boot (`http://local
 | | `GET /api/v1/customer/transactions/all` | Storico paginato |
 | | `DELETE /api/v1/customer/transactions/{id}/cancel` | Cancella transazione pendente |
 | **Customer Beneficiaries** | `GET /api/v1/customer/beneficiaries` | Lista |
-| | `POST /api/v1/customer/beneficiaries` | Aggiungi (con `beneficiaryName` opzionale per IBAN esterni) |
+| | `POST /api/v1/customer/beneficiaries` | Aggiungi (IBAN validato dal backend: esiste, attivo, non proprio) |
 | | `DELETE /api/v1/customer/beneficiaries/{id}` | Elimina |
 | | `GET /api/v1/customer/beneficiaries/check` | Verifica esistenza |
 | | `PUT /api/v1/customer/beneficiaries/{id}/rename` | Rinomina |
@@ -188,9 +202,9 @@ Il frontend consuma **60+ endpoint REST** del backend Spring Boot (`http://local
 | | `GET /api/v1/customer/notifications/unread-count` | Conteggio non lette |
 | | `PUT /api/v1/customer/notifications/{id}/read` | Segna come letta |
 | | `PUT /api/v1/customer/notifications/read-all` | Segna tutte come lette |
-| **Customer PIN** | `POST /api/v1/customer/pin/setup` | Configura PIN |
-| | `GET /api/v1/customer/pin/status` | Stato PIN |
-| | `POST /api/v1/customer/pin/verify` | Verifica PIN |
+| **Customer PIN** | `POST /api/v1/user/pin/setup` | Configura PIN |
+| | `GET /api/v1/user/pin/status` | Stato PIN |
+| | `POST /api/v1/user/pin/verify` | Verifica PIN |
 | **Customer Password** | `POST /api/v1/customer/password-change` | Richiedi cambio password |
 | **Customer Limit Change** | `POST /api/v1/customer/limit-change` | Richiedi modifica limite |
 | **Customer Requests** | `GET /api/v1/customer/requests` | Lista richieste |
@@ -265,7 +279,7 @@ Documentazione API disponibile su: `http://localhost:8081/swagger-ui/index.html`
 
 ### Auth
 - **Login** — Email + password, language switcher, link registrazione, reindirizzamento ruolo
-- **Registrazione** — Form completo dati anagrafici con validazione, lingua selezionabile
+- **Registrazione** — Form completo dati anagrafici con validazione. Luogo di nascita da dataset ISTAT comuni (endpoint `/api/v1/comuni`, codifica catastale per codice fiscale), residenza con autocompletamento via Photon API (indirizzi OpenStreetMap), lingua selezionabile
 
 ### Customer
 
@@ -276,7 +290,7 @@ Documentazione API disponibile su: `http://localhost:8081/swagger-ui/index.html`
 | **Dettaglio Conto** | `/customer/accounts/:number` | Saldo, stato, data apertura, limiti operativi, dettaglio completo |
 | **Transazioni** | `/customer/transactions` | Storico paginato con filtri data, colori per direzione |
 | **Operazioni** | `/customer/operations` | Deposito, prelievo, bonifico (standard/istantaneo/schedulato), con verifica PIN |
-| **Beneficiari** | `/customer/beneficiaries` | CRUD contatti interni per bonifici rapidi |
+| **Beneficiari** | `/customer/beneficiaries` | CRUD contatti per bonifici rapidi; IBAN validato dal backend (toast i18n se non trovato) |
 | **Carte** | `/customer/cards` | Lista carte con gradienti, dettaglio, reveal dati sensibili |
 | **Profilo** | `/customer/profile` | Dati personali, foto profilo, cambio password, estratto conto PDF |
 | **Limiti** | `/customer/limits` | Visualizzazione e modifica limiti operativi (con policy) |
@@ -402,7 +416,9 @@ Mobile (< 768px):
    → Stato: ACTIVE, Account: ATTIVO, Carta: DEBIT ATTIVA
 
 3. LOGIN → POST /api/v1/auth/keycloak-login
-   → JWT + ruolo + dati utente salvati in localStorage
+   → Il backend imposta il cookie httpOnly `bank_token` (JWT)
+   → Il frontend salva in localStorage solo il profilo utente (token = '')
+   → Restore sessione: GET /api/v1/auth/me
 
 4. PRIMO ACCESSO CUSTOMER:
    a. Setup limiti obbligatorio (6 limiti) → /customer/limits-setup
@@ -478,7 +494,7 @@ audit_logs ── performed_by_user_id → users
 ### Installazione
 
 ```bash
-cd front-end/bank-frontend
+cd javaisland-bank-frontend
 npm install
 ```
 
